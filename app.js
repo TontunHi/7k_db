@@ -24,7 +24,6 @@ app.use(session({
 // Use Routes
 app.use('/', indexRoutes);
 app.use('/admin', adminRoutes);
-
 // Start Server
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
