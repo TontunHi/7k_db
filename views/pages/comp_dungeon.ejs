@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head') %>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    
+    <style>
+        body { background-color: #0f0f0f; font-family: 'Segoe UI', sans-serif; }
+        
+        .page-title-box { text-align: center; margin-bottom: 30px; }
+        .page-title {
+            font-size: 2rem; font-weight: 800; 
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+
+        /* --- Compact Card --- */
+        .dungeon-card {
+            background: #161616; border-radius: 8px; margin-bottom: 20px;
+            overflow: hidden; border: 1px solid #333;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .dungeon-banner-box {
+            position: relative; width: 100%; 
+            height: auto; min-height: 50px;
+            border-bottom: 1px solid #2a2a2a;
+            line-height: 0;
+        }
+        .dungeon-banner-img { width: 100%; height: auto; display: block; }
+
+        /* --- Team Row (Interactive) --- */
+        .team-row {
+            padding: 10px 15px; border-bottom: 1px solid #222;
+            display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+            transition: background 0.2s;
+            position: relative;
+        }
+        .team-row:last-child { border-bottom: none; }
+        .team-row:hover { background: #1f1f1f; }
+        
+        .team-clickable {
+            display: flex; flex-grow: 1; align-items: center; gap: 12px;
+            cursor: pointer;
+        }
+
+        .formation-info { 
+            display: flex; flex-direction: column; align-items: center;
+            min-width: 45px; opacity: 0.9; 
+        }
+        .formation-info img { width: 25px; margin-bottom: 2px; }
+        .formation-info span { font-size: 0.65rem; color: #888; font-weight: bold; }
+
+        .heroes-container { flex-grow: 1; display: flex; gap: 6px; align-items: center; min-height: 50px; }
+        
+        .hero-slot {
+            width: 40px; aspect-ratio: 3/4; background: #000; 
+            border: 2px solid #ef9a9a; border-radius: 4px; overflow: hidden; position: relative; transition: all 0.3s;
+        }
+        .hero-slot img { width: 100%; height: 100%; object-fit: cover; }
+        .hero-slot.is-front { 
+            border-color: #90caf9; transform: translateY(-6px); 
+            box-shadow: 0 3px 10px rgba(144, 202, 249, 0.15); z-index: 2;
+        }
+
+        .desc-box { 
+            background: rgba(255, 107, 107, 0.08); border-left: 2px solid #ff6b6b;
+            padding: 4px 10px; border-radius: 0 4px 4px 0;
+            font-size: 0.75rem; color: #ffadad; max-width: 300px;
+        }
+
+        .btn-export {
+            background: #222; color: #fff; border: 1px solid #444;
+            width: 30px; height: 30px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            transition: 0.2s; cursor: pointer; margin-left: auto; font-size: 0.8rem;
+            z-index: 10;
+        }
+        .btn-export:hover { background: #ff6b6b; color: #000; border-color: #ff6b6b; }
+
+        /* --- View Modal Styles --- */
+        .modal-content { background: #1a1a1a; border: 1px solid #444; color: #fff; }
+        .modal-header { border-bottom: 1px solid #333; }
+        .modal-title { font-weight: 800; color: #ff6b6b; text-transform: uppercase; }
+        
+        .view-hero-container {
+            display: flex; justify-content: center; gap: 15px; padding: 20px 0;
+            align-items: flex-end; 
+            min-height: 120px;
+        }
+        .view-hero-slot {
+            width: 70px; aspect-ratio: 3/4; background: #000;
+            border: 3px solid #ef9a9a; border-radius: 8px; overflow: hidden;
+            position: relative; transition: transform 0.3s;
+        }
+        .view-hero-slot img { width: 100%; height: 100%; object-fit: cover; }
+        .view-hero-slot.v-front {
+            border-color: #90caf9; transform: translateY(-20px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5); z-index: 5;
+        }
+        
+        .view-desc {
+            background: #222; padding: 15px; border-radius: 8px;
+            text-align: center; color: #ccc; font-style: italic;
+            border-left: 4px solid #ff6b6b; margin-top: 10px;
+        }
+
+        /* --- Capture Canvas --- */
+        #captureArea {
+            position: fixed; top: -9999px; left: -9999px; width: 1420px; background: #121212; padding: 0; z-index: -9999;
+        }
+        .capture-banner { width: 100%; height: auto; border-bottom: 4px solid #ff6b6b; position: relative; z-index: 1; line-height: 0; display: block; }
+        .capture-banner img { width: 100%; height: auto; display: block; }
+        .capture-body { padding: 80px 50px 60px 50px; background: #1a1a1a; display: flex; justify-content: center; gap: 30px; align-items: flex-end; position: relative; z-index: 50; }
+        .capture-desc { background: #1a1a1a; color: #d0d0d0; padding: 0 80px 40px 80px; text-align: center; font-size: 1.8rem; font-style: italic; position: relative; z-index: 50; }
+        .capture-hero { width: 140px; aspect-ratio: 3/4; border: 4px solid #ef9a9a; border-radius: 12px; position: relative; z-index: 2; background: #000; }
+        .capture-hero img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; position: relative; z-index: 5; display: block; }
+        .capture-hero.front { border-color: #90caf9; top: -50px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); z-index: 100 !important; }
+        .capture-footer { padding: 20px; text-align: center; font-size: 1.2rem; color: #555; background: #121212; position: relative; z-index: 10; }
+    </style>
+</head>
+<body class="d-flex flex-column h-100 bg-main text-light">
+    
+    <%- include('../partials/navbar') %>
+
+    <main class="flex-shrink-0 mt-5 pt-4">
+        <div class="container py-4" style="max-width: 900px;">
+            
+            <div class="page-title-box">
+                <h1 class="page-title">Dungeon Guide</h1>
+                <p class="text-secondary small">Optimal teams for daily dungeons</p>
+            </div>
+
+            <div id="dungeonContainer">
+                <% dungeons.forEach(dungeon => { %>
+                    <% 
+                        let displayName = dungeon.banner
+                            .replace(/^\d+_/, '')
+                            .replace(/\.[^/.]+$/, '')
+                            .replace(/_/g, ' ');
+                    %>
+
+                    <div class="dungeon-card">
+                        <div class="dungeon-banner-box">
+                            <img src="/images/dungeon/<%= dungeon.banner %>" class="dungeon-banner-img">
+                        </div>
+
+                        <% dungeon.teams.forEach(team => { %>
+                            <div class="team-row">
+                                <div class="team-clickable" onclick='viewTeamDetail(<%- JSON.stringify(team) %>, "<%= displayName %>")' title="Click to view details">
+                                    <div class="formation-info">
+                                        <img src="/images/formation/<%= team.formation %>.png">
+                                        <span><%= team.formation %></span>
+                                    </div>
+
+                                    <div class="heroes-container">
+                                        <% 
+                                            let upIndices = [];
+                                            if(team.formation === '1-4') upIndices = [2];
+                                            else if(team.formation === '2-3') upIndices = [1, 3];
+                                            else if(team.formation === '3-2') upIndices = [0, 2, 4];
+                                            else if(team.formation === '4-1') upIndices = [0, 1, 3, 4];
+                                        %>
+                                        <% team.heroes.forEach((h, i) => { %>
+                                            <div class="hero-slot <%= upIndices.includes(i) ? 'is-front' : '' %>">
+                                                <% if(h) { %> <img src="/images/heroes/<%= h %>"> <% } %>
+                                            </div>
+                                        <% }) %>
+                                    </div>
+
+                                    <% if(team.description) { %>
+                                        <div class="desc-box">
+                                            <i class="bi bi-info-circle me-1"></i><%= team.description %>
+                                        </div>
+                                    <% } %>
+                                </div>
+
+                                <button class="btn-export" onclick='exportDungeonTeam(<%- JSON.stringify(team) %>, "<%= dungeon.banner %>", "<%= displayName %>")' title="Export Image">
+                                    <i class="bi bi-camera"></i>
+                                </button>
+                            </div>
+                        <% }) %>
+                    </div>
+                <% }) %>
+            </div>
+        </div>
+    </main>
+
+    <div class="modal fade" id="viewModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewModalTitle">DUNGEON NAME</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    
+                    <div class="view-hero-container" id="viewHeroes"></div>
+
+                    <div id="viewDescContainer" style="display: none;">
+                        <div class="view-desc" id="viewDescText"></div>
+                    </div>
+
+                    <div class="text-center mt-4 pt-3 border-top border-secondary">
+                        <div class="text-secondary small mb-2" style="font-size: 0.7rem; letter-spacing: 1px;">FORMATION</div>
+                        <div class="d-flex flex-column align-items-center">
+                            <img id="viewFormationImg" src="" style="width: 50px; filter: drop-shadow(0 0 5px rgba(255,193,7,0.3));">
+                            <span id="viewFormationText" class="text-warning fw-bold mt-1" style="font-size: 0.9rem;"></span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="captureArea">
+        <div class="capture-banner">
+            <img id="capBannerImg" src="" alt="Banner">
+        </div>
+        <div class="capture-body" id="capHeroes"></div>
+        <div class="capture-desc" id="capDesc"></div>
+        <div class="capture-footer">Generated by 7K Rebirth Database</div>
+    </div>
+
+    <%- include('../partials/footer') %>
+
+    <script>
+        const viewModal = new bootstrap.Modal(document.getElementById('viewModal'));
+
+        function viewTeamDetail(teamData, displayName) {
+            // Set Title
+            document.getElementById('viewModalTitle').innerText = displayName;
+            
+            // [UPDATED] Set Formation Image & Text
+            document.getElementById('viewFormationImg').src = `/images/formation/${teamData.formation}.png`;
+            document.getElementById('viewFormationText').innerText = teamData.formation;
+
+            // Set Description
+            const descContainer = document.getElementById('viewDescContainer');
+            const descText = document.getElementById('viewDescText');
+            if(teamData.description && teamData.description.trim() !== "") {
+                descContainer.style.display = 'block';
+                descText.innerText = teamData.description;
+            } else {
+                descContainer.style.display = 'none';
+            }
+
+            // Set Heroes
+            const container = document.getElementById('viewHeroes');
+            container.innerHTML = '';
+
+            let upIndices = [];
+            if(teamData.formation === '1-4') upIndices = [2];
+            else if(teamData.formation === '2-3') upIndices = [1, 3];
+            else if(teamData.formation === '3-2') upIndices = [0, 2, 4];
+            else if(teamData.formation === '4-1') upIndices = [0, 1, 3, 4];
+
+            teamData.heroes.forEach((h, i) => {
+                if(h) {
+                    const isFront = upIndices.includes(i) ? 'v-front' : '';
+                    const html = `
+                        <div class="view-hero-slot ${isFront}">
+                            <img src="/images/heroes/${h}">
+                        </div>
+                    `;
+                    container.insertAdjacentHTML('beforeend', html);
+                }
+            });
+
+            viewModal.show();
+        }
+
+        function exportDungeonTeam(teamData, bannerFilename, displayName) {
+            const capture = document.getElementById('captureArea');
+            const capBannerImg = document.getElementById('capBannerImg');
+            const capHeroes = document.getElementById('capHeroes');
+            const capDesc = document.getElementById('capDesc');
+
+            // Set Banner
+            capBannerImg.src = `/images/dungeon/${bannerFilename}`;
+
+            // Set Desc
+            if (teamData.description && teamData.description.trim() !== "") {
+                capDesc.style.display = 'block';
+                capDesc.innerHTML = `<i class="bi bi-quote me-2 text-warning"></i>${teamData.description}`;
+            } else {
+                capDesc.style.display = 'none';
+            }
+
+            // Hero Logic
+            let upIndices = [];
+            if(teamData.formation === '1-4') upIndices = [2];
+            else if(teamData.formation === '2-3') upIndices = [1, 3];
+            else if(teamData.formation === '3-2') upIndices = [0, 2, 4];
+            else if(teamData.formation === '4-1') upIndices = [0, 1, 3, 4];
+
+            let html = '';
+            
+            teamData.heroes.forEach((h, i) => {
+                if(h) {
+                    const isFront = upIndices.includes(i) ? 'front' : '';
+                    html += `
+                        <div class="capture-hero ${isFront}">
+                            <img src="/images/heroes/${h}" onload="checkImages()">
+                        </div>
+                    `;
+                }
+            });
+            capHeroes.innerHTML = html;
+
+            let loadedImages = 0;
+            window.checkImages = function() {
+                loadedImages++;
+            }
+
+            setTimeout(() => {
+                html2canvas(capture, {
+                    backgroundColor: '#121212',
+                    scale: 1, 
+                    useCORS: true,
+                    allowTaint: true,
+                    onclone: (clonedDoc) => {
+                        const clonedBody = clonedDoc.getElementById('capHeroes');
+                        clonedBody.style.display = 'flex';
+                        const clonedDesc = clonedDoc.getElementById('capDesc');
+                        if (teamData.description && teamData.description.trim() !== "") {
+                            clonedDesc.style.display = 'block';
+                        }
+                    }
+                }).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = `7K-Dungeon-${displayName.replace(/\s+/g, '_')}.png`;
+                    link.href = canvas.toDataURL();
+                    link.click();
+                });
+            }, 800);
+        }
+    </script>
+</body>
+</html>

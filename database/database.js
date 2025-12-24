@@ -1,7 +1,7 @@
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 
-const dbPath = path.resolve(__dirname, 'game_data.db');
+const dbPath = path.resolve(__dirname, 'seven_knights_rebirth.db');
 
 const db = new sqlite3.Database(dbPath, (err) => {
     if (err) {
@@ -55,6 +55,14 @@ function initTables() {
         formation TEXT,         -- '1-4', '2-3', '3-2', '4-1'
         heroes TEXT,            -- JSON Array เก็บชื่อไฟล์รูป 5 ตัว
         description TEXT        -- คำอธิบายเสริม
+    )`);
+
+    db.run(`CREATE TABLE IF NOT EXISTS dungeon_comps (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        dungeon_name TEXT,      -- เก็บชื่อไฟล์รูป Banner เช่น 'gold_dungeon.png'
+        formation TEXT,         -- '1-4', '2-3', etc.
+        heroes TEXT,            -- JSON Array เก็บชื่อไฟล์รูป 5 ตัว
+        description TEXT
     )`);
 }
 

@@ -41,4 +41,9 @@ router.get('/manage/comp/stage', requireAdmin, adminController.getStageCompManag
 router.post('/api/save_stage_comp', requireAdmin, adminController.saveStageComp);
 router.post('/api/delete_stage_comp', requireAdmin, adminController.deleteStageComp);
 
+//Dungeon
+router.get('/manage/comp/dungeon', requireAdmin, adminController.getDungeonManager);
+router.post('/api/save_dungeon_comp', requireAdmin, adminController.saveDungeonComp);
+router.post('/api/delete_dungeon_comp', requireAdmin, adminController.deleteDungeonComp);
+
 module.exports = router;

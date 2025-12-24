@@ -83,8 +83,13 @@
         .btn-outline-white { border: 1px solid #444; color: #ccc; }
         .btn-outline-white:hover { background: #333; color: #fff; border-color: #666; }
 
+        /* Stage Theme */
         .btn-outline-purple { border: 1px solid #d2ade6; color: #d2ade6; }
         .btn-outline-purple:hover { background: #d2ade6; color: #000; }
+
+        /* Dungeon Theme (New) */
+        .btn-outline-red { border: 1px solid #ff6b6b; color: #ff6b6b; }
+        .btn-outline-red:hover { background: #ff6b6b; color: #000; }
 
     </style>
 </head>
@@ -92,7 +97,7 @@
     
     <nav class="navbar-modern">
         <div class="nav-brand-box">
-            <img src="/images/about_website/logo_seven_knight_rebirth.png" alt="Logo" class="site-logo">
+            <img src="/images/about_website/logo_seven_knights_rebirth.png" alt="Logo" class="site-logo">
             <span class="nav-title">Admin Dashboard</span>
         </div>
         <div class="d-flex align-items-center gap-3">
@@ -144,10 +149,14 @@
                     <div class="card-body">
                         <i class="bi bi-map-fill card-icon" style="-webkit-text-fill-color: #d2ade6;"></i>
                         <h4 class="card-title">Comp & Guide</h4>
-                        <p class="card-desc">Manage team formations for Stage, Nightmare, and Raids.</p>
+                        <p class="card-desc">Manage formations for Stages, Dungeons, and Raids.</p>
                         
                         <a href="/admin/manage/comp/stage" class="btn-action btn-outline-purple">
                             <i class="bi bi-flag-fill me-2"></i>Stage & Nightmare
+                        </a>
+
+                        <a href="/admin/manage/comp/dungeon" class="btn-action btn-outline-red">
+                            <i class="bi bi-shield-shaded me-2"></i>Dungeon
                         </a>
                         
                         <button class="btn-action btn-outline-white opacity-50" disabled>

@@ -19,6 +19,8 @@ router.get('/build/:grade', buildController.getBuildPage);
 // --- Comp & Guide ---
 // 1. ใส่ Route ที่เฉพาะเจาะจงก่อน (Stage)
 router.get('/comp/stage', compController.getStagePage);
+router.get('/comp/dungeon', compController.getDungeonPage);
+router.get('/comp/:page', (req, res) => res.send('Page Coming Soon'));
 
 // 2. ใส่ Route ทั่วไปทีหลัง (สำหรับหน้าอื่นๆ ที่ยังไม่เสร็จ)
 router.get('/comp/:page', (req, res) => res.send('Comp Page Coming Soon'));

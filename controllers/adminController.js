@@ -1,6 +1,8 @@
 require('dotenv').config();
 const db = require('../database/database');
 const fileHelper = require('../utils/fileHelper');
+const fs = require('fs'); // อย่าลืม require fs ถ้ายังไม่มี
+const path = require('path');
 
 // --- Auth Section ---
 exports.getLoginPage = (req, res) => {
@@ -284,6 +286,79 @@ exports.saveStageComp = (req, res) => {
 exports.deleteStageComp = (req, res) => {
     const { id } = req.body;
     db.run("DELETE FROM stage_comps WHERE id = ?", [id], (err) => {
+        if(err) return res.json({success: false});
+        res.json({success: true});
+    });
+};
+
+// --- Dungeon Manager ---
+exports.getDungeonManager = (req, res) => {
+    const heroes = fileHelper.getSortedImages('heroes');
+    
+    // 1. อ่านไฟล์รูป Banner ทั้งหมดจากโฟลเดอร์ dungeon
+    const dungeonDir = path.join(__dirname, '../public/images/dungeon');
+    let dungeonBanners = [];
+    
+    try {
+        if (fs.existsSync(dungeonDir)) {
+            dungeonBanners = fs.readdirSync(dungeonDir).filter(file => {
+                return ['.png', '.jpg', '.jpeg', '.webp'].includes(path.extname(file).toLowerCase());
+            });
+        }
+    } catch (err) {
+        console.error("Error reading dungeon directory:", err);
+    }
+
+    // 2. ดึงข้อมูลทีมทั้งหมดจาก DB
+    db.all("SELECT * FROM dungeon_comps", [], (err, rows) => {
+        if (err) return res.send("DB Error");
+
+        // 3. จัดกลุ่มทีม (Teams) เข้ากับดันเจี้ยน (Banners)
+        const groupedDungeons = dungeonBanners.map(banner => {
+            const teams = rows.filter(r => r.dungeon_name === banner).map(r => {
+                try { r.heroes = JSON.parse(r.heroes); } catch(e) { r.heroes = []; }
+                return r;
+            });
+            return {
+                banner: banner,
+                teams: teams
+            };
+        });
+
+        res.render('pages/admin/dungeon_manager', {
+            title: 'Manage Dungeon',
+            dungeons: groupedDungeons,
+            heroes: heroes
+        });
+    });
+};
+
+exports.saveDungeonComp = (req, res) => {
+    const { id, dungeon_name, formation, heroes, description } = req.body;
+    const heroesJson = JSON.stringify(heroes || []);
+
+    if (id) {
+        // Update
+        db.run(`UPDATE dungeon_comps SET dungeon_name=?, formation=?, heroes=?, description=? WHERE id=?`, 
+            [dungeon_name, formation, heroesJson, description, id], 
+            (err) => {
+                if(err) return res.json({success: false, error: err.message});
+                res.json({success: true});
+            });
+    } else {
+        // Insert
+        db.run(`INSERT INTO dungeon_comps (dungeon_name, formation, heroes, description) VALUES (?,?,?,?)`, 
+            [dungeon_name, formation, heroesJson, description], 
+            function(err) {
+                if(err) return res.json({success: false, error: err.message});
+                res.json({success: true});
+            });
+    }
+};
+
+exports.deleteDungeonComp = (req, res) => {
+    const { id } = req.body;
+    db.run("DELETE FROM dungeon_comps WHERE id = ?", [id], (err) => {
         if(err) return res.json({success: false});
         res.json({success: true});
     });

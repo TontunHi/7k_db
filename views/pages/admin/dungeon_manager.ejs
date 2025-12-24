@@ -3,9 +3,8 @@
 <head>
     <%- include('../../partials/head') %>
     <style>
-        body { background-color: #0f0f0f; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
+        body { background-color: #0f0f0f; font-family: 'Segoe UI', sans-serif; overflow-x: hidden;}
         
-        /* Modern Navbar */
         .navbar-modern {
             height: 64px; background: rgba(18, 18, 18, 0.95); backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1); position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
@@ -22,47 +21,40 @@
         }
         .nav-btn:hover { background: rgba(255, 255, 255, 0.1); color: #fff; transform: translateY(-1px); }
         .nav-btn.primary { background: rgba(255, 193, 7, 0.1); color: #ffc107; border-color: rgba(255, 193, 7, 0.3); }
+        .nav-btn.primary:hover { background: rgba(255, 193, 7, 0.2); box-shadow: 0 0 15px rgba(255, 193, 7, 0.2); }
 
         .main-content { margin-top: 90px; padding-bottom: 50px; max-width: 900px; margin-left: auto; margin-right: auto; }
 
-        /* Floating Add Button */
-        .btn-add-floating {
-            position: fixed; bottom: 30px; right: 30px;
-            width: 60px; height: 60px; border-radius: 50%;
-            background: #ffc107; color: #000; border: none;
-            box-shadow: 0 5px 20px rgba(255, 193, 7, 0.4);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.5rem; transition: 0.3s; z-index: 100;
-        }
-        .btn-add-floating:hover { transform: scale(1.1) rotate(90deg); background: #fff; }
-
-        /* Stage Card */
-        .stage-card {
+        .dungeon-card {
             background: #161616; border-radius: 12px; margin-bottom: 30px;
-            overflow: hidden; border: 1px solid #333;
+            border: 1px solid #333; overflow: hidden;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             transition: transform 0.2s;
         }
-        .stage-card:hover { border-color: #555; }
+        .dungeon-card:hover { border-color: #555; }
 
-        /* Header Styles */
-        .header-stage { background: linear-gradient(90deg, rgba(241, 227, 182, 0.1), transparent); border-left: 5px solid #f1e3b6; }
-        .header-nightmare { background: linear-gradient(90deg, rgba(210, 173, 230, 0.1), transparent); border-left: 5px solid #d2ade6; }
+        .dungeon-banner-box {
+            position: relative; width: 100%; height: 110px;
+            overflow: hidden; border-bottom: 1px solid #333;
+        }
+        .dungeon-banner-img {
+            width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s;
+        }
+        .dungeon-card:hover .dungeon-banner-img { transform: scale(1.02); }
         
-        .stage-header { padding: 15px 25px; display: flex; align-items: center; gap: 15px; }
-        .stage-number { font-size: 1.5rem; font-weight: 800; color: #fff; letter-spacing: 1px; }
-        .stage-badge { padding: 4px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
-        .badge-stage { background: #f1e3b6; color: #3d3314; }
-        .badge-nightmare { background: #d2ade6; color: #2e1a3b; }
+        .banner-overlay {
+            position: absolute; inset: 0;
+            background: linear-gradient(90deg, transparent 60%, rgba(0,0,0,0.6) 100%);
+            padding: 0 25px; display: flex; justify-content: flex-end; align-items: center;
+        }
 
-        /* Team Row */
         .team-row {
-            padding: 15px 25px; border-top: 1px solid #2a2a2a;
-            display: grid; grid-template-columns: 80px 1fr auto; 
-            gap: 20px; align-items: center; background: #1a1a1a;
-            transition: background 0.2s;
+            padding: 15px 25px; border-bottom: 1px solid #2a2a2a;
+            display: grid; grid-template-columns: 80px 1fr auto;
+            gap: 20px; align-items: center; background: #1a1a1a; transition: background 0.2s;
         }
         .team-row:hover { background: #222; }
+        .team-row:last-child { border-bottom: none; }
 
         .formation-block {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -75,14 +67,16 @@
         .middle-content { display: flex; flex-direction: column; gap: 10px; }
         .heroes-strip { display: flex; gap: 8px; align-items: center; }
         
+        /* [FIX] Admin Border Fix */
         .hero-slot-sm {
             width: 42px; aspect-ratio: 3/4; background: #000; 
-            border: 2px solid #ef9a9a; border-radius: 4px; overflow: hidden; 
-            position: relative; transition: transform 0.2s;
+            border: 2px solid #ef9a9a; /* Default Red */
+            border-radius: 4px; overflow: hidden; position: relative; transition: transform 0.2s;
         }
         .hero-slot-sm img { width: 100%; height: 100%; object-fit: cover; }
         .hero-slot-sm.is-front { 
-            border-color: #90caf9; transform: translateY(-4px); 
+            border-color: #90caf9; /* Front Blue */
+            transform: translateY(-4px); 
             box-shadow: 0 4px 8px rgba(0,0,0,0.4); z-index: 2; 
         }
 
@@ -103,12 +97,12 @@
         .btn-icon.del:hover { background: #dc3545; border-color: #dc3545; }
         .btn-icon.edit:hover { background: #0d6efd; border-color: #0d6efd; }
 
-        /* Modal */
+        /* Modal Styles */
         .modal-content { background: #1a1a1a; border: 1px solid #444; color: #fff; }
-        .input-dark { background-color: #222 !important; border: 1px solid #444 !important; color: #fff !important; }
-        .input-dark:focus { border-color: #ffc107 !important; color: #fff !important; }
+        .input-dark { background-color: #222 !important; border: 1px solid #444 !important; color: #fff !important; padding: 8px 12px; }
+        .input-dark:focus { background-color: #2a2a2a !important; border-color: #ffc107 !important; color: #fff !important; box-shadow: none !important; }
         .modal-label { color: #fff; font-size: 0.85rem; font-weight: 700; margin-bottom: 6px; display: block; }
-
+        
         .formation-selector { display: flex; gap: 15px; justify-content: center; }
         .form-option input { display: none; }
         .form-option label {
@@ -125,7 +119,7 @@
             width: 65px; aspect-ratio: 3/4; background: #222; border: 2px solid #444; border-radius: 8px; cursor: pointer; position: relative; display: flex; align-items: center; justify-content: center; transition: 0.3s;
         }
         .hero-input-slot img { width: 100%; height: 100%; object-fit: cover; border-radius: 6px; }
-        .hero-input-slot.slot-front { border-color: #90caf9; transform: translateY(-15px); }
+        .hero-input-slot.slot-front { border-color: #90caf9; transform: translateY(-15px); box-shadow: 0 5px 15px rgba(144, 202, 249, 0.2); }
         .hero-input-slot.slot-back { border-color: #ef9a9a; }
 
         .hero-picker-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 8px; max-height: 350px; overflow-y: auto; }
@@ -139,7 +133,7 @@
     <nav class="navbar-modern">
         <div class="nav-brand-box">
             <img src="/images/about_website/logo_seven_knights_rebirth.png" alt="Logo" class="site-logo">
-            <span class="nav-title">7K Rebirth <span style="font-weight:400; opacity:0.7;">| Stage Manager</span></span>
+            <span class="nav-title">7K Rebirth <span style="font-weight:400; opacity:0.7;">| Dungeon Manager</span></span>
         </div>
         <div class="d-flex align-items-center gap-3">
             <a href="/admin/dashboard" class="nav-btn primary"><i class="bi bi-grid-fill"></i> Panel</a>
@@ -148,14 +142,26 @@
     </nav>
 
     <div class="container main-content">
-        <% stages.forEach(group => { %>
-            <div class="stage-card">
-                <div class="stage-header header-<%= group.type.toLowerCase() %>">
-                    <span class="stage-number"><%= group.stage_main %> - <%= group.stage_sub %></span>
-                    <span class="stage-badge badge-<%= group.type.toLowerCase() %>"><%= group.type %></span>
+        <% dungeons.forEach(dungeon => { %>
+            <% 
+                let displayName = dungeon.banner
+                    .replace(/^\d+_/, '')
+                    .replace(/\.[^/.]+$/, '')
+                    .replace(/_/g, ' ');
+            %>
+
+            <div class="dungeon-card">
+                <div class="dungeon-banner-box">
+                    <img src="/images/dungeon/<%= dungeon.banner %>" class="dungeon-banner-img">
+                    <div class="banner-overlay">
+                        <button class="btn btn-warning btn-sm fw-bold px-3 rounded-pill shadow-sm" 
+                                onclick="openAddTeamModal('<%= dungeon.banner %>', '<%= displayName %>')">
+                            <i class="bi bi-plus-lg me-1"></i> Add Team
+                        </button>
+                    </div>
                 </div>
 
-                <% group.teams.forEach(team => { %>
+                <% dungeon.teams.forEach(team => { %>
                     <div class="team-row">
                         <div class="formation-block">
                             <img src="/images/formation/<%= team.formation %>.png">
@@ -177,7 +183,7 @@
                                     </div>
                                 <% }) %>
                             </div>
-                            
+
                             <% if(team.description) { %>
                                 <div class="note-box">
                                     <i class="bi bi-card-text"></i>
@@ -187,7 +193,7 @@
                         </div>
 
                         <div class="action-btns">
-                            <button class="btn-icon edit" onclick='editTeam(<%- JSON.stringify(team) %>, <%- JSON.stringify(group) %>)' title="Edit">
+                            <button class="btn-icon edit" onclick='editTeam(<%- JSON.stringify(team) %>, "<%= dungeon.banner %>", "<%= displayName %>")' title="Edit">
                                 <i class="bi bi-pencil-fill"></i>
                             </button>
                             <button class="btn-icon del" onclick="deleteTeam(<%= team.id %>)" title="Delete">
@@ -196,48 +202,29 @@
                         </div>
                     </div>
                 <% }) %>
+
+                <% if(dungeon.teams.length === 0) { %>
+                    <div class="text-center py-4 text-white-50 small" style="background: #1a1a1a;">No teams added yet.</div>
+                <% } %>
             </div>
         <% }) %>
-        
-        <% if(stages.length === 0) { %>
-            <div class="text-center py-5 text-muted">
-                <i class="bi bi-inbox display-1"></i>
-                <p class="mt-3">No stages added yet.</p>
-            </div>
-        <% } %>
     </div>
-
-    <button class="btn-add-floating" onclick="openAddModal()">
-        <i class="bi bi-plus-lg"></i>
-    </button>
 
     <div class="modal fade" id="compModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header border-secondary py-2">
-                    <h6 class="modal-title fw-bold text-warning" id="modalTitle">Add Stage Team</h6>
+                    <h6 class="modal-title fw-bold text-warning">Dungeon Team</h6>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body pt-4">
                     <form id="compForm">
                         <input type="hidden" name="id" id="compId">
+                        <input type="hidden" name="dungeon_name" id="dungeonNameHidden">
 
-                        <div class="row g-2 mb-3">
-                            <div class="col-4">
-                                <label class="modal-label">Type</label>
-                                <select class="form-select form-select-sm input-dark" name="type" id="inputType">
-                                    <option value="Stage">Stage</option>
-                                    <option value="Nightmare">Nightmare</option>
-                                </select>
-                            </div>
-                            <div class="col-4">
-                                <label class="modal-label">Main</label>
-                                <input type="number" name="stage_main" id="inputMain" class="form-control form-control-sm input-dark" placeholder="20">
-                            </div>
-                            <div class="col-4">
-                                <label class="modal-label">Sub</label>
-                                <input type="number" name="stage_sub" id="inputSub" class="form-control form-control-sm input-dark" placeholder="10">
-                            </div>
+                        <div class="mb-3 text-center">
+                            <label class="modal-label">Selected Dungeon</label>
+                            <input type="text" id="dungeonNameDisplay" class="form-control form-control-sm input-dark text-center fw-bold fs-5" readonly style="color: #ffc107; border: none; background: transparent;">
                         </div>
 
                         <div class="mb-3">
@@ -246,17 +233,14 @@
                                 <% ['1-4', '2-3', '3-2', '4-1'].forEach(fmt => { %>
                                     <div class="form-option">
                                         <input type="radio" name="formation" id="fmt_<%= fmt %>" value="<%= fmt %>" <%= fmt=='1-4'?'checked':'' %> onchange="updateHeroSlotsUI(this.value)">
-                                        <label for="fmt_<%= fmt %>">
-                                            <img src="/images/formation/<%= fmt %>.png">
-                                            <div><%= fmt %></div>
-                                        </label>
+                                        <label for="fmt_<%= fmt %>"><img src="/images/formation/<%= fmt %>.png"><div><%= fmt %></div></label>
                                     </div>
                                 <% }) %>
                             </div>
                         </div>
 
                         <div class="mb-4">
-                            <label class="modal-label text-center mb-0">Team (Front/Back)</label>
+                            <label class="modal-label text-center mb-0">Team</label>
                             <div class="hero-select-container">
                                 <% for(let i=0; i<5; i++) { %>
                                     <div class="text-center">
@@ -278,7 +262,7 @@
                 </div>
                 <div class="modal-footer border-secondary py-2">
                     <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-success btn-sm px-4" onclick="saveComp()">Save</button>
+                    <button type="button" class="btn btn-success btn-sm px-4" onclick="saveComp()">Save Team</button>
                 </div>
             </div>
         </div>
@@ -331,27 +315,21 @@
             }
         }
 
-        function openAddModal() {
+        function openAddTeamModal(dungeonName, displayName) {
             resetForm();
-            document.getElementById('modalTitle').innerText = "Add Stage Team";
-            updateHeroSlotsUI('1-4');
+            document.getElementById('dungeonNameHidden').value = dungeonName;
+            document.getElementById('dungeonNameDisplay').value = displayName;
+            updateHeroSlotsUI('1-4'); // Default
             compModal.show();
         }
 
         // [NEW] Edit Function
-        function editTeam(team, group) {
+        function editTeam(team, dungeonName, displayName) {
             resetForm();
-            document.getElementById('modalTitle').innerText = "Edit Stage Team";
-            
-            // Populate ID
+            // Populate Data
             document.getElementById('compId').value = team.id;
-            
-            // Populate Stage Info
-            document.getElementById('inputType').value = group.type;
-            document.getElementById('inputMain').value = group.stage_main;
-            document.getElementById('inputSub').value = group.stage_sub;
-            
-            // Populate Desc
+            document.getElementById('dungeonNameHidden').value = dungeonName;
+            document.getElementById('dungeonNameDisplay').value = displayName;
             document.getElementById('compDesc').value = team.description || '';
 
             // Set Formation
@@ -360,7 +338,7 @@
 
             // Set Heroes
             team.heroes.forEach((h, index) => {
-                if(index < 5) setHeroSlot(index, h);
+                if (index < 5) setHeroSlot(index, h);
             });
 
             compModal.show();
@@ -383,7 +361,7 @@
                 payload.heroes.push(document.getElementById(`heroInput_${i}`).value);
             }
 
-            fetch('/admin/api/save_stage_comp', {
+            fetch('/admin/api/save_dungeon_comp', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(payload)
@@ -397,7 +375,7 @@
 
         function deleteTeam(id) {
             if(!confirm('Delete this team?')) return;
-            fetch('/admin/api/delete_stage_comp', {
+            fetch('/admin/api/delete_dungeon_comp', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({id})

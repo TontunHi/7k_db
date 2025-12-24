@@ -1,4 +1,6 @@
 const db = require('../database/database');
+const fs = require('fs');
+const path = require('path');
 
 exports.getStagePage = (req, res) => {
     // ดึงข้อมูลและเรียงลำดับ: Type (Stage มาก่อน) -> Main -> Sub
@@ -37,6 +39,44 @@ exports.getStagePage = (req, res) => {
             title: 'Stage & Nightmare Guide',
             page: 'comp', // Active Navbar
             stages: stagesList
+        });
+    });
+};
+
+exports.getDungeonPage = (req, res) => {
+    // 1. อ่านไฟล์รูป Banner
+    const dungeonDir = path.join(__dirname, '../public/images/dungeon');
+    let dungeonBanners = [];
+    try {
+        if (fs.existsSync(dungeonDir)) {
+            dungeonBanners = fs.readdirSync(dungeonDir).filter(file => {
+                return ['.png', '.jpg', '.jpeg', '.webp'].includes(path.extname(file).toLowerCase());
+            });
+        }
+    } catch (err) {
+        console.error(err);
+    }
+
+    // 2. ดึงข้อมูลทีมทั้งหมด
+    db.all("SELECT * FROM dungeon_comps", [], (err, rows) => {
+        if (err) return res.render('pages/error');
+
+        // 3. จัดกลุ่ม
+        const groupedDungeons = dungeonBanners.map(banner => {
+            const teams = rows.filter(r => r.dungeon_name === banner).map(r => {
+                try { r.heroes = JSON.parse(r.heroes); } catch(e) { r.heroes = []; }
+                return r;
+            });
+            return {
+                banner: banner,
+                teams: teams
+            };
+        });
+
+        res.render('pages/comp_dungeon', {
+            title: 'Dungeon Guide',
+            page: 'comp', // Active Navbar
+            dungeons: groupedDungeons
         });
     });
 };
