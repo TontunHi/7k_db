@@ -115,59 +115,46 @@
     }
 </style>
 
-<nav class="navbar navbar-expand-lg navbar-dark navbar-modern fixed-top">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top border-bottom border-secondary">
     <div class="container">
-        <a class="navbar-brand d-flex align-items-center gap-2" href="/">
-            <img src="/images/about_website/logo_seven_knights_rebirth.png" alt="7K Rebirth" 
-                 style="height: 40px; width: auto; object-fit: contain; filter: drop-shadow(0 0 8px rgba(255,193,7,0.4));">
-            <span class="navbar-brand-text">7K Rebirth</span>
+        <a class="navbar-brand d-flex align-items-center" href="/">
+            <img src="/images/about_website/logo_seven_knights_rebirth.png" alt="Logo" height="40" class="me-2">
+            <span class="fw-bold text-warning" style="letter-spacing: 1px;">7K REBIRTH</span>
         </a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
-        
+
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto align-items-center gap-1">
+            <ul class="navbar-nav ms-auto">
                 
                 <li class="nav-item">
-                    <a class="nav-link nav-link-custom <%= typeof page !== 'undefined' && page === 'home' ? 'active' : '' %>" href="/">
-                        Home
-                    </a>
+                    <a class="nav-link" href="/">Home</a>
                 </li>
 
                 <li class="nav-item dropdown">
-                    <a class="nav-link nav-link-custom dropdown-toggle <%= typeof page !== 'undefined' && page === 'build' ? 'active' : '' %>" href="#" role="button" data-bs-toggle="dropdown">
-                        Builds
+                    <a class="nav-link dropdown-toggle" href="#" id="buildDropdown" role="button" data-bs-toggle="dropdown">
+                        Build
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-custom dropdown-menu-dark">
-                        <li><a class="dropdown-item dropdown-item-custom" href="/build/legendary">Legendary Heroes</a></li>
-                        <li><a class="dropdown-item dropdown-item-custom" href="/build/rare">Rare Heroes</a></li>
+                    <ul class="dropdown-menu dropdown-menu-dark">
+                        <li><a class="dropdown-item" href="/build/legendary">Legendary Hero</a></li>
+                        <li><a class="dropdown-item" href="/build/rare">Rare Hero</a></li>
                     </ul>
                 </li>
 
-                <li class="nav-item dropdown">
-                    <a class="nav-link nav-link-custom dropdown-toggle <%= typeof page !== 'undefined' && page === 'tierlist' ? 'active' : '' %>" href="#" role="button" data-bs-toggle="dropdown">
-                        Tier List
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-custom dropdown-menu-dark">
-                        <li><a class="dropdown-item dropdown-item-custom" href="/tierlist/pvp">PVP Tier List</a></li>
-                        <li><a class="dropdown-item dropdown-item-custom" href="/tierlist/pve">PVE Tier List</a></li>
-                        <li><a class="dropdown-item dropdown-item-custom" href="/tierlist/pet">Pet Tier List</a></li>
-                    </ul>
+                <li class="nav-item">
+                    <a class="nav-link" href="/tierlist/pvp">Tier List</a>
                 </li>
 
                 <li class="nav-item dropdown">
-                    <a class="nav-link nav-link-custom dropdown-toggle <%= typeof page !== 'undefined' && page === 'comp' ? 'active' : '' %>" href="#" role="button" data-bs-toggle="dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="compDropdown" role="button" data-bs-toggle="dropdown">
                         Comp & Guide
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-custom dropdown-menu-dark">
-                        <li><a class="dropdown-item dropdown-item-custom" href="/comp/stage">Stage & Nightmare</a></li>
-                        <li><a class="dropdown-item dropdown-item-custom" href="/comp/raid">Raid</a></li>
-                        <li><a class="dropdown-item dropdown-item-custom" href="/comp/dungeon">Dungeon</a></li>
-                        <li><a class="dropdown-item dropdown-item-custom" href="/comp/castle-rush">Castle Rush</a></li>
-                        <li><a class="dropdown-item dropdown-item-custom" href="/comp/guild-war">Guild War</a></li>
-                        <li><a class="dropdown-item dropdown-item-custom" href="/comp/advent">Advent Expedition</a></li>
+                    <ul class="dropdown-menu dropdown-menu-dark">
+                        <li><a class="dropdown-item" href="/comp/stage">Stage & Nightmare</a></li>
+                        <li><a class="dropdown-item" href="/comp/dungeon">Dungeon</a></li>
+                        <li><a class="dropdown-item" href="/comp/guild-war">Guild War</a></li>
                     </ul>
                 </li>
 
@@ -175,3 +162,23 @@
         </div>
     </div>
 </nav>
+
+<style>
+    @media (min-width: 992px) {
+        .dropdown:hover .dropdown-menu {
+            display: block;
+            margin-top: 0;
+            animation: fadeIn 0.3s;
+        }
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Active Link State Style (Optional) */
+    .nav-link.active {
+        color: #ffc107 !important;
+        font-weight: bold;
+    }
+</style>

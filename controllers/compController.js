@@ -80,3 +80,25 @@ exports.getDungeonPage = (req, res) => {
         });
     });
 };
+
+exports.getGuildWarPage = (req, res) => {
+    db.all("SELECT * FROM guildwar_comps", [], (err, rows) => {
+        if (err) {
+            console.error(err);
+            return res.render('pages/error');
+        }
+
+        // Parse JSON strings
+        const comps = rows.map(r => {
+            try { r.heroes = JSON.parse(r.heroes); } catch(e) { r.heroes = []; }
+            try { r.skill_order = JSON.parse(r.skill_order); } catch(e) { r.skill_order = []; }
+            return r;
+        });
+
+        res.render('pages/comp_guildwar', {
+            title: 'Guild War Guide',
+            page: 'comp', // Active Navbar State
+            comps: comps
+        });
+    });
+};

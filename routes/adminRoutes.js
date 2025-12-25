@@ -46,4 +46,9 @@ router.get('/manage/comp/dungeon', requireAdmin, adminController.getDungeonManag
 router.post('/api/save_dungeon_comp', requireAdmin, adminController.saveDungeonComp);
 router.post('/api/delete_dungeon_comp', requireAdmin, adminController.deleteDungeonComp);
 
+//Guild War
+router.get('/manage/comp/guild-war', requireAdmin, adminController.getGuildWarManager);
+router.post('/api/save_guildwar_comp', requireAdmin, adminController.saveGuildWarComp);
+router.post('/api/delete_guildwar_comp', requireAdmin, adminController.deleteGuildWarComp);
+
 module.exports = router;

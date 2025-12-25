@@ -363,3 +363,71 @@ exports.deleteDungeonComp = (req, res) => {
         res.json({success: true});
     });
 };
+
+// --- Guild War Manager ---
+exports.getGuildWarManager = (req, res) => {
+    const heroes = fileHelper.getSortedImages('heroes');
+    
+    // สมมติว่ามี Helper ดึงรูป Pet (ถ้าไม่มีให้ใช้ Logic เดียวกับ Hero)
+    let pets = [];
+    try {
+        const petDir = path.join(__dirname, '../public/images/pets');
+        if (fs.existsSync(petDir)) {
+            pets = fs.readdirSync(petDir).filter(f => ['.png','.webp','.jpg'].includes(path.extname(f).toLowerCase()));
+        }
+    } catch(e) { console.log("No pets folder found"); }
+
+    db.all("SELECT * FROM guildwar_comps", [], (err, rows) => {
+        if (err) return res.send("DB Error");
+
+        // Format Data
+        const comps = rows.map(r => {
+            try { r.heroes = JSON.parse(r.heroes); } catch(e) { r.heroes = []; }
+            try { r.skill_order = JSON.parse(r.skill_order); } catch(e) { r.skill_order = []; }
+            return r;
+        });
+
+        res.render('pages/admin/guildwar_manager', {
+            title: 'Manage Guild War',
+            comps: comps,
+            heroes: heroes,
+            pets: pets
+        });
+    });
+};
+
+exports.saveGuildWarComp = (req, res) => {
+    const { id, team_name, formation, description, pet, skill_order_json } = req.body;
+    // heroes[] จะส่งมาเป็น array
+    let heroes = req.body['heroes[]'];
+    if (!heroes) heroes = [];
+    if (!Array.isArray(heroes)) heroes = [heroes];
+    
+    // ตัดให้เหลือแค่ 3 ตัวเพื่อความชัวร์
+    heroes = heroes.slice(0, 3);
+    const heroesJson = JSON.stringify(heroes);
+
+    if (id) {
+        db.run(`UPDATE guildwar_comps SET team_name=?, formation=?, heroes=?, pet=?, skill_order=?, description=? WHERE id=?`, 
+            [team_name, formation, heroesJson, pet, skill_order_json, description, id], 
+            (err) => {
+                if(err) return res.json({success: false, error: err.message});
+                res.json({success: true});
+            });
+    } else {
+        db.run(`INSERT INTO guildwar_comps (team_name, formation, heroes, pet, skill_order, description) VALUES (?,?,?,?,?,?)`, 
+            [team_name, formation, heroesJson, pet, skill_order_json, description], 
+            function(err) {
+                if(err) return res.json({success: false, error: err.message});
+                res.json({success: true});
+            });
+    }
+};
+
+exports.deleteGuildWarComp = (req, res) => {
+    const { id } = req.body;
+    db.run("DELETE FROM guildwar_comps WHERE id = ?", [id], (err) => {
+        if(err) return res.json({success: false});
+        res.json({success: true});
+    });
+};

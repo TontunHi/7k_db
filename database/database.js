@@ -64,6 +64,17 @@ function initTables() {
         heroes TEXT,            -- JSON Array เก็บชื่อไฟล์รูป 5 ตัว
         description TEXT
     )`);
+
+    // สร้างตาราง Guild War Comps
+    db.run(`CREATE TABLE IF NOT EXISTS guildwar_comps (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        team_name TEXT,
+        formation TEXT,
+        heroes TEXT,            -- JSON Array เก็บชื่อไฟล์ Hero (max 3)
+        pet TEXT,               -- ชื่อไฟล์ Pet
+        skill_order TEXT,       -- JSON Array เก็บ Sequence การกดสกิล
+        description TEXT
+    )`);
 }
 
 module.exports = db;
