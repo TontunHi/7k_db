@@ -1,101 +1,243 @@
 <%- include('../../partials/head') %>
 
-<div class="container-fluid mt-4">
+<style>
+    body {
+        background-color: #121212; /* พื้นหลังเว็บสีมืดสนิท */
+    }
+    .codex-container {
+        max-width: 1200px; /* จำกัดความกว้างไม่ให้เกินนี้ */
+    }
+    .main-card {
+        background-color: #1e1e1e;
+        border: 1px solid #333;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+    .hero-card {
+        background-color: #2c2c2c;
+        border: 1px solid #444;
+        transition: transform 0.2s, border-color 0.2s;
+    }
+    .hero-card:hover {
+        transform: translateY(-5px);
+        border-color: #ffc107; /* สีเหลือง */
+    }
+    .skill-icon {
+        width: 32px;
+        height: 32px;
+        object-fit: cover;
+        border-radius: 4px;
+        border: 1px solid #666;
+        background: #000;
+    }
+    /* Scrollbar สวยๆ ใน Modal */
+    .image-selector-container::-webkit-scrollbar {
+        width: 8px;
+    }
+    .image-selector-container::-webkit-scrollbar-thumb {
+        background: #555; 
+        border-radius: 4px;
+    }
+</style>
+
+<div class="container codex-container mt-5 pb-5">
+    
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="text-white text-shadow">🛡️ Hero Codex Manager</h1>
-        <a href="/admin/dashboard" class="btn btn-outline-light">⬅ Back to Dashboard</a>
+        <div>
+            <h2 class="text-warning fw-bold mb-0"><i class="fas fa-dungeon"></i> Hero Codex Manager</h2>
+            <p class="text-white-50 mb-0">Manage heroes, categories, and skill linkages.</p>
+        </div>
+        <a href="/admin/dashboard" class="btn btn-outline-secondary text-white">
+            <i class="fas fa-arrow-left"></i> Dashboard
+        </a>
     </div>
 
-    <div class="card bg-dark text-white mb-4 border-secondary">
-        <div class="card-body">
-            <h5 class="card-title">Add Main Category</h5>
+    <div class="card main-card mb-5">
+        <div class="card-body p-4">
+            <h5 class="text-white mb-3"><i class="fas fa-plus-circle text-success"></i> New Main Category</h5>
             <form action="/admin/codex/category/add" method="POST" class="d-flex gap-2">
-                <input type="text" name="name" class="form-control" placeholder="Ex: Special, Common Heroes..." required>
-                <button type="submit" class="btn btn-success">Add Category</button>
+                <input type="text" name="name" class="form-control bg-dark text-white border-secondary" placeholder="Enter Category Name (e.g. Special Heroes)" required>
+                <button type="submit" class="btn btn-success px-4 fw-bold">Add</button>
             </form>
         </div>
     </div>
 
     <% categories.forEach(cat => { %>
-        <div class="card mb-4 bg-dark border-light codex-category-card">
-            <div class="card-header bg-secondary text-white d-flex justify-content-between">
-                <h3 class="m-0"><%= cat.name %></h3>
-                <form action="/admin/codex/group/add" method="POST" class="d-flex gap-2">
-                    <input type="hidden" name="category_id" value="<%= cat.id %>">
-                    <input type="text" name="name" class="form-control form-control-sm" placeholder="Add Sub-Group (Ex: Seven Knights)" required>
-                    <button type="submit" class="btn btn-sm btn-info">Add Group</button>
-                </form>
+        <div class="mb-5">
+            <div class="d-flex align-items-center mb-3 pb-2 border-bottom border-secondary">
+                <h3 class="text-white fw-bold m-0"><%= cat.name %></h3>
             </div>
 
-            <div class="card-body">
-                <div class="row">
-                    <% const myGroups = groups.filter(g => g.category_id === cat.id); %>
-                    
-                    <% myGroups.forEach(group => { %>
-                        <div class="col-md-12 mb-3">
-                            <div class="p-3 border rounded bg-black-50">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <h4 class="text-warning text-shadow"><%= group.name %></h4>
-                                    <button class="btn btn-sm btn-primary" onclick="toggleForm('form-<%= group.id %>')">+ Add Hero</button>
-                                </div>
+            <div class="row g-4">
+                <% const myGroups = groups.filter(g => g.category_id === cat.id); %>
+                
+                <% myGroups.forEach(group => { %>
+                    <div class="col-12">
+                        <div class="card main-card">
+                            <div class="card-header bg-dark border-bottom border-secondary d-flex justify-content-between align-items-center py-3">
+                                <h5 class="text-info m-0 fw-bold"><i class="fas fa-layer-group"></i> <%= group.name %></h5>
+                                <button class="btn btn-sm btn-primary px-3 rounded-pill" 
+                                        onclick="openAddHeroModal('<%= group.id %>', '<%= group.name %>')">
+                                    <i class="fas fa-plus"></i> Add Hero
+                                </button>
+                            </div>
 
-                                <div id="form-<%= group.id %>" class="mb-3 p-2 bg-secondary rounded" style="display:none;">
-                                    <form action="/admin/codex/hero/add" method="POST">
-                                        <input type="hidden" name="group_id" value="<%= group.id %>">
-                                        <div class="row g-2">
-                                            <div class="col-md-5">
-                                                <label>Hero Image</label>
-                                                <select name="image_name" class="form-select">
-                                                    <% availableHeroImages.forEach(img => { %>
-                                                        <option value="<%= img %>"><%= img %></option>
-                                                    <% }) %>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-5">
-                                                <label>Skill Folder Name</label>
-                                                <input type="text" name="skill_folder" class="form-control" placeholder="Ex: l+colt">
-                                            </div>
-                                            <div class="col-md-2 d-flex align-items-end">
-                                                <button type="submit" class="btn btn-success w-100">Save</button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-
-                                <div class="row">
+                            <div class="card-body">
+                                <div class="row g-3">
                                     <% const myHeroes = heroes.filter(h => h.group_id === group.id); %>
-                                    <% myHeroes.forEach(hero => { %>
-                                        <div class="col-md-3 col-sm-6 mb-2">
-                                            <div class="card bg-dark text-white h-100 border-secondary">
-                                                <div class="card-body text-center p-2">
-                                                    <img src="/images/heroes/<%= hero.image_name %>" class="img-fluid mb-2" style="max-height: 100px;">
-                                                    
-                                                    <h5 class="hero-text-shadow mb-2"><%= hero.name %></h5>
-                                                    
-                                                    <div class="d-flex justify-content-center gap-1 flex-wrap">
-                                                        <small class="text-muted"><%= hero.skill_folder ? 'Skills Linked' : 'No Skills' %></small>
-                                                    </div>
+                                    
+                                    <% if(myHeroes.length === 0) { %>
+                                        <div class="col-12 text-center py-4">
+                                            <span class="text-muted fst-italic">No heroes in this group.</span>
+                                        </div>
+                                    <% } %>
 
-                                                    <a href="/admin/codex/hero/delete/<%= hero.id %>" class="btn btn-sm btn-danger mt-2" onclick="return confirm('Delete?')">Delete</a>
+                                    <% myHeroes.forEach(hero => { %>
+                                        <div class="col-6 col-md-4 col-lg-2">
+                                            <div class="card hero-card h-100 text-center p-2">
+                                                <div class="mb-2">
+                                                    <img src="/images/heroes/<%= hero.image_name %>" class="img-fluid rounded" style="max-height: 90px; object-fit: contain;">
                                                 </div>
+                                                
+                                                <h6 class="text-white fw-bold mb-1 text-truncate"><%= hero.name %></h6>
+
+                                                <div class="d-flex flex-row-reverse justify-content-center gap-1 my-2 flex-wrap">
+                                                    <% if (hero.skillImages && hero.skillImages.length > 0) { %>
+                                                        <% hero.skillImages.forEach(skillImg => { %>
+                                                            <img src="/images/skill/<%= hero.detectedSkillFolder %>/<%= skillImg %>" 
+                                                                 class="skill-icon" 
+                                                                 title="<%= skillImg %>"
+                                                                 loading="lazy">
+                                                        <% }) %>
+                                                    <% } else { %>
+                                                        <small class="text-danger" style="font-size: 0.7rem;">No Skills Found</small>
+                                                    <% } %>
+                                                </div>
+                                                
+                                                <a href="/admin/codex/hero/delete/<%= hero.id %>" 
+                                                   class="btn btn-danger btn-sm w-100 py-0 mt-auto" 
+                                                   onclick="return confirm('Delete this hero?')">
+                                                    <small>Remove</small>
+                                                </a>
                                             </div>
                                         </div>
                                     <% }); %>
                                 </div>
                             </div>
                         </div>
-                    <% }); %>
+                    </div>
+                <% }); %>
+
+                <div class="col-md-4">
+                    <div class="card bg-transparent border-secondary border-dashed h-100" style="border-style: dashed;">
+                        <div class="card-body d-flex align-items-center justify-content-center">
+                            <form action="/admin/codex/group/add" method="POST" class="w-100">
+                                <input type="hidden" name="category_id" value="<%= cat.id %>">
+                                <div class="input-group input-group-sm">
+                                    <input type="text" name="name" class="form-control bg-dark text-white border-secondary" placeholder="New Sub-Group..." required>
+                                    <button type="submit" class="btn btn-secondary"><i class="fas fa-plus"></i></button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
+            
         </div>
     <% }); %>
 </div>
 
+<div class="modal fade" id="addHeroModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border-secondary">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title">Add Hero to <span id="modalGroupName" class="text-info fw-bold"></span></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="/admin/codex/hero/add" method="POST">
+                <div class="modal-body">
+                    <input type="hidden" name="group_id" id="modalGroupId">
+                    
+                    <div class="mb-3">
+                        <label class="form-label text-warning">Select Hero Image</label>
+                        <input type="text" id="imgSearch" class="form-control bg-black text-white border-secondary mb-2" placeholder="Search filename..." onkeyup="filterImages()">
+                        
+                        <div class="border border-secondary rounded p-2 bg-black image-selector-container" style="max-height: 300px; overflow-y: auto;">
+                            <div class="row g-2" id="imageGrid">
+                                <% availableHeroImages.forEach(img => { %>
+                                    <div class="col-3 col-sm-2 text-center img-item-col">
+                                        <div class="p-1 border border-transparent rounded selectable-image" 
+                                             style="cursor: pointer;" 
+                                             onclick="selectImage(this, '<%= img %>')">
+                                            <img src="/images/heroes/<%= img %>" class="img-fluid mb-1" style="max-height: 60px;">
+                                            <small class="d-block text-muted text-truncate" style="font-size: 0.7rem;"><%= img %></small>
+                                        </div>
+                                    </div>
+                                <% }) %>
+                            </div>
+                        </div>
+                        <input type="hidden" name="image_name" id="selectedImageInput" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-warning">Skill Folder Name</label>
+                        <input type="text" name="skill_folder" id="skillFolderInput" class="form-control bg-black text-white border-secondary" placeholder="Auto-filled from image name">
+                        <small class="text-muted">System will look in <code>public/images/skill/[folder_name]</code></small>
+                    </div>
+
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-success px-4">Save Hero</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
-function toggleForm(id) {
-    const x = document.getElementById(id);
-    if (x.style.display === "none") { x.style.display = "block"; } else { x.style.display = "none"; }
-}
+    function openAddHeroModal(groupId, groupName) {
+        document.getElementById('modalGroupId').value = groupId;
+        document.getElementById('modalGroupName').innerText = groupName;
+        // Reset inputs
+        document.getElementById('selectedImageInput').value = '';
+        document.getElementById('skillFolderInput').value = '';
+        // Clear selection visual
+        document.querySelectorAll('.selectable-image').forEach(el => {
+            el.classList.remove('bg-primary', 'bg-opacity-25', 'border-primary');
+            el.classList.add('border-transparent');
+        });
+        
+        new bootstrap.Modal(document.getElementById('addHeroModal')).show();
+    }
+
+    function selectImage(el, filename) {
+        // Clear previous selection
+        document.querySelectorAll('.selectable-image').forEach(div => {
+            div.classList.remove('bg-primary', 'bg-opacity-25', 'border-primary');
+            div.classList.add('border-transparent');
+        });
+        
+        // Highlight current
+        el.classList.remove('border-transparent');
+        el.classList.add('bg-primary', 'bg-opacity-25', 'border-primary');
+
+        // Set Values
+        document.getElementById('selectedImageInput').value = filename;
+        
+        // Auto-fill skill folder (remove extension)
+        const folderName = filename.replace(/\.[^/.]+$/, "");
+        document.getElementById('skillFolderInput').value = folderName;
+    }
+
+    function filterImages() {
+        const input = document.getElementById('imgSearch').value.toLowerCase();
+        const cols = document.getElementsByClassName('img-item-col');
+        
+        for (let col of cols) {
+            const txt = col.innerText || col.textContent;
+            col.style.display = txt.toLowerCase().includes(input) ? "" : "none";
+        }
+    }
 </script>
 
 <%- include('../../partials/footer') %>
