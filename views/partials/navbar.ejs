@@ -117,47 +117,37 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top border-bottom border-secondary">
     <div class="container">
-        <a class="navbar-brand d-flex align-items-center" href="/">
-            <img src="/images/about_website/logo_seven_knights_rebirth.png" alt="Logo" height="40" class="me-2">
-            <span class="fw-bold text-warning" style="letter-spacing: 1px;">7K REBIRTH</span>
+        <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+            <img src="/images/about_website/logo_seven_knights_rebirth.png" alt="Logo" height="40">
+            <span class="fw-bold text-warning">7K Rebirth</span>
         </a>
-
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
-
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="/tierlist">Tier List</a></li>
                 
-                <li class="nav-item">
-                    <a class="nav-link" href="/">Home</a>
-                </li>
-
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="buildDropdown" role="button" data-bs-toggle="dropdown">
-                        Build
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        Codex
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-dark">
-                        <li><a class="dropdown-item" href="/build/legendary">Legendary Hero</a></li>
-                        <li><a class="dropdown-item" href="/build/rare">Rare Hero</a></li>
+                    <ul class="dropdown-menu dropdown-menu-dark border-secondary">
+                        <li><a class="dropdown-item" href="/codex/hero"><i class="bi bi-person-badge me-2"></i>Heroes</a></li>
+                        <li><a class="dropdown-item" href="/codex/pet"><i class="bi bi-github me-2"></i>Pets</a></li>
                     </ul>
                 </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="/tierlist/pvp">Tier List</a>
-                </li>
-
+                <li class="nav-item"><a class="nav-link" href="/build/legendary">Builds</a></li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="compDropdown" role="button" data-bs-toggle="dropdown">
-                        Comp & Guide
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-dark">
-                        <li><a class="dropdown-item" href="/comp/stage">Stage & Nightmare</a></li>
-                        <li><a class="dropdown-item" href="/comp/dungeon">Dungeon</a></li>
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Guides</a>
+                    <ul class="dropdown-menu dropdown-menu-dark border-secondary">
+                        <li><a class="dropdown-item" href="/comp/stage">Stage Comp</a></li>
+                        <li><a class="dropdown-item" href="/comp/dungeon">Dungeon Comp</a></li>
                         <li><a class="dropdown-item" href="/comp/guild-war">Guild War</a></li>
                     </ul>
                 </li>
-
             </ul>
         </div>
     </div>

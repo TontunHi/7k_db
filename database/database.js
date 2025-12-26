@@ -110,9 +110,26 @@ db.serialize(() => {
         image_name TEXT,
         FOREIGN KEY(group_id) REFERENCES codex_groups(id)
     )`);
-});
+    // [NEW] ตาราง Raid Bosses
+    db.run(`CREATE TABLE IF NOT EXISTS raid_bosses (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT,
+        image_name TEXT
+    )`);
 
-    
+    // [NEW] ตาราง Raid Teams
+    db.run(`CREATE TABLE IF NOT EXISTS raid_teams (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        raid_id INTEGER,
+        team_name TEXT,             -- ชื่อทีม (Admin ตั้งเองไว้อ้างอิง)
+        formation TEXT,             -- เช่น 1-4, 4-1
+        hero_ids TEXT,              -- JSON Array [id1, id2, id3, id4, id5]
+        skill_priority TEXT,        -- JSON Array ["heroId_skillFile", ...]
+        description TEXT,
+        youtube_link TEXT,
+        FOREIGN KEY(raid_id) REFERENCES raid_bosses(id)
+    )`);
+});
 }
 
 module.exports = db;

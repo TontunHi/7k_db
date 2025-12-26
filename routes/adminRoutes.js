@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const adminController = require('../controllers/adminController');
 const adminCodexController = require('../controllers/adminCodexController');
+const raidController = require('../controllers/raidController');
 
 // Middleware: Body Parser
 router.use(express.urlencoded({ extended: true }));
@@ -63,5 +64,12 @@ router.get('/codex/pet/delete/:id', adminCodexController.deletePet);
 // Shared Actions (Add Category / Group)
 router.post('/codex/category/add', adminCodexController.addCategory);
 router.post('/codex/group/add', adminCodexController.addGroup);
+
+// --- RAID MANAGER --- [NEW SECTION]
+router.get('/manage/raid', requireAdmin, raidController.getIndex);
+router.post('/api/raid/add_boss', requireAdmin, raidController.addRaidBoss);
+router.post('/api/raid/delete_boss', requireAdmin, raidController.deleteRaidBoss);
+router.post('/api/raid/save_team', requireAdmin, raidController.saveTeam);
+router.post('/api/raid/delete_team', requireAdmin, raidController.deleteTeam);
 
 module.exports = router;

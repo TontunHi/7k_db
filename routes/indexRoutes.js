@@ -4,6 +4,7 @@ const homeController = require('../controllers/homeController');
 const tierListController = require('../controllers/tierListController');
 const buildController = require('../controllers/buildController');
 const compController = require('../controllers/compController');
+const codexController = require('../controllers/codexController');
 
 // --- Home ---
 router.get('/', homeController.getHomePage);
@@ -26,5 +27,9 @@ router.get('/comp/:page', (req, res) => res.send('Page Coming Soon'));
 // 2. ใส่ Route ทั่วไปทีหลัง (สำหรับหน้าอื่นๆ ที่ยังไม่เสร็จ)
 router.get('/comp/:page', (req, res) => res.send('Comp Page Coming Soon'));
 router.get('/comp', (req, res) => res.send('Comp Page Coming Soon'));
+
+// --- CODEX ROUTES (USER) ---
+router.get('/codex/hero', codexController.getHeroCodex);
+router.get('/codex/pet', codexController.getPetCodex);
 
 module.exports = router;

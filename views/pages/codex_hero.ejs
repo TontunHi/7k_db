@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head') %>
+    <style>
+        /* Modern Dark Theme */
+        body { background-color: #0b0c10; color: #c5c6c7; font-family: 'Segoe UI', sans-serif; padding-top: 70px; }
+        
+        /* Layout Grid */
+        .codex-container { display: flex; min-height: calc(100vh - 70px); }
+        .sidebar { width: 260px; background: #1f2833; border-right: 1px solid #45a29e; flex-shrink: 0; display: flex; flex-direction: column; }
+        .content-area { flex: 1; padding: 20px; background: #0b0c10; overflow-y: auto; }
+
+        /* Sidebar Items */
+        .group-item {
+            padding: 12px 20px; color: #c5c6c7; text-decoration: none; display: flex; justify-content: space-between; align-items: center;
+            border-left: 3px solid transparent; transition: 0.2s;
+        }
+        .group-item:hover { background: #2c353f; color: #66fcf1; }
+        .group-item.active { background: #2c353f; color: #66fcf1; border-left-color: #66fcf1; font-weight: 600; }
+        .sidebar-title { padding: 20px; font-weight: bold; color: #66fcf1; border-bottom: 1px solid #45a29e; margin-bottom: 10px; }
+
+        /* Top Tabs (Categories) */
+        .nav-pills .nav-link { 
+            color: #888; border-radius: 50px; padding: 8px 20px; font-weight: 500; transition: 0.3s; 
+            border: 1px solid #333; margin-right: 8px;
+        }
+        .nav-pills .nav-link:hover { color: #fff; border-color: #66fcf1; background: rgba(102, 252, 241, 0.1); }
+        .nav-pills .nav-link.active { background-color: #66fcf1; color: #0b0c10; font-weight: bold; border-color: #66fcf1; box-shadow: 0 0 10px rgba(102, 252, 241, 0.4); }
+
+        /* Hero Card */
+        .hero-card {
+            background: #1f2833; border: 1px solid #2f3a46; border-radius: 12px; overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s; cursor: pointer; position: relative;
+        }
+        .hero-card:hover { transform: translateY(-5px); border-color: #66fcf1; box-shadow: 0 5px 15px rgba(102, 252, 241, 0.2); }
+        .hero-img-wrapper { aspect-ratio: 3/4; overflow: hidden; position: relative; }
+        .hero-img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; }
+        .hero-card:hover .hero-img { transform: scale(1.05); }
+        .hero-info { padding: 12px; text-align: center; }
+        .hero-name { color: #fff; font-weight: 600; font-size: 1rem; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* Modal Styles */
+        .modal-content { background-color: #1f2833; border: 1px solid #45a29e; color: #fff; }
+        .modal-header { border-bottom: 1px solid #45a29e; }
+        .modal-title { color: #66fcf1; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        .btn-close { filter: invert(1); }
+
+        /* Skill Priority Display */
+        .skill-priority-wrapper { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px; }
+        .skill-item { position: relative; width: 60px; height: 60px; border-radius: 8px; border: 2px solid #45a29e; overflow: hidden; background: #000; }
+        .skill-item img { width: 100%; height: 100%; object-fit: cover; }
+        .priority-badge {
+            position: absolute; top: 0; left: 0; background: #66fcf1; color: #000;
+            width: 20px; height: 20px; font-size: 12px; font-weight: bold;
+            display: flex; align-items: center; justify-content: center;
+            border-bottom-right-radius: 6px;
+        }
+        
+        .hero-detail-img { width: 100%; border-radius: 12px; border: 2px solid #45a29e; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+    </style>
+</head>
+<body>
+    
+    <%- include('../partials/navbar') %>
+
+    <div class="codex-container">
+        <div class="sidebar d-none d-md-flex">
+            <div class="sidebar-title"><i class="bi bi-collection-fill me-2"></i>GROUPS</div>
+            <div class="overflow-auto flex-grow-1">
+                <% if(groups.length > 0) { %>
+                    <% groups.forEach(grp => { %>
+                        <a href="/codex/hero?cat_id=<%= activeCatId %>&group_id=<%= grp.id %>" 
+                           class="group-item <%= activeGroupId == grp.id ? 'active' : '' %>">
+                           <%= grp.name %> <i class="bi bi-chevron-right small opacity-50"></i>
+                        </a>
+                    <% }) %>
+                <% } else { %>
+                    <div class="p-3 text-muted text-center">No Groups</div>
+                <% } %>
+            </div>
+        </div>
+
+        <div class="content-area">
+            <div class="d-md-none mb-3">
+                <select class="form-select bg-dark text-white border-secondary" onchange="window.location.href=this.value">
+                    <% groups.forEach(grp => { %>
+                        <option value="/codex/hero?cat_id=<%= activeCatId %>&group_id=<%= grp.id %>" <%= activeGroupId == grp.id ? 'selected' : '' %>>
+                            <%= grp.name %>
+                        </option>
+                    <% }) %>
+                </select>
+            </div>
+
+            <ul class="nav nav-pills mb-4 pb-2 border-bottom border-secondary">
+                <% categories.forEach(cat => { %>
+                    <li class="nav-item">
+                        <a class="nav-link <%= activeCatId == cat.id ? 'active' : '' %>" 
+                           href="/codex/hero?cat_id=<%= cat.id %>">
+                           <%= cat.name %>
+                        </a>
+                    </li>
+                <% }) %>
+            </ul>
+
+            <div class="container-fluid p-0">
+                <% if(heroes.length > 0) { %>
+                    <h4 class="text-white mb-4 fw-bold border-start border-4 border-info ps-3">
+                        <%= groups.find(g => g.id == activeGroupId)?.name || 'Heroes' %>
+                    </h4>
+                    
+                    <div class="row g-4">
+                        <% heroes.forEach(hero => { %>
+                            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                                <div class="hero-card" onclick="openHeroModal(this)"
+                                     data-name="<%= hero.name %>"
+                                     data-img="<%= hero.image_name %>"
+                                     data-folder="<%= hero.skillFolder %>"
+                                     data-priority='<%- JSON.stringify(hero.skillOrder) %>'
+                                >
+                                    <div class="hero-img-wrapper">
+                                        <img src="/images/heroes/<%= hero.image_name %>" class="hero-img" loading="lazy">
+                                    </div>
+                                    <div class="hero-info">
+                                        <h6 class="hero-name"><%= hero.name %></h6>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }) %>
+                    </div>
+                <% } else { %>
+                    <div class="text-center py-5 text-muted border border-secondary border-dashed rounded mt-4">
+                        <i class="bi bi-search display-4 mb-3 d-block opacity-50"></i>
+                        <h5>No Heroes in this group</h5>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="heroDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalHeroName">HERO NAME</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="row">
+                        <div class="col-md-5 mb-3 mb-md-0">
+                            <img src="" id="modalHeroImg" class="hero-detail-img">
+                        </div>
+                        
+                        <div class="col-md-7">
+                            <h5 class="text-info border-bottom border-secondary pb-2 mb-3">
+                                <i class="bi bi-lightning-charge-fill me-2"></i>SKILL PRIORITY
+                            </h5>
+                            
+                            <p class="text-muted small mb-2">Recommended skill usage order:</p>
+                            
+                            <div id="modalSkillContainer" class="skill-priority-wrapper">
+                                </div>
+
+                            <div id="modalNoSkills" class="alert alert-secondary mt-3 d-none">
+                                <i class="bi bi-info-circle me-2"></i>No specific skill priority set.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../partials/footer') %>
+
+    <script>
+        function openHeroModal(element) {
+            const name = element.getAttribute('data-name');
+            const img = element.getAttribute('data-img');
+            const folder = element.getAttribute('data-folder');
+            const priority = JSON.parse(element.getAttribute('data-priority') || '[]');
+
+            document.getElementById('modalHeroName').innerText = name;
+            document.getElementById('modalHeroImg').src = `/images/heroes/${img}`;
+            
+            const container = document.getElementById('modalSkillContainer');
+            const noSkillsMsg = document.getElementById('modalNoSkills');
+            container.innerHTML = '';
+
+            if (priority && priority.length > 0) {
+                noSkillsMsg.classList.add('d-none');
+                priority.forEach((filename, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'skill-item';
+                    div.innerHTML = `
+                        <img src="/images/skill/${folder}/${filename}" onerror="this.src='https://via.placeholder.com/60?text=Skill'">
+                        <div class="priority-badge">${index + 1}</div>
+                    `;
+                    container.appendChild(div);
+                });
+            } else {
+                noSkillsMsg.classList.remove('d-none');
+            }
+
+            new bootstrap.Modal(document.getElementById('heroDetailModal')).show();
+        }
+    </script>
+</body>
+</html>
