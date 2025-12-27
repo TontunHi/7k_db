@@ -129,6 +129,18 @@ db.serialize(() => {
         youtube_link TEXT,
         FOREIGN KEY(raid_id) REFERENCES raid_bosses(id)
     )`);
+    // [NEW] Castle Rush Teams
+    db.run(`CREATE TABLE IF NOT EXISTS castle_rush_teams (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        stage_key TEXT,             -- ตัวระบุวัน เช่น 'cr_rudy', 'cr_eileene'
+        team_name TEXT,
+        formation TEXT,
+        hero_ids TEXT,              -- JSON Array
+        skill_priority TEXT,        -- JSON Array
+        description TEXT,
+        youtube_link TEXT
+    )`);
+
 });
 }
 

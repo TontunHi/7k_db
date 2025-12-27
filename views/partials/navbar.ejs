@@ -1,174 +1,135 @@
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+
 <style>
-    /* --- Navbar Styles --- */
+    /* --- Modern Navbar Styles --- */
+    :root {
+        --nav-bg: rgba(11, 12, 16, 0.85);
+        --nav-border: 1px solid rgba(255, 255, 255, 0.1);
+        --accent-color: #ffffff; /* Cyan Neon */
+        --text-color: #c5c6c7;
+        --hover-bg: rgba(102, 252, 241, 0.1);
+    }
+
     .navbar-modern {
-        background: rgba(10, 10, 10, 0.85); /* สีดำโปร่งแสง */
-        backdrop-filter: blur(12px); /* เบลอฉากหลัง */
+        font-family: 'Kanit', sans-serif; /* ใช้ฟอนต์ Kanit */
+        background-color: var(--nav-bg);
+        backdrop-filter: blur(12px); /* Glassmorphism Effect */
         -webkit-backdrop-filter: blur(12px);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08); /* เส้นขอบบางๆ */
-        padding: 0.8rem 0;
+        border-bottom: var(--nav-border);
         transition: all 0.3s ease;
+        padding: 0.8rem 1rem;
     }
 
-    /* Brand / Logo */
-    .navbar-brand-text {
-        font-weight: 800;
-        letter-spacing: 1.5px;
-        background: linear-gradient(45deg, #fff, #ccc);
-        background-clip: text;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        font-size: 1.2rem;
-        text-transform: uppercase;
-    }
-
-    /* Nav Links */
-    .nav-link-custom {
-        color: #b0b0b0 !important;
-        font-weight: 500;
-        font-size: 0.95rem;
-        padding: 0.5rem 1rem !important;
-        position: relative;
-        transition: color 0.3s ease;
-    }
-
-    .nav-link-custom:hover {
+    .navbar-brand {
+        font-weight: 700;
+        font-size: 1.5rem;
         color: #fff !important;
+        letter-spacing: 1px;
     }
 
-    /* Animated Underline Effect */
-    .nav-link-custom::after {
-        content: '';
-        position: absolute;
-        width: 0;
-        height: 2px;
-        bottom: 5px;
-        left: 50%;
-        background-color: #ffc107; /* สีทอง */
-        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        transform: translateX(-50%);
-        box-shadow: 0 0 8px rgba(255, 193, 7, 0.6);
+    .navbar-brand span {
+        color: var(--accent-color);
+        text-shadow: 0 0 10px rgba(102, 252, 241, 0.5);
     }
 
-    .nav-link-custom:hover::after {
-        width: 80%; /* ความยาวเส้นเมื่อ Hover */
+    .nav-link {
+        color: var(--text-color) !important;
+        font-weight: 500;
+        font-size: 1.05rem;
+        padding: 0.5rem 1rem !important;
+        margin: 0 5px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        position: relative;
     }
 
-    /* Active State */
-    .nav-link-custom.active {
-        color: #ffc107 !important;
-        text-shadow: 0 0 10px rgba(255, 193, 7, 0.3);
-    }
-    .nav-link-custom.active::after {
-        width: 80%;
+    /* Hover Effect */
+    .nav-link:hover, .nav-link.active, .dropdown-item:hover {
+        color: #fff !important;
+        background: var(--hover-bg);
+        text-shadow: 0 0 8px rgba(102, 252, 241, 0.6);
     }
 
-    /* Dropdown Menu Animation */
-    .dropdown-menu-custom {
-        background-color: #1a1a1a;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 12px;
-        padding: 10px 0;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        margin-top: 15px !important; /* เว้นระยะห่างจาก Navbar นิดหน่อย */
-        
-        /* Animation */
-        animation: slideUpFade 0.3s ease forwards;
-        transform-origin: top center;
+    /* Dropdown Styling */
+    .dropdown-menu-dark {
+        background-color: #1f2833;
+        border: 1px solid #45a29e;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        border-radius: 10px;
+        padding: 0.5rem;
+        margin-top: 10px;
     }
 
-    @keyframes slideUpFade {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    /* Dropdown Items */
-    .dropdown-item-custom {
-        color: #ccc;
-        padding: 8px 20px;
-        font-size: 0.9rem;
-        transition: all 0.2s;
-        border-left: 2px solid transparent;
-    }
-
-    .dropdown-item-custom:hover {
-        background-color: rgba(255, 255, 255, 0.05);
-        color: #ffc107;
-        border-left-color: #ffc107;
-        padding-left: 25px; /* ขยับขวาเมื่อ Hover */
+    .dropdown-item {
+        color: #c5c6c7;
+        border-radius: 6px;
+        padding: 8px 15px;
+        font-weight: 400;
+        transition: 0.2s;
     }
     
-    .dropdown-divider { border-top-color: rgba(255,255,255,0.1); }
+    .dropdown-item.active, .dropdown-item:active {
+        background-color: var(--accent-color);
+        color: #000;
+        font-weight: 600;
+    }
 
-    /* Mobile Toggler */
+    /* Toggler (Mobile) */
     .navbar-toggler {
         border: none;
-        padding: 0;
+        color: var(--accent-color);
     }
     .navbar-toggler:focus {
         box-shadow: none;
     }
 </style>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top border-bottom border-secondary">
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top navbar-modern">
     <div class="container">
         <a class="navbar-brand d-flex align-items-center gap-2" href="/">
             <img src="/images/about_website/logo_seven_knights_rebirth.png" alt="Logo" height="40">
-            <span class="fw-bold text-warning">7K Rebirth</span>
+            <span>7K Rebirth</span>
         </a>
+
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
+            <span class="bi bi-list fs-1"></span>
         </button>
+
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="/tierlist">Tier List</a></li>
+            <ul class="navbar-nav ms-auto align-items-center">
                 
+                <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                        Codex
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-dark border-secondary">
-                        <li><a class="dropdown-item" href="/codex/hero"><i class="bi bi-person-badge me-2"></i>Heroes</a></li>
-                        <li><a class="dropdown-item" href="/codex/pet"><i class="bi bi-github me-2"></i>Pets</a></li>
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Build</a>
+                    <ul class="dropdown-menu dropdown-menu-dark">
+                        <li><a class="dropdown-item" href="/build/legendary">Legendary Hero</a></li>
+                        <li><a class="dropdown-item" href="/build/rare">Rare Hero</a></li>
                     </ul>
                 </li>
 
-                <li class="nav-item"><a class="nav-link" href="/build/legendary">Builds</a></li>
+                <li class="nav-item"><a class="nav-link" href="/tierlist">Tier List</a></li>
+
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Guides</a>
-                    <ul class="dropdown-menu dropdown-menu-dark border-secondary">
-                        <li><a class="dropdown-item" href="/comp/stage">Stage Comp</a></li>
-                        <li><a class="dropdown-item" href="/comp/dungeon">Dungeon Comp</a></li>
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Comp</a>
+                    <ul class="dropdown-menu dropdown-menu-dark">
+                        <li><a class="dropdown-item" href="/comp/stage">Stage & Nightmare</a></li>
+                        <li><a class="dropdown-item" href="/comp/dungeon">Dungeon</a></li>
                         <li><a class="dropdown-item" href="/comp/guild-war">Guild War</a></li>
+                        <li><a class="dropdown-item" href="/raid">Raid</a></li>
+                        <li><a class="dropdown-item" href="/castle-rush">Castle Rush</a></li>
                     </ul>
                 </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Codex</a>
+                    <ul class="dropdown-menu dropdown-menu-dark">
+                        <li><a class="dropdown-item" href="/codex/hero">Heroes</a></li>
+                        <li><a class="dropdown-item" href="/codex/pet">Pets</a></li>
+                    </ul>
+                </li>
+
             </ul>
         </div>
     </div>
 </nav>
-
-<style>
-    @media (min-width: 992px) {
-        .dropdown:hover .dropdown-menu {
-            display: block;
-            margin-top: 0;
-            animation: fadeIn 0.3s;
-        }
-    }
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    
-    /* Active Link State Style (Optional) */
-    .nav-link.active {
-        color: #ffc107 !important;
-        font-weight: bold;
-    }
-</style>

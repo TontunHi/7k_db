@@ -5,6 +5,8 @@ const tierListController = require('../controllers/tierListController');
 const buildController = require('../controllers/buildController');
 const compController = require('../controllers/compController');
 const codexController = require('../controllers/codexController');
+const raidController = require('../controllers/raidController');
+const castleRushController = require('../controllers/castleRushController');
 
 // --- Home ---
 router.get('/', homeController.getHomePage);
@@ -28,8 +30,13 @@ router.get('/comp/:page', (req, res) => res.send('Page Coming Soon'));
 router.get('/comp/:page', (req, res) => res.send('Comp Page Coming Soon'));
 router.get('/comp', (req, res) => res.send('Comp Page Coming Soon'));
 
+// --- RAID ROUTES (USER) ---
+router.get('/raid', raidController.getUserIndex);
+
 // --- CODEX ROUTES (USER) ---
 router.get('/codex/hero', codexController.getHeroCodex);
 router.get('/codex/pet', codexController.getPetCodex);
 
+// --- CASTLE RUSH (USER) ---
+router.get('/castle-rush', castleRushController.getUserIndex);
 module.exports = router;

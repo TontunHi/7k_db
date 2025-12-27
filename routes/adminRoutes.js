@@ -3,6 +3,7 @@ const router = express.Router();
 const adminController = require('../controllers/adminController');
 const adminCodexController = require('../controllers/adminCodexController');
 const raidController = require('../controllers/raidController');
+const castleRushController = require('../controllers/castleRushController');
 
 // Middleware: Body Parser
 router.use(express.urlencoded({ extended: true }));
@@ -71,5 +72,10 @@ router.post('/api/raid/add_boss', requireAdmin, raidController.addRaidBoss);
 router.post('/api/raid/delete_boss', requireAdmin, raidController.deleteRaidBoss);
 router.post('/api/raid/save_team', requireAdmin, raidController.saveTeam);
 router.post('/api/raid/delete_team', requireAdmin, raidController.deleteTeam);
+
+// --- CASTLE RUSH MANAGER --- [NEW]
+router.get('/manage/castle-rush', requireAdmin, castleRushController.getIndex);
+router.post('/api/castle-rush/save_team', requireAdmin, castleRushController.saveTeam);
+router.post('/api/castle-rush/delete_team', requireAdmin, castleRushController.deleteTeam);
 
 module.exports = router;

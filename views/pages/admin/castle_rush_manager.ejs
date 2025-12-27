@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../../partials/head') %>
+    <style>
+        /* --- Base Theme --- */
+        body { background-color: #0f0f0f; color: #e0e0e0; padding-top: 80px; font-family: 'Kanit', sans-serif; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+
+        /* --- Admin Navbar --- */
+        .navbar-modern {
+            height: 64px; background: rgba(18, 18, 18, 0.95); backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1050;
+            padding: 0 20px; display: flex; align-items: center; justify-content: space-between;
+        }
+        .nav-brand-text { font-weight: 700; color: #fff; font-size: 1.1rem; }
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.05); color: #ccc; border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; text-decoration: none;
+            display: inline-flex; align-items: center; gap: 6px; transition: 0.2s;
+        }
+        .nav-btn:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
+
+        /* --- Stage Card (Vertical) --- */
+        .stage-card {
+            background: #1e1e1e; border: 1px solid #333; border-radius: 12px;
+            overflow: hidden; transition: 0.3s; cursor: pointer; position: relative;
+            height: 100%; display: flex; flex-direction: column;
+        }
+        .stage-card:hover { transform: translateY(-8px); border-color: #ffc107; box-shadow: 0 10px 25px rgba(255, 193, 7, 0.2); }
+        .stage-img { width: 100%; aspect-ratio: 2/3; object-fit: cover; border-bottom: 4px solid #000; }
+        .stage-info { padding: 15px; text-align: center; background: linear-gradient(to bottom, #1e1e1e, #151515); flex: 1; display: flex; align-items: center; justify-content: center; }
+        .stage-name { font-size: 1.1rem; font-weight: 700; color: #fff; text-transform: uppercase; margin: 0; }
+
+        /* --- Team Manager Layout --- */
+        .page-header { background: #161616; padding: 20px 0; border-bottom: 1px solid #333; margin-bottom: 30px; }
+        
+        .team-card-item {
+            background: #1e1e1e; border: 1px solid #333; border-radius: 8px; padding: 15px;
+            display: flex; flex-direction: column; gap: 10px; transition: 0.2s;
+        }
+        .team-card-item:hover { border-color: #666; background: #222; }
+        
+        /* --- EDITOR MODAL STYLES (Copied & Adapted from Raid) --- */
+        .modal-content { background: #121212; border: 1px solid #333; }
+        .form-label-modern { color: #888; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+        .input-modern { background: #000 !important; border: 1px solid #333 !important; color: #fff !important; border-radius: 6px; }
+        
+        /* Formation Selector */
+        .formation-wrapper { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; }
+        .form-select-card {
+            background: #1a1a1a; border: 2px solid #333; border-radius: 8px; padding: 8px;
+            cursor: pointer; transition: 0.2s; text-align: center; width: 90px;
+        }
+        .form-select-card.active { border-color: #ffc107; background: rgba(255, 193, 7, 0.05); }
+        .form-img { width: 100%; height: auto; margin-bottom: 5px; opacity: 0.6; }
+        .form-select-card.active .form-img { opacity: 1; }
+        .form-name { font-size: 0.8rem; font-weight: bold; color: #aaa; }
+        .form-select-card.active .form-name { color: #ffc107; }
+
+        /* Battle Stage */
+        .battle-stage {
+            background: #1a1a1a; border-radius: 12px; border: 1px solid #333;
+            padding: 40px 20px; margin-bottom: 20px;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 220px; position: relative;
+            background-image: radial-gradient(#2a2a2a 1px, transparent 1px); background-size: 20px 20px;
+        }
+        .hero-row { display: flex; gap: 12px; align-items: center; }
+        .hero-input-slot {
+            width: 85px; height: 115px; background: #000; border-radius: 8px; border: 2px dashed #444; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            cursor: pointer; position: relative; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+        .hero-input-slot:hover { border-color: #fff; transform: scale(1.05); z-index: 10; }
+        .hero-input-slot img { width: 100%; height: 100%; object-fit: cover; border-radius: 6px; }
+        
+        .hero-input-slot.slot-front { border-style: solid; border-color: #90caf9; transform: translateY(-20px); }
+        .hero-input-slot.slot-back { border-style: solid; border-color: #ef9a9a; }
+
+        /* Skill Priority */
+        .skill-section { background: #000; border: 1px solid #333; border-radius: 8px; padding: 15px; }
+        .skill-matrix { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 5px; justify-content: center; }
+        .hero-col { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .skill-box { width: 35px; height: 35px; border: 1px solid #333; border-radius: 4px; cursor: pointer; position: relative; overflow: hidden; }
+        .skill-box.selected { border: 2px solid #ffc107; }
+        .skill-box.selected img { opacity: 1; }
+        .skill-box img { width: 100%; height: 100%; object-fit: cover; opacity: 0.5; }
+        .order-badge { position: absolute; top: 0; right: 0; background: #ffc107; color: #000; width: 14px; height: 14px; font-size: 9px; font-weight: bold; display: flex; align-items: center; justify-content: center; }
+
+        /* Hero Picker */
+        .picker-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 10px; }
+        .pick-item img { width: 100%; aspect-ratio: 3/4; object-fit: cover; border-radius: 6px; border: 2px solid transparent; }
+        .pick-item:hover img { border-color: #ffc107; transform: scale(1.05); }
+
+    </style>
+</head>
+<body class="text-light">
+
+    <nav class="navbar-modern">
+        <div class="d-flex align-items-center gap-3">
+            <img src="/images/about_website/logo_seven_knights_rebirth.png" alt="Logo" style="height: 40px;">
+            <span class="nav-brand-text">7K Rebirth <span style="font-weight:400; opacity:0.7;">| Admin</span></span>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+            <a href="/admin/dashboard" class="nav-btn"><i class="bi bi-grid-fill"></i> Dashboard</a>
+            <a href="/admin/logout" class="nav-btn"><i class="bi bi-box-arrow-right"></i> Logout</a>
+        </div>
+    </nav>
+
+    <% if (viewState === 'list') { %>
+        <div class="container py-5">
+            <h2 class="text-white fw-bold mb-5 text-center text-uppercase" style="letter-spacing: 2px;">
+                <i class="bi bi-shield-shaded me-2 text-warning"></i>Castle Rush Manager
+            </h2>
+
+            <div class="row g-4 justify-content-center">
+                <% stages.forEach(stage => { %>
+                    <div class="col-6 col-md-4 col-xl-3">
+                        <div class="stage-card" onclick="window.location.href='/admin/manage/castle-rush?stage_key=<%= stage.key %>'">
+                            <img src="/images/castle_rush/<%= stage.img %>" class="stage-img" onerror="this.src='https://via.placeholder.com/300x450?text=No+Image'">
+                            <div class="stage-info">
+                                <h5 class="stage-name"><%= stage.name %></h5>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+        </div>
+
+    <% } else { %>
+        <div class="page-header">
+            <div class="container d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-3">
+                    <a href="/admin/manage/castle-rush" class="btn btn-outline-secondary rounded-circle" style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;"><i class="bi bi-arrow-left"></i></a>
+                    <div class="d-flex align-items-center gap-3">
+                        <img src="/images/castle_rush/<%= activeStage.img %>" style="width:50px;height:50px;border-radius:8px;object-fit:cover;border:1px solid #444;">
+                        <h3 class="m-0 fw-bold text-white"><%= activeStage.name %></h3>
+                    </div>
+                </div>
+                <button class="btn btn-warning px-4 fw-bold rounded-pill shadow-sm" onclick="openEditor()">
+                    <i class="bi bi-plus-lg me-2"></i>Add Team
+                </button>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row g-3">
+                <% if(teams.length === 0) { %>
+                    <div class="col-12 text-center py-5 text-muted border border-dashed border-secondary rounded">
+                        <h5>No teams created for this day.</h5>
+                    </div>
+                <% } %>
+                <% teams.forEach(team => { %>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="team-card-item">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <h5 class="text-white m-0 fw-bold"><%= team.team_name || 'Untitled Team' %></h5>
+                                <span class="badge bg-secondary"><%= team.formation %></span>
+                            </div>
+                            <div class="d-flex gap-1 mt-2">
+                                <% team.hero_ids.forEach(hid => { %>
+                                    <% let h = heroesMap[hid]; %>
+                                    <% if(h) { %>
+                                        <img src="/images/heroes/<%= h.image_name %>" style="width:35px; aspect-ratio:3/4; object-fit:cover; border-radius:3px; border:1px solid #444;">
+                                    <% } %>
+                                <% }) %>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top border-secondary">
+                                <div class="text-muted small text-truncate" style="max-width: 150px;">
+                                    <%= team.description || 'No desc' %>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-sm btn-outline-light" onclick='editTeam(<%- JSON.stringify(team) %>)'>Edit</button>
+                                    <form action="/admin/api/castle-rush/delete_team" method="POST" onsubmit="return confirm('Delete team?');">
+                                        <input type="hidden" name="id" value="<%= team.id %>">
+                                        <input type="hidden" name="stage_key" value="<%= activeStage.key %>">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+        </div>
+
+        <div class="modal fade" id="teamEditorModal" tabindex="-1" data-bs-backdrop="static">
+            <div class="modal-dialog modal-xl modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header border-secondary">
+                        <h5 class="modal-title text-warning fw-bold" id="editorTitle">TEAM BUILDER</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body p-4">
+                        
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label-modern">Team Name</label>
+                                <input type="text" id="editName" class="form-control input-modern" placeholder="e.g. Best Score Team">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label-modern">Video Guide (URL)</label>
+                                <input type="text" id="editYoutube" class="form-control input-modern" placeholder="https://youtube.com/...">
+                            </div>
+                        </div>
+
+                        <label class="form-label-modern text-center w-100 mb-2">Select Formation</label>
+                        <div class="formation-wrapper">
+                            <% ['1-4', '2-3', '3-2', '4-1'].forEach(fmt => { %>
+                                <div class="form-select-card" id="form-card-<%= fmt %>" onclick="setFormation('<%= fmt %>')">
+                                    <img src="/images/formation/<%= fmt %>.png" class="form-img" onerror="this.src='https://via.placeholder.com/50?text=F'">
+                                    <div class="form-name"><%= fmt %></div>
+                                </div>
+                            <% }) %>
+                        </div>
+
+                        <div class="battle-stage">
+                            <div class="hero-row">
+                                <% for(let i=1; i<=5; i++) { %>
+                                    <div class="hero-input-slot empty slot-back" id="slot-<%= i-1 %>" onclick="openPicker(<%= i-1 %>)">
+                                        <i class="bi bi-plus-lg"></i>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+
+                        <div class="skill-section mb-3">
+                            <label class="form-label-modern w-100 text-center mb-3">Skill Priority Sequence</label>
+                            <div id="skillMatrix" class="skill-matrix">
+                                <span class="text-muted small">Select heroes to configure skills</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="form-label-modern">Description / Notes</label>
+                            <textarea id="editDesc" class="form-control input-modern" rows="2"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-secondary">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-warning px-5 fw-bold" onclick="saveTeamData()">Save Team</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="heroPickerModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content border-secondary">
+                    <div class="modal-header border-secondary py-2">
+                        <input type="text" id="heroSearch" class="form-control input-modern form-control-sm" placeholder="Search Hero File..." onkeyup="filterHeroes()">
+                        <button type="button" class="btn-close btn-close-white ms-2" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body bg-black" style="height: 60vh; overflow-y: auto;">
+                        <div class="picker-grid">
+                            <% heroFiles.forEach(file => { %>
+                                <div class="pick-item" data-name="<%= file.toLowerCase() %>" onclick="selectHero('<%= file %>')">
+                                    <img src="/images/heroes/<%= file %>" loading="lazy">
+                                    <small class="d-block text-center text-muted mt-1 text-truncate"><%= file %></small>
+                                </div>
+                            <% }) %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Data
+            const activeStageKey = '<%= activeStage ? activeStage.key : "" %>';
+            const heroesMap = <%- JSON.stringify(heroesMap || {}) %>;
+
+            let currentTeamId = null;
+            let currentFormation = '1-4';
+            let teamSlots = [null, null, null, null, null];
+            let skillPriority = [];
+            let pickingSlotIndex = -1;
+
+            // Editor Logic
+            function openEditor() {
+                currentTeamId = null;
+                document.getElementById('editorTitle').innerText = 'CREATE NEW TEAM';
+                teamSlots = [null, null, null, null, null];
+                skillPriority = [];
+                currentFormation = '1-4';
+                document.getElementById('editName').value = '';
+                document.getElementById('editYoutube').value = '';
+                document.getElementById('editDesc').value = '';
+                setFormation('1-4');
+                new bootstrap.Modal(document.getElementById('teamEditorModal')).show();
+            }
+
+            function editTeam(team) {
+                currentTeamId = team.id;
+                document.getElementById('editorTitle').innerText = 'EDIT TEAM';
+                currentFormation = team.formation || '1-4';
+                
+                teamSlots = team.hero_ids.map(hid => {
+                    if(!hid) return null;
+                    const h = heroesMap[hid];
+                    return h ? { id: h.id, img: h.image_name, folder: h.skill_folder } : null;
+                });
+                skillPriority = team.skill_priority || [];
+
+                document.getElementById('editName').value = team.team_name || '';
+                document.getElementById('editYoutube').value = team.youtube_link || '';
+                document.getElementById('editDesc').value = team.description || '';
+
+                setFormation(currentFormation);
+                new bootstrap.Modal(document.getElementById('teamEditorModal')).show();
+            }
+
+            // Formation Visuals
+            function setFormation(fmt) {
+                currentFormation = fmt;
+                document.querySelectorAll('.form-select-card').forEach(el => el.classList.remove('active'));
+                const activeCard = document.getElementById(`form-card-${fmt}`);
+                if(activeCard) activeCard.classList.add('active');
+                renderSlots();
+                updateFormationVisuals();
+            }
+
+            function updateFormationVisuals() {
+                for(let i=0; i<5; i++) {
+                    const el = document.getElementById(`slot-${i}`);
+                    if(el) el.className = `hero-input-slot ${teamSlots[i] ? '' : 'empty'} slot-back`; 
+                }
+
+                let frontIndices = [];
+                switch(currentFormation) {
+                    case '1-4': frontIndices = [2]; break;
+                    case '2-3': frontIndices = [1, 3]; break;
+                    case '3-2': frontIndices = [0, 2, 4]; break;
+                    case '4-1': frontIndices = [0, 1, 3, 4]; break;
+                }
+
+                frontIndices.forEach(idx => {
+                    const el = document.getElementById(`slot-${idx}`);
+                    if(el) { el.classList.remove('slot-back'); el.classList.add('slot-front'); }
+                });
+            }
+
+            function renderSlots() {
+                teamSlots.forEach((h, i) => {
+                    const el = document.getElementById(`slot-${i}`);
+                    if(h) {
+                        el.innerHTML = `<img src="/images/heroes/${h.img}">`;
+                        el.classList.remove('empty');
+                    } else {
+                        el.innerHTML = `<i class="bi bi-plus-lg"></i>`;
+                        el.classList.add('empty');
+                    }
+                });
+                renderSkillMatrix();
+            }
+
+            // Hero Picker
+            function openPicker(idx) {
+                pickingSlotIndex = idx;
+                document.getElementById('heroSearch').value = '';
+                filterHeroes();
+                new bootstrap.Modal(document.getElementById('heroPickerModal')).show();
+            }
+
+            function filterHeroes() {
+                const term = document.getElementById('heroSearch').value.toLowerCase();
+                document.querySelectorAll('.pick-item').forEach(el => {
+                    el.style.display = el.dataset.name.includes(term) ? 'block' : 'none';
+                });
+            }
+
+            function selectHero(filename) {
+                const folder = filename.replace(/\.[^/.]+$/, "");
+                teamSlots[pickingSlotIndex] = { id: filename, img: filename, folder: folder };
+                skillPriority = skillPriority.filter(s => !s.startsWith(`${pickingSlotIndex}_`));
+                
+                const modalEl = document.getElementById('heroPickerModal');
+                const modal = bootstrap.Modal.getInstance(modalEl);
+                modal.hide();
+
+                renderSlots();
+                updateFormationVisuals();
+            }
+
+            // Skill Matrix
+            function renderSkillMatrix() {
+                const container = document.getElementById('skillMatrix');
+                container.innerHTML = '';
+
+                teamSlots.forEach((h, idx) => {
+                    if(!h) return;
+                    
+                    const col = document.createElement('div');
+                    col.className = 'hero-col';
+                    
+                    ['2.png', '3.png'].forEach(file => {
+                        const val = `${idx}_${file}`;
+                        const box = document.createElement('div');
+                        box.className = 'skill-box';
+                        
+                        const pIdx = skillPriority.indexOf(val);
+                        if(pIdx > -1) {
+                            box.classList.add('selected');
+                            box.innerHTML = `<div class="order-badge">${pIdx+1}</div>`;
+                        }
+
+                        const sImg = document.createElement('img');
+                        const folder = h.folder || h.img.replace(/\.[^/.]+$/, "");
+                        sImg.src = `/images/skill/${folder}/${file}`;
+                        sImg.onerror = function() { this.style.display='none'; }
+
+                        box.appendChild(sImg);
+                        box.onclick = () => toggleSkill(val);
+                        col.appendChild(box);
+                    });
+                    container.appendChild(col);
+                });
+            }
+
+            function toggleSkill(val) {
+                const idx = skillPriority.indexOf(val);
+                if(idx > -1) skillPriority.splice(idx, 1);
+                else skillPriority.push(val);
+                renderSkillMatrix();
+            }
+
+            // Save Data
+            function saveTeamData() {
+                const finalHeroIds = teamSlots.map(s => s ? s.id : null);
+                if(finalHeroIds.every(id => id === null)) return alert('Add at least one hero!');
+
+                const payload = {
+                    id: currentTeamId,
+                    stage_key: activeStageKey,
+                    team_name: document.getElementById('editName').value,
+                    formation: currentFormation,
+                    hero_ids: finalHeroIds,
+                    skill_priority: skillPriority,
+                    description: document.getElementById('editDesc').value,
+                    youtube_link: document.getElementById('editYoutube').value
+                };
+
+                fetch('/admin/api/castle-rush/save_team', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if(data.success) location.reload();
+                    else alert('Error: ' + data.error);
+                });
+            }
+        </script>
+    <% } %>
+
+    <%- include('../../partials/footer') %>
+</body>
+</html>

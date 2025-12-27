@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head') %>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <style>
+        /* --- Theme --- */
+        body { background-color: #0b0c10; color: #e0e0e0; font-family: 'Kanit', sans-serif; padding-top: 80px; }
+        
+        /* --- Stage List (Cards) --- */
+        .stage-card-link {
+            display: block; text-decoration: none; color: inherit;
+            background: #1f2833; border: 1px solid #45a29e; border-radius: 12px;
+            overflow: hidden; transition: 0.3s; height: 100%; position: relative;
+        }
+        .stage-card-link:hover { 
+            transform: translateY(-8px); 
+            box-shadow: 0 10px 25px rgba(255, 193, 7, 0.2); 
+            border-color: #ffc107; 
+        }
+        .stage-img-wrapper {
+            width: 100%; aspect-ratio: 2/3; overflow: hidden;
+            border-bottom: 1px solid #333;
+        }
+        .stage-img-wrapper img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; }
+        .stage-card-link:hover .stage-img-wrapper img { transform: scale(1.05); }
+        
+        .stage-info { padding: 15px; text-align: center; background: #15191d; }
+        .stage-title { 
+            font-size: 1.1rem; font-weight: 700; color: #fff; margin: 0; 
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+
+        /* --- Team Detail View --- */
+        .page-header { background: #1f2833; padding: 20px 0; border-bottom: 1px solid #45a29e; margin-bottom: 30px; }
+        
+        /* Card Layout */
+        .team-comp-card {
+            background: #15191d; border: 1px solid #2f3a46; border-radius: 12px; padding: 20px;
+            margin-bottom: 30px; display: flex; flex-direction: column;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        /* Header Info */
+        .comp-title { color: #ffc107; font-weight: 700; font-size: 1.25rem; margin-bottom: 5px; }
+        .comp-meta { color: #aaa; font-size: 0.9rem; display: flex; gap: 10px; align-items: center; }
+        .comp-meta span { color: #fff; }
+
+        /* Formation Field */
+        .battle-field {
+            background: #0b0c10; border-radius: 12px; border: 2px solid #2f3a46;
+            padding: 40px 10px 20px 10px;
+            margin: 20px 0;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 160px;
+            background-image: radial-gradient(#1f2833 1px, transparent 1px); background-size: 15px 15px;
+            overflow: visible;
+        }
+        .hero-row { display: flex; gap: 8px; align-items: center; justify-content: center; position: relative; }
+        
+        .hero-slot-visual {
+            width: 60px; height: 85px; background: #000; border-radius: 6px;
+            border: 2px solid #444; 
+            overflow: hidden; position: relative;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5); z-index: 1;
+            transition: 0.2s;
+        }
+        .hero-slot-visual img { width: 100%; height: 100%; object-fit: cover; }
+        
+        /* Color Logic */
+        .slot-front { 
+            border-color: #0dcaf0 !important; /* Blue/Cyan */
+            transform: translateY(-25px); 
+            box-shadow: 0 10px 15px rgba(13, 202, 240, 0.3) !important;
+            z-index: 10;
+        }
+        .slot-back { border-color: #dc3545 !important; z-index: 1; opacity: 0.9; } /* Red */
+
+        /* --- Skill Order (New Fixed Layout) --- */
+        .skill-section-title { font-size: 0.85rem; font-weight: 700; color: #888; text-transform: uppercase; margin-bottom: 10px; border-left: 3px solid #ffc107; padding-left: 10px; }
+        
+        .skill-section-container {
+            background: #0f1216; border: 1px solid #333; border-radius: 8px; padding: 10px;
+            display: flex; flex-direction: column; gap: 6px; align-items: center;
+        }
+        
+        .skill-fixed-row {
+            display: flex; gap: 8px; justify-content: center;
+        }
+
+        .skill-node { 
+            position: relative; width: 40px; height: 40px; border-radius: 6px; border: 1px solid #444; 
+            overflow: hidden; background: #000; flex-shrink: 0;
+        }
+        /* Empty slot filler */
+        .skill-node.empty-slot { background: transparent; border-color: transparent; }
+
+        .skill-node img { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; transition: 0.2s; }
+        
+        /* Active Ordered Skill */
+        .skill-node.has-order { border-color: #ffc107; box-shadow: 0 0 5px rgba(255,193,7,0.3); }
+        .skill-node.has-order img { opacity: 1; }
+
+        .skill-badge { 
+            position: absolute; top: 0; right: 0; background: #ffc107; color: #000; 
+            font-size: 10px; font-weight: 800; width: 16px; height: 16px; 
+            display: flex; align-items: center; justify-content: center; border-bottom-left-radius: 4px;
+            z-index: 2;
+        }
+
+        /* Description */
+        .desc-box { background: rgba(255,255,255,0.05); border-radius: 8px; padding: 10px; color: #ddd; font-size: 0.9rem; margin-top: 15px; border-left: 3px solid #ffc107; }
+
+        /* Actions */
+        .card-actions { display: flex; justify-content: flex-end; margin-top: 15px; padding-top: 15px; border-top: 1px solid #333; }
+        .btn-capture-circle {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: #2c2c2c; border: 1px solid #444; color: #aaa;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s; font-size: 1.2rem; cursor: pointer;
+        }
+        .btn-capture-circle:hover { background: #444; color: #fff; border-color: #ffc107; color: #ffc107; }
+
+        /* --- SCREENSHOT TEMPLATE (Off-Screen) --- */
+        .capture-template-layout {
+            display: flex; flex-direction: row; background: #15191d; width: 900px;
+            border: 2px solid #ffc107; border-radius: 0;
+        }
+        .capture-sidebar-col {
+            width: 250px; background: #000; position: relative; overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+            border-right: 2px solid #ffc107;
+        }
+        .capture-sidebar-col img { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; }
+        .capture-sidebar-title {
+            position: absolute; color: #fff; font-weight: 800; font-size: 2.2rem;
+            text-transform: uppercase; text-shadow: 0 0 10px #ffc107;
+            transform: rotate(-90deg); white-space: nowrap;
+        }
+        .capture-content-col { flex: 1; padding: 30px; display: flex; flex-direction: column; }
+        
+        /* Capture Overrides */
+        .capture-content-col .battle-field { border-color: #444; background: #0e0e0e; min-height: 200px; overflow: visible !important; }
+        .capture-content-col .hero-slot-visual { 
+            width: 80px; height: 110px; overflow: visible !important; 
+            background: transparent !important; box-shadow: none !important; 
+        }
+        .capture-content-col .hero-slot-visual img { border-radius: 6px; box-shadow: 0 4px 8px rgba(0,0,0,0.8); }
+        .capture-content-col .slot-front { transform: translateY(-30px); z-index: 100 !important; border-color: #0dcaf0 !important; }
+        .capture-content-col .slot-back { border-color: #dc3545 !important; }
+        
+        .capture-content-col .comp-title { font-size: 2rem; color: #ffc107; }
+        .capture-content-col .skill-node { width: 50px; height: 50px; }
+        .capture-content-col .skill-section-container { gap: 8px; }
+
+    </style>
+</head>
+<body>
+    
+    <%- include('../partials/navbar') %>
+
+    <% if (viewState === 'list') { %>
+        <div class="container py-5">
+            <h2 class="text-white fw-bold mb-5 text-center text-uppercase" style="letter-spacing: 2px;">
+                <i class="bi bi-shield-shaded me-2 text-warning"></i>Castle Rush
+            </h2>
+
+            <div class="row g-4 justify-content-center">
+                <% stages.forEach(stage => { %>
+                    <div class="col-6 col-md-4 col-xl-3">
+                        <a href="/castle-rush?stage_key=<%= stage.key %>" class="stage-card-link">
+                            <div class="stage-img-wrapper">
+                                <img src="/images/castle_rush/<%= stage.img %>" onerror="this.src='https://via.placeholder.com/300x450?text=No+Image'">
+                            </div>
+                            <div class="stage-info">
+                                <div class="stage-title"><%= stage.name %></div>
+                            </div>
+                        </a>
+                    </div>
+                <% }) %>
+            </div>
+        </div>
+
+    <% } else { %>
+        <div class="page-header">
+            <div class="container d-flex align-items-center gap-3">
+                <a href="/castle-rush" class="btn btn-outline-warning rounded-circle d-flex align-items-center justify-content-center" style="width:40px;height:40px;"><i class="bi bi-arrow-left"></i></a>
+                <h2 class="m-0 fw-bold text-white text-uppercase"><%= activeStage.name %></h2>
+            </div>
+        </div>
+
+        <div class="container pb-5">
+            <div class="row g-4 justify-content-center">
+                <% if(teams.length === 0) { %>
+                    <div class="col-12 text-center py-5 text-muted"><h5>No teams guide available for this day.</h5></div>
+                <% } %>
+
+                <% teams.forEach(team => { %>
+                    <div class="col-md-6 col-xl-4">
+                        <div class="team-comp-card" id="card-<%= team.id %>">
+                            
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <div class="comp-title"><%= team.team_name || 'Team Guide' %></div>
+                                    <div class="comp-meta">
+                                        Formation: <span><%= team.formation %></span>
+                                    </div>
+                                </div>
+                                <% if(team.youtube_link) { %>
+                                    <a href="<%= team.youtube_link %>" target="_blank" class="text-danger fs-3"><i class="bi bi-youtube"></i></a>
+                                <% } %>
+                            </div>
+
+                            <div class="battle-field">
+                                <div class="hero-row">
+                                    <% 
+                                        let slotClasses = ['slot-back', 'slot-back', 'slot-back', 'slot-back', 'slot-back'];
+                                        if(team.formation === '1-4') slotClasses[2] = 'slot-front';
+                                        else if(team.formation === '2-3') { slotClasses[1] = 'slot-front'; slotClasses[3] = 'slot-front'; }
+                                        else if(team.formation === '3-2') { slotClasses[0] = 'slot-front'; slotClasses[2] = 'slot-front'; slotClasses[4] = 'slot-front'; }
+                                        else if(team.formation === '4-1') { slotClasses[0]='slot-front'; slotClasses[1]='slot-front'; slotClasses[3]='slot-front'; slotClasses[4]='slot-front'; }
+                                    %>
+                                    <% team.hero_ids.forEach((hid, idx) => { %>
+                                        <% let h = heroesMap[hid]; %>
+                                        <div class="hero-slot-visual <%= slotClasses[idx] %>">
+                                            <% if(h) { %>
+                                                <img src="/images/heroes/<%= h.image_name %>">
+                                            <% } %>
+                                        </div>
+                                    <% }) %>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="skill-section-title">Skill Order</div>
+                                <div class="skill-section-container">
+                                    
+                                    <div class="skill-fixed-row">
+                                        <% team.hero_ids.forEach((hid, heroIdx) => { %>
+                                            <% 
+                                                let h = heroesMap[hid]; 
+                                                let orderKey = `${heroIdx}_2.png`;
+                                                let orderIndex = -1;
+                                                if(team.skill_priority && team.skill_priority.includes(orderKey)) {
+                                                    orderIndex = team.skill_priority.indexOf(orderKey) + 1;
+                                                }
+                                            %>
+                                            <% if(h) { %>
+                                                <% let folder = h.skill_folder || h.image_name.replace(/\.[^/.]+$/, ""); %>
+                                                <div class="skill-node <%= orderIndex > 0 ? 'has-order' : '' %>">
+                                                    <img src="/images/skill/<%= folder %>/2.png" onerror="this.style.opacity='0.1'">
+                                                    <% if(orderIndex > 0) { %>
+                                                        <div class="skill-badge"><%= orderIndex %></div>
+                                                    <% } %>
+                                                </div>
+                                            <% } else { %>
+                                                <div class="skill-node empty-slot"></div>
+                                            <% } %>
+                                        <% }) %>
+                                    </div>
+
+                                    <div class="skill-fixed-row">
+                                        <% team.hero_ids.forEach((hid, heroIdx) => { %>
+                                            <% 
+                                                let h = heroesMap[hid]; 
+                                                let orderKey = `${heroIdx}_3.png`;
+                                                let orderIndex = -1;
+                                                if(team.skill_priority && team.skill_priority.includes(orderKey)) {
+                                                    orderIndex = team.skill_priority.indexOf(orderKey) + 1;
+                                                }
+                                            %>
+                                            <% if(h) { %>
+                                                <% let folder = h.skill_folder || h.image_name.replace(/\.[^/.]+$/, ""); %>
+                                                <div class="skill-node <%= orderIndex > 0 ? 'has-order' : '' %>">
+                                                    <img src="/images/skill/<%= folder %>/3.png" onerror="this.style.opacity='0.1'">
+                                                    <% if(orderIndex > 0) { %>
+                                                        <div class="skill-badge"><%= orderIndex %></div>
+                                                    <% } %>
+                                                </div>
+                                            <% } else { %>
+                                                <div class="skill-node empty-slot"></div>
+                                            <% } %>
+                                        <% }) %>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <% if(team.description) { %>
+                                <div class="desc-box"><%= team.description %></div>
+                            <% } %>
+
+                            <div class="card-actions">
+                                <button class="btn-capture-circle" onclick="smartCapture('<%= team.id %>', '<%= activeStage.name %>', '<%= team.team_name %>')">
+                                    <i class="bi bi-camera-fill"></i>
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+        </div>
+
+        <div id="capture-staging-area" style="position:fixed; top:-9999px; left:-9999px;"></div>
+
+        <script>
+            function smartCapture(teamId, stageName, teamName) {
+                const sourceCard = document.getElementById(`card-${teamId}`);
+                const staging = document.getElementById('capture-staging-area');
+                const btn = sourceCard.querySelector('.btn-capture-circle');
+
+                const originalIcon = btn.innerHTML;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+
+                const captureWrapper = document.createElement('div');
+                captureWrapper.className = 'capture-template-layout';
+
+                const leftCol = document.createElement('div');
+                leftCol.className = 'capture-sidebar-col';
+                leftCol.innerHTML = `
+                    <img src="/images/castle_rush/<%= activeStage.img %>">
+                    <div class="capture-sidebar-title">${stageName.split(' ')[0]}</div>
+                `;
+
+                const rightCol = document.createElement('div');
+                rightCol.className = 'capture-content-col';
+                
+                const headerClone = sourceCard.querySelector('.d-flex.justify-content-between').cloneNode(true);
+                const yt = headerClone.querySelector('a'); if(yt) yt.remove();
+                
+                const fieldClone = sourceCard.querySelector('.battle-field').cloneNode(true);
+                // [FIX] Clone new skill structure
+                const skillClone = sourceCard.querySelector('.mb-3').cloneNode(true);
+                
+                const descClone = sourceCard.querySelector('.desc-box') ? sourceCard.querySelector('.desc-box').cloneNode(true) : null;
+
+                rightCol.appendChild(headerClone);
+                rightCol.appendChild(fieldClone);
+                rightCol.appendChild(skillClone);
+                if(descClone) rightCol.appendChild(descClone);
+                
+                const watermark = document.createElement('div');
+                watermark.style.marginTop = 'auto'; watermark.style.color='#444'; watermark.style.fontSize='0.8rem'; watermark.innerText = '7K Rebirth Guide';
+                rightCol.appendChild(watermark);
+
+                captureWrapper.appendChild(leftCol);
+                captureWrapper.appendChild(rightCol);
+
+                staging.innerHTML = '';
+                staging.appendChild(captureWrapper);
+
+                setTimeout(() => {
+                    html2canvas(captureWrapper, {
+                        backgroundColor: '#15191d',
+                        scale: 2,
+                        logging: false
+                    }).then(canvas => {
+                        const link = document.createElement('a');
+                        link.download = `CR_${stageName.split(' ')[0]}_${teamName}.png`;
+                        link.href = canvas.toDataURL('image/png');
+                        link.click();
+
+                        staging.innerHTML = '';
+                        btn.innerHTML = originalIcon;
+                    }).catch(err => {
+                        console.error(err);
+                        alert('Error capturing');
+                        btn.innerHTML = originalIcon;
+                    });
+                }, 100);
+            }
+        </script>
+    <% } %>
+
+    <%- include('../partials/footer') %>
+</body>
+</html>

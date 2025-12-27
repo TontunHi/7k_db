@@ -106,3 +106,74 @@ exports.deleteTeam = (req, res) => {
         res.redirect(`/admin/manage/raid?raid_id=${raid_id}`);
     });
 };
+
+// --- USER SECTION --- [NEW]
+exports.getUserIndex = (req, res) => {
+    const selectedRaidId = req.query.raid_id ? parseInt(req.query.raid_id) : null;
+
+    db.all("SELECT * FROM raid_bosses", [], (err, raids) => {
+        if (err) return res.render('error', { message: 'DB Error' });
+
+        // 1. แปลงชื่อ Raid จากชื่อไฟล์ก่อน (เพื่อเอามาเทียบ)
+        raids = raids.map(r => ({
+            ...r,
+            displayName: r.image_name.replace(/\.[^/.]+$/, "").replace(/_/g, " ")
+        }));
+
+        // 2. [UPDATE] Custom Sort Order
+        const sortOrder = ['Destroyer Gaze', 'Ox King', 'Iron Devourer'];
+        
+        raids.sort((a, b) => {
+            // หา index ของชื่อในอาเรย์ที่กำหนด
+            let indexA = sortOrder.indexOf(a.displayName);
+            let indexB = sortOrder.indexOf(b.displayName);
+
+            // ถ้าชื่อไม่ตรงกับที่กำหนด ให้ไปอยู่ท้ายสุด
+            if (indexA === -1) indexA = 99;
+            if (indexB === -1) indexB = 99;
+
+            return indexA - indexB;
+        });
+
+        const heroFiles = getFilesFromDir('images/heroes').sort();
+        const heroesMap = {};
+        heroFiles.forEach(filename => {
+            heroesMap[filename] = {
+                id: filename,
+                name: filename.replace(/\.[^/.]+$/, ""),
+                image_name: filename,
+                skill_folder: filename.replace(/\.[^/.]+$/, "")
+            };
+        });
+
+        if (selectedRaidId) {
+            db.all("SELECT * FROM raid_teams WHERE raid_id = ?", [selectedRaidId], (err, teams) => {
+                if (err) return res.render('error', { message: 'DB Error' });
+                
+                const teamsParsed = teams.map(t => ({
+                    ...t,
+                    hero_ids: JSON.parse(t.hero_ids || '[]'),
+                    skill_priority: JSON.parse(t.skill_priority || '[]')
+                }));
+
+                res.render('pages/raid', {
+                    title: 'Raid Guide',
+                    viewState: 'detail',
+                    raids,
+                    activeRaid: raids.find(r => r.id === selectedRaidId),
+                    teams: teamsParsed,
+                    heroesMap
+                });
+            });
+        } else {
+            res.render('pages/raid', {
+                title: 'Raid Guide',
+                viewState: 'list',
+                raids,
+                activeRaid: null,
+                teams: [],
+                heroesMap
+            });
+        }
+    });
+};
