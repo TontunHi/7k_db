@@ -122,9 +122,9 @@ exports.getBuildManager = (req, res) => {
     });
 
     // 2. Get Items Images (New Paths)
-    const weaponImages = fileHelper.getImageFiles('Items/weapon');
-    const armorImages = fileHelper.getImageFiles('Items/armor');
-    const accImages = fileHelper.getImageFiles('Items/accessories');
+    const weaponImages = fileHelper.getImageFiles('items/weapon');
+    const armorImages = fileHelper.getImageFiles('items/armor');
+    const accImages = fileHelper.getImageFiles('items/accessories');
 
     // 3. Get Builds Data
     db.all("SELECT * FROM builds", [], (err, builds) => {

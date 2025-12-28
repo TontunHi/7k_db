@@ -511,9 +511,11 @@
             
             let images = [];
             let folder = '';
-            if(type === 'weapon') { images = itemImages.weapons; folder = 'Items/weapon'; }
-            else if(type === 'armor') { images = itemImages.armors; folder = 'Items/armor'; }
-            else { images = itemImages.accessories; folder = 'Items/accessories'; }
+            if(type === 'weapon') { images = itemImages.weapons; folder = 'items/weapon'; }
+            else if(type === 'armor') { images = itemImages.armors; folder = 'items/armor'; }
+            else { images = itemImages.accessories; folder = 'items/accessories'; }
+
+            console.log(`Opening picker for ${type}. Found ${images ? images.length : 0} images.`);
 
             if(multi) {
                 btnMultiConfirm.classList.remove('d-none');
