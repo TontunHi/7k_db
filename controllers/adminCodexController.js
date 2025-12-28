@@ -2,6 +2,7 @@ const db = require('../database/database');
 const { formatHeroName, getFilesFromDir } = require('../utils/fileHelper'); 
 const fs = require('fs');
 const path = require('path');
+const { logAction } = require('../middleware/logger');
 
 // --- HERO SECTION ---
 

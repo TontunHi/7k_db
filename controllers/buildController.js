@@ -1,5 +1,6 @@
 const db = require('../database/database');
 const fileHelper = require('../utils/fileHelper');
+const { logAction } = require('../middleware/logger');
 
 exports.getBuildPage = (req, res) => {
     const gradeParam = req.params.grade.toLowerCase(); // legendary, rare

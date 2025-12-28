@@ -1,6 +1,7 @@
 const db = require('../database/database');
 const fs = require('fs');
 const path = require('path');
+const { logAction } = require('../middleware/logger');
 
 exports.getStagePage = (req, res) => {
     // ดึงข้อมูลและเรียงลำดับ: Type (Stage มาก่อน) -> Main -> Sub

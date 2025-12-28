@@ -1,93 +1,138 @@
-<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 
 <style>
-    /* --- Modern Navbar Styles --- */
+    /* --- Modern Gold Theme Navbar v2 --- */
     :root {
-        --nav-bg: rgba(11, 12, 16, 0.85);
-        --nav-border: 1px solid rgba(255, 255, 255, 0.1);
-        --accent-color: #ffffff; /* Cyan Neon */
-        --text-color: #c5c6c7;
-        --hover-bg: rgba(102, 252, 241, 0.1);
+        --nav-bg: rgba(10, 10, 10, 0.95);
+        --nav-border-color: rgba(255, 193, 7, 0.15);
+        --primary-gold: #ffc107;
+        --text-color: #d1d1d1;
+        --dropdown-bg: #141414;
+        --hover-bg: linear-gradient(90deg, rgba(255, 193, 7, 0.1) 0%, transparent 100%);
     }
 
     .navbar-modern {
-        font-family: 'Kanit', sans-serif; /* ใช้ฟอนต์ Kanit */
+        font-family: 'Kanit', sans-serif;
         background-color: var(--nav-bg);
-        backdrop-filter: blur(12px); /* Glassmorphism Effect */
+        backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
-        border-bottom: var(--nav-border);
-        transition: all 0.3s ease;
-        padding: 0.8rem 1rem;
+        border-bottom: 1px solid var(--nav-border-color);
+        padding: 0.7rem 1.5rem;
+        box-shadow: 0 4px 30px rgba(0,0,0,0.5);
     }
 
+    /* Brand Logo */
     .navbar-brand {
-        font-weight: 700;
+        font-weight: 800;
         font-size: 1.5rem;
         color: #fff !important;
+        text-transform: uppercase;
         letter-spacing: 1px;
+        display: flex; align-items: center; gap: 10px;
     }
-
     .navbar-brand span {
-        color: var(--accent-color);
-        text-shadow: 0 0 10px rgba(102, 252, 241, 0.5);
+        color: var(--primary-gold);
+        text-shadow: 0 0 15px rgba(255, 193, 7, 0.3);
     }
 
+    /* Main Nav Links */
+    .nav-item { position: relative; }
+    
     .nav-link {
         color: var(--text-color) !important;
         font-weight: 500;
-        font-size: 1.05rem;
+        font-size: 0.95rem;
         padding: 0.5rem 1rem !important;
-        margin: 0 5px;
+        transition: 0.3s;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .nav-link:hover, .nav-link.active, .nav-link.show {
+        color: var(--primary-gold) !important;
+        text-shadow: 0 0 10px rgba(255, 193, 7, 0.4);
+    }
+
+    /* Underline Animation */
+    .nav-link::after {
+        content: ''; position: absolute; bottom: 5px; left: 50%;
+        width: 0; height: 2px;
+        background: var(--primary-gold);
+        transition: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        transform: translateX(-50%);
+        box-shadow: 0 0 8px var(--primary-gold);
+    }
+    .nav-link:hover::after, .nav-link.active::after { width: 60%; }
+
+    /* --- Dropdown Styling --- */
+    .dropdown-menu {
+        background-color: var(--dropdown-bg);
+        border: 1px solid var(--nav-border-color);
         border-radius: 8px;
-        transition: all 0.3s ease;
-        position: relative;
+        padding: 0.5rem 0;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.8);
+        min-width: 220px;
+        margin-top: 0; /* แก้ปัญหา Gap */
     }
 
-    /* Hover Effect */
-    .nav-link:hover, .nav-link.active, .dropdown-item:hover {
-        color: #fff !important;
-        background: var(--hover-bg);
-        text-shadow: 0 0 8px rgba(102, 252, 241, 0.6);
+    /* Header in Dropdown */
+    .dropdown-header {
+        color: #666; font-size: 0.7rem; font-weight: 700;
+        text-transform: uppercase; letter-spacing: 1px;
+        padding: 8px 20px 4px 20px;
     }
 
-    /* Dropdown Styling */
-    .dropdown-menu-dark {
-        background-color: #1f2833;
-        border: 1px solid #45a29e;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        border-radius: 10px;
-        padding: 0.5rem;
-        margin-top: 10px;
-    }
-
+    /* Dropdown Items */
     .dropdown-item {
-        color: #c5c6c7;
-        border-radius: 6px;
-        padding: 8px 15px;
-        font-weight: 400;
+        color: #bbb;
+        padding: 10px 20px;
+        font-size: 0.95rem;
         transition: 0.2s;
-    }
-    
-    .dropdown-item.active, .dropdown-item:active {
-        background-color: var(--accent-color);
-        color: #000;
-        font-weight: 600;
+        border-left: 3px solid transparent;
+        display: flex; align-items: center; gap: 10px;
     }
 
-    /* Toggler (Mobile) */
-    .navbar-toggler {
-        border: none;
-        color: var(--accent-color);
+    .dropdown-item i { font-size: 1.1rem; color: #555; transition: 0.2s; }
+
+    .dropdown-item:hover {
+        background: var(--hover-bg);
+        color: #fff;
+        border-left-color: var(--primary-gold);
+        padding-left: 25px; /* Slide effect */
     }
-    .navbar-toggler:focus {
-        box-shadow: none;
+    .dropdown-item:hover i { color: var(--primary-gold); }
+
+    .dropdown-divider { border-top: 1px solid rgba(255, 255, 255, 0.08); margin: 0.3rem 0; }
+
+    /* --- Desktop Hover Logic (Magic Fix) --- */
+    @media (min-width: 992px) {
+        .nav-item.dropdown:hover .dropdown-menu {
+            display: block;
+            animation: slideUp 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        /* Invisible bridge to prevent menu closing when moving mouse */
+        .nav-item.dropdown::after {
+            content: ''; position: absolute;
+            bottom: -5px; left: 0; width: 100%; height: 20px;
+            background: transparent;
+        }
+    }
+
+    /* Mobile Toggler */
+    .navbar-toggler { border: none; color: var(--primary-gold); }
+    .navbar-toggler:focus { box-shadow: none; }
+
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(15px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 </style>
 
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top navbar-modern">
-    <div class="container">
-        <a class="navbar-brand d-flex align-items-center gap-2" href="/">
-            <img src="/images/about_website/logo_seven_knights_rebirth.png" alt="Logo" height="40">
+    <div class="container-fluid" style="max-width: 1400px;">
+        <a class="navbar-brand" href="/">
+            <img src="/images/about_website/logo_seven_knights_rebirth.png" alt="Logo" height="42">
             <span>7K Rebirth</span>
         </a>
 
@@ -98,34 +143,65 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto align-items-center">
                 
-                <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Build</a>
-                    <ul class="dropdown-menu dropdown-menu-dark">
-                        <li><a class="dropdown-item" href="/build/legendary">Legendary Hero</a></li>
-                        <li><a class="dropdown-item" href="/build/rare">Rare Hero</a></li>
-                    </ul>
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Home</a>
                 </li>
 
-                <li class="nav-item"><a class="nav-link" href="/tierlist">Tier List</a></li>
-
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Comp</a>
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        Build
+                    </a>
                     <ul class="dropdown-menu dropdown-menu-dark">
-                        <li><a class="dropdown-item" href="/comp/stage">Stage & Nightmare</a></li>
-                        <li><a class="dropdown-item" href="/comp/dungeon">Dungeon</a></li>
-                        <li><a class="dropdown-item" href="/comp/guild-war">Guild War</a></li>
-                        <li><a class="dropdown-item" href="/raid">Raid</a></li>
-                        <li><a class="dropdown-item" href="/castle-rush">Castle Rush</a></li>
+                        <li><h6 class="dropdown-header">Rarity</h6></li>
+                        <li><a class="dropdown-item" href="/build/legendary"><i class="bi bi-stars"></i> Legendary</a></li>
+                        <li><a class="dropdown-item" href="/build/rare"><i class="bi bi-gem"></i> Rare</a></li>
                     </ul>
                 </li>
 
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Codex</a>
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        Tier List
+                    </a>
                     <ul class="dropdown-menu dropdown-menu-dark">
-                        <li><a class="dropdown-item" href="/codex/hero">Heroes</a></li>
-                        <li><a class="dropdown-item" href="/codex/pet">Pets</a></li>
+                        <li><h6 class="dropdown-header">Rankings</h6></li>
+                        <li><a class="dropdown-item" href="/tierlist?type=pve"><i class="bi bi-globe"></i> PVE Tier List</a></li>
+                        <li><a class="dropdown-item" href="/tierlist?type=pvp"><i class="bi bi-hammer"></i> PVP Tier List</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="/tierlist?type=pet"><i class="bi bi-gitlab"></i> Pet Tier List</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        Comp
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark">
+                        <li><h6 class="dropdown-header">Adventure & Farm</h6></li>
+                        <li><a class="dropdown-item" href="/comp/stage"><i class="bi bi-map"></i> Stage & Nightmare</a></li>
+                        <li><a class="dropdown-item" href="/comp/dungeon"><i class="bi bi-bounding-box-circles"></i> Dungeon</a></li>
+                        <li><a class="dropdown-item" href="/comp/advent"><i class="bi bi-compass"></i> Advent Expedition</a></li>
+                        
+                        <li><hr class="dropdown-divider"></li>
+                        
+                        <li><h6 class="dropdown-header">Boss Raid</h6></li>
+                        <li><a class="dropdown-item" href="/raid"><i class="bi bi-crosshair"></i> Raid Boss</a></li>
+                        <li><a class="dropdown-item" href="/castle-rush"><i class="bi bi-shield-shaded"></i> Castle Rush</a></li>
+                        
+                        <li><hr class="dropdown-divider"></li>
+
+                        <li><h6 class="dropdown-header">Competitive</h6></li>
+                        <li><a class="dropdown-item" href="/comp/guild-war"><i class="bi bi-flag-fill"></i> Guild War</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        Codex
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark">
+                        <li><h6 class="dropdown-header">Database</h6></li>
+                        <li><a class="dropdown-item" href="/codex/hero"><i class="bi bi-person-badge"></i> Heroes</a></li>
+                        <li><a class="dropdown-item" href="/codex/pet"><i class="bi bi-piggy-bank"></i> Pets</a></li>
                     </ul>
                 </li>
 

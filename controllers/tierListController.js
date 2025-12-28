@@ -1,6 +1,7 @@
 const db = require('../database/database');
 const fileHelper = require('../utils/fileHelper'); // เรียกใช้ helper
 const RANKS = ['SSS', 'SS', 'S', 'A', 'B', 'C', 'D', 'E', 'F'];
+const { logAction } = require('../middleware/logger');
 
 exports.getTierListPage = (req, res) => {
     // Default เป็น PVP ถ้าไม่ระบุ

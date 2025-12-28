@@ -140,7 +140,16 @@ db.serialize(() => {
         description TEXT,
         youtube_link TEXT
     )`);
-
+    // [NEW] ตารางเก็บ Log
+    db.run(`CREATE TABLE IF NOT EXISTS admin_logs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        admin_username TEXT,
+        action TEXT,            -- เช่น CREATE, UPDATE, DELETE, LOGIN
+        target TEXT,            -- เช่น Team ID: 5, Page: Raid
+        details TEXT,           -- เก็บ JSON หรือข้อความสั้นๆ ว่าแก้อะไร
+        ip_address TEXT,
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+    )`);    
 });
 }
 

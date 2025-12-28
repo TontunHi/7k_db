@@ -1,10 +1,87 @@
-<footer class="bg-dark-custom text-center text-secondary py-4 mt-auto border-top border-secondary">
+<style>
+    .footer-modern {
+        background: #0f0f0f;
+        border-top: 1px solid #333;
+        color: #888;
+        padding: 50px 0 20px 0;
+        font-family: 'Kanit', sans-serif;
+        margin-top: 50px;
+    }
+    .footer-brand { color: #fff; font-size: 1.5rem; font-weight: bold; margin-bottom: 15px; display: block; text-decoration: none; }
+    .footer-brand span { color: #ffc107; }
+    
+    .footer-title { color: #fff; font-size: 1rem; font-weight: 600; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
+    
+    .footer-links { list-style: none; padding: 0; }
+    .footer-links li { margin-bottom: 10px; }
+    .footer-links a { color: #888; text-decoration: none; transition: 0.2s; }
+    .footer-links a:hover { color: #ffc107; padding-left: 5px; }
+
+    .social-icon {
+        width: 40px; height: 40px; border-radius: 50%;
+        background: #1a1a1a; border: 1px solid #333;
+        display: inline-flex; align-items: center; justify-content: center;
+        color: #ccc; font-size: 1.2rem; transition: 0.3s;
+        margin-right: 10px; cursor: pointer;
+    }
+    /* Discord Brand Color or Gold */
+    .social-icon:hover { background: #5865F2; border-color: #5865F2; color: #fff; transform: translateY(-3px); }
+    
+    .copyright { border-top: 1px solid #222; margin-top: 40px; padding-top: 20px; text-align: center; font-size: 0.85rem; }
+</style>
+
+<footer class="footer-modern">
     <div class="container">
-        <p class="mb-0 small">
-            &copy; 2025 Seven Knights Rebirth Database. All rights reserved.
-        </p>
-        <p class="mb-0 small text-muted">Fan-made project by Developer</p>
+        <div class="row gy-4">
+            
+            <div class="col-lg-4 col-md-6">
+                <a href="/" class="footer-brand">7K <span>Rebirth</span></a>
+                <p>The ultimate database and strategy guide for Seven Knights Rebirth. Built by players, for players.</p>
+                <div class="d-flex mt-3">
+                    <div class="social-icon" title="Discord Community">
+                        <i class="bi bi-discord"></i>
+                    </div>
+                    <div class="social-icon" title="Facebook">
+                        <i class="bi bi-facebook"></i>
+                    </div>
+                    <div class="social-icon" title="YouTube">
+                        <i class="bi bi-youtube"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-2 col-md-6">
+                <div class="footer-title">Database</div>
+                <ul class="footer-links">
+                    <li><a href="/codex/hero">Hero Codex</a></li>
+                    <li><a href="/codex/pet">Pet Codex</a></li>
+                    <li><a href="/tierlist">Tier List</a></li>
+                    <li><a href="/build/legendary">Hero Builds</a></li>
+                </ul>
+            </div>
+
+            <div class="col-lg-2 col-md-6">
+                <div class="footer-title">Guides</div>
+                <ul class="footer-links">
+                    <li><a href="/comp/stage">Stage Guide</a></li>
+                    <li><a href="/raid">Raid Boss</a></li>
+                    <li><a href="/castle-rush">Castle Rush</a></li>
+                    <li><a href="/comp/guild-war">Guild War</a></li>
+                </ul>
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+                <div class="footer-title">Community</div>
+                <p>Join our community to discuss strategies and team compositions.</p>
+                <div class="alert alert-dark border-secondary d-inline-block py-2 px-3">
+                    <i class="bi bi-envelope me-2 text-warning"></i> contact@7krebirth.com
+                </div>
+            </div>
+
+        </div>
+
+        <div class="copyright">
+            &copy; <%= new Date().getFullYear() %> 7K Rebirth Guide. Not affiliated with Netmarble.
+        </div>
     </div>
 </footer>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
