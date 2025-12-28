@@ -445,10 +445,10 @@
                 card.querySelector('.field-w2-stat').value = data.weapon2_stat;
                 card.querySelector('.field-a2-stat').value = data.armor2_stat;
 
-                setImgInput(card.querySelector('.field-w1-img'), data.weapon1_img, 'Items/weapon');
-                setImgInput(card.querySelector('.field-a1-img'), data.armor1_img, 'Items/armor');
-                setImgInput(card.querySelector('.field-w2-img'), data.weapon2_img, 'Items/weapon');
-                setImgInput(card.querySelector('.field-a2-img'), data.armor2_img, 'Items/armor');
+                setImgInput(card.querySelector('.field-w1-img'), data.weapon1_img, 'items/weapon');
+                setImgInput(card.querySelector('.field-a1-img'), data.armor1_img, 'items/armor');
+                setImgInput(card.querySelector('.field-w2-img'), data.weapon2_img, 'items/weapon');
+                setImgInput(card.querySelector('.field-a2-img'), data.armor2_img, 'items/armor');
 
                 const accInput = card.querySelector('.field-acc');
                 accInput.value = (data.accessories || []).join(',');
@@ -587,7 +587,7 @@
             images.forEach(img => {
                 if(!img) return;
                 const thumb = document.createElement('img');
-                thumb.src = `/images/Items/accessories/${img}`;
+                thumb.src = `/images/items/accessories/${img}`;
                 thumb.className = 'acc-mini-thumb';
                 container.appendChild(thumb);
             });
