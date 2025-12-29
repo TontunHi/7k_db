@@ -2,7 +2,6 @@
 const db = require('../database/database');
 const path = require('path');
 const fs = require('fs');
-const { logAction } = require('../middleware/logger');
 
 exports.getHeroCodex = (req, res) => {
     const catId = req.query.cat_id ? parseInt(req.query.cat_id) : null;

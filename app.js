@@ -6,7 +6,7 @@ const port = 3000;
 // Import Routes
 const indexRoutes = require('./routes/indexRoutes');
 const session = require('express-session');
-const adminRoutes = require('./routes/adminRoutes'); // Import
+const adminRoutes = require('./routes/adminRoutes');
 require('dotenv').config();
 
 // Setup View Engine (EJS)

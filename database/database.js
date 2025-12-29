@@ -1,19 +1,19 @@
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
+const sqlite3 = require("sqlite3").verbose();
+const path = require("path");
 
-const dbPath = path.resolve(__dirname, 'seven_knights_rebirth.db');
+const dbPath = path.resolve(__dirname, "seven_knights_rebirth.db");
 
 const db = new sqlite3.Database(dbPath, (err) => {
-    if (err) {
-        console.error('Could not connect to database', err);
-    } else {
-        console.log('Connected to SQLite database');
-        initTables();
-    }
+  if (err) {
+    console.error("Could not connect to database", err);
+  } else {
+    console.log("Connected to SQLite database");
+    initTables();
+  }
 });
 
 function initTables() {
-    db.run(`CREATE TABLE IF NOT EXISTS builds (
+  db.run(`CREATE TABLE IF NOT EXISTS builds (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         hero_filename TEXT NOT NULL,
         build_name TEXT,
@@ -34,12 +34,8 @@ function initTables() {
         substats TEXT,    -- เก็บ JSON Array ของ Stat ที่เลือกเรียงตามลำดับ
         description TEXT
     )`);
-    
-    // สร้างตารางเก็บข้อมูล Tier List
-    // category: 'PVP', 'PVE', 'PET'
-    // rank: 'SSS', 'SS', 'S', ...
-    // char_id: ชื่อไฟล์รูปภาพ (เพื่อใช้อ้างอิงกับไฟล์)
-    db.run(`CREATE TABLE IF NOT EXISTS tier_rankings (
+
+  db.run(`CREATE TABLE IF NOT EXISTS tier_rankings (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         category TEXT NOT NULL,
         rank TEXT NOT NULL,
@@ -47,7 +43,7 @@ function initTables() {
         char_type TEXT NOT NULL
     )`);
 
-    db.run(`CREATE TABLE IF NOT EXISTS stage_comps (
+  db.run(`CREATE TABLE IF NOT EXISTS stage_comps (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         stage_main INTEGER,     -- เลขหน้า เช่น 20
         stage_sub INTEGER,      -- เลขหลัง เช่น 30
@@ -57,7 +53,7 @@ function initTables() {
         description TEXT        -- คำอธิบายเสริม
     )`);
 
-    db.run(`CREATE TABLE IF NOT EXISTS dungeon_comps (
+  db.run(`CREATE TABLE IF NOT EXISTS dungeon_comps (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         dungeon_name TEXT,      -- เก็บชื่อไฟล์รูป Banner เช่น 'gold_dungeon.png'
         formation TEXT,         -- '1-4', '2-3', etc.
@@ -65,8 +61,7 @@ function initTables() {
         description TEXT
     )`);
 
-    // สร้างตาราง Guild War Comps
-    db.run(`CREATE TABLE IF NOT EXISTS guildwar_comps (
+  db.run(`CREATE TABLE IF NOT EXISTS guildwar_comps (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         team_name TEXT,
         formation TEXT,
@@ -76,25 +71,20 @@ function initTables() {
         description TEXT
     )`);
 
-    // [Update] เพิ่ม Schema สำหรับ Codex System
-db.serialize(() => {
-    // 1. ตารางหัวข้อใหญ่ (Main Categories: Special, Common, Asgar...)
-    db.run(`CREATE TABLE IF NOT EXISTS codex_categories (
+  db.run(`CREATE TABLE IF NOT EXISTS codex_categories (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT,
         type TEXT DEFAULT 'hero' -- แยกประเภท hero หรือ pet
     )`);
 
-    // 2. ตารางหัวข้อย่อย (Sub Categories: Seven Knights, Evan Expedition...)
-    db.run(`CREATE TABLE IF NOT EXISTS codex_groups (
+  db.run(`CREATE TABLE IF NOT EXISTS codex_groups (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         category_id INTEGER,
         name TEXT,
         FOREIGN KEY(category_id) REFERENCES codex_categories(id)
     )`);
 
-    // ตาราง Hero
-    db.run(`CREATE TABLE IF NOT EXISTS codex_heroes (
+  db.run(`CREATE TABLE IF NOT EXISTS codex_heroes (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         group_id INTEGER,
         name TEXT,
@@ -103,22 +93,22 @@ db.serialize(() => {
         skill_order TEXT,   -- [NEW] เก็บ JSON Array ลำดับสกิล เช่น ["skill1.png", "skill2.png"]
         FOREIGN KEY(group_id) REFERENCES codex_groups(id)
     )`);
-    db.run(`CREATE TABLE IF NOT EXISTS codex_pets (
+
+  db.run(`CREATE TABLE IF NOT EXISTS codex_pets (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         group_id INTEGER,
         name TEXT,
         image_name TEXT,
         FOREIGN KEY(group_id) REFERENCES codex_groups(id)
     )`);
-    // [NEW] ตาราง Raid Bosses
-    db.run(`CREATE TABLE IF NOT EXISTS raid_bosses (
+
+  db.run(`CREATE TABLE IF NOT EXISTS raid_bosses (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT,
         image_name TEXT
     )`);
 
-    // [NEW] ตาราง Raid Teams
-    db.run(`CREATE TABLE IF NOT EXISTS raid_teams (
+  db.run(`CREATE TABLE IF NOT EXISTS raid_teams (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         raid_id INTEGER,
         team_name TEXT,             -- ชื่อทีม (Admin ตั้งเองไว้อ้างอิง)
@@ -129,8 +119,8 @@ db.serialize(() => {
         youtube_link TEXT,
         FOREIGN KEY(raid_id) REFERENCES raid_bosses(id)
     )`);
-    // [NEW] Castle Rush Teams
-    db.run(`CREATE TABLE IF NOT EXISTS castle_rush_teams (
+
+  db.run(`CREATE TABLE IF NOT EXISTS castle_rush_teams (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         stage_key TEXT,             -- ตัวระบุวัน เช่น 'cr_rudy', 'cr_eileene'
         team_name TEXT,
@@ -140,17 +130,6 @@ db.serialize(() => {
         description TEXT,
         youtube_link TEXT
     )`);
-    // [NEW] ตารางเก็บ Log
-    db.run(`CREATE TABLE IF NOT EXISTS admin_logs (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        admin_username TEXT,
-        action TEXT,            -- เช่น CREATE, UPDATE, DELETE, LOGIN
-        target TEXT,            -- เช่น Team ID: 5, Page: Raid
-        details TEXT,           -- เก็บ JSON หรือข้อความสั้นๆ ว่าแก้อะไร
-        ip_address TEXT,
-        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-    )`);    
-});
 }
 
 module.exports = db;

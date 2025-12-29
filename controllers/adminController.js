@@ -3,7 +3,6 @@ const db = require('../database/database');
 const fileHelper = require('../utils/fileHelper');
 const fs = require('fs'); // อย่าลืม require fs ถ้ายังไม่มี
 const path = require('path');
-const { logAction } = require('../middleware/logger');
 
 // --- Auth Section ---
 exports.getLoginPage = (req, res) => {

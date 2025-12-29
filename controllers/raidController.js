@@ -1,7 +1,5 @@
-// [file: controllers/raidController.js]
 const db = require('../database/database');
 const { getFilesFromDir } = require('../utils/fileHelper');
-const { logAction } = require('../middleware/logger');
 
 exports.getIndex = (req, res) => {
     const selectedRaidId = req.query.raid_id ? parseInt(req.query.raid_id) : null;

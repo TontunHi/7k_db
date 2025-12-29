@@ -1,6 +1,5 @@
 const db = require('../database/database');
 const { getFilesFromDir } = require('../utils/fileHelper');
-const { logAction } = require('../middleware/logger');
 
 // Config รายชื่อด่านและลำดับ (Monday -> Sunday)
 const STAGES = [

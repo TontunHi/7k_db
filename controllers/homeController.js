@@ -1,4 +1,3 @@
-const { logAction } = require('../middleware/logger');
 exports.getHomePage = (req, res) => {
     // Render ไปที่ไฟล์ index.ejs
     // ส่ง title ไปแสดงผล

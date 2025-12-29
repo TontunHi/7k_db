@@ -1,6 +1,5 @@
 const db = require('../database/database');
 const fileHelper = require('../utils/fileHelper');
-const { logAction } = require('../middleware/logger');
 const fs = require('fs');
 const path = require('path');
 
