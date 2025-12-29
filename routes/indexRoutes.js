@@ -24,11 +24,6 @@ router.get('/build/:grade', buildController.getBuildPage);
 router.get('/comp/stage', compController.getStagePage);
 router.get('/comp/dungeon', compController.getDungeonPage);
 router.get('/comp/guild-war', compController.getGuildWarPage);
-router.get('/comp/:page', (req, res) => res.send('Page Coming Soon'));
-
-// 2. ใส่ Route ทั่วไปทีหลัง (สำหรับหน้าอื่นๆ ที่ยังไม่เสร็จ)
-router.get('/comp/:page', (req, res) => res.send('Comp Page Coming Soon'));
-router.get('/comp', (req, res) => res.send('Comp Page Coming Soon'));
 
 // --- RAID ROUTES (USER) ---
 router.get('/raid', raidController.getUserIndex);

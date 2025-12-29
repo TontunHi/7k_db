@@ -61,14 +61,19 @@ exports.getTierListManager = (req, res) => {
             assignedMap[row.char_filename] = row.rank;
         });
 
-        const ranks = ['SSS', 'SS', 'S', 'A', 'B', 'C', 'D', 'E', 'F'];
+        // [Update] เปลี่ยน Ranks เป็นชุดใหม่
+        const ranks = ['EX', 'S', 'A', 'B', 'C', 'D', 'E'];
+        
         const tierData = {};
         ranks.forEach(r => tierData[r] = []);
         const poolData = [];
 
         allItems.forEach(item => {
             const rank = assignedMap[item.filename];
-            if (rank) {
+            
+            // [Update] เพิ่มเงื่อนไขตรวจสอบว่า Rank นั้นมีอยู่ในระบบใหม่หรือไม่ (tierData[rank])
+            // ถ้าเป็น Rank เก่า (เช่น SSS) หรือไม่มี Rank ให้โยนเข้า Pool
+            if (rank && tierData[rank]) {
                 tierData[rank].push(item);
             } else {
                 poolData.push(item);

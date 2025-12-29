@@ -1,6 +1,6 @@
 const db = require('../database/database');
 const fileHelper = require('../utils/fileHelper');
-const RANKS = ['SSS', 'SS', 'S', 'A', 'B', 'C', 'D', 'E', 'F'];
+const RANKS = ['EX', 'S', 'A', 'B', 'C', 'D', 'E'];
 
 exports.getTierListPage = (req, res) => {
     // Default เป็น PVP ถ้าไม่ระบุ
