@@ -9,7 +9,7 @@
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #1a1a1a; }
         ::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
-
+        
         /* Navbar */
         .navbar-modern {
             height: 64px; background: rgba(18, 18, 18, 0.95); backdrop-filter: blur(10px);
@@ -29,13 +29,17 @@
         .sidebar-panel { width: 280px; background: #161616; border-right: 1px solid #333; display: flex; flex-direction: column; flex-shrink: 0; }
         .sidebar-header { padding: 15px; border-bottom: 1px solid #444; display: flex; justify-content: space-between; align-items: center; }
         .group-list { overflow-y: auto; flex: 1; padding: 10px; }
-        .group-item { 
-            display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; 
-            margin-bottom: 4px; cursor: pointer; border-radius: 6px; color: #bbb; text-decoration: none; border-left: 3px solid transparent; 
+        
+        .group-wrapper {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 4px; border-radius: 6px; border-left: 3px solid transparent; color: #bbb;
         }
-        .group-item:hover { background: #252525; color: #fff; padding-left: 20px; }
-        /* ใช้สีเขียว (Success) สำหรับ Pet เพื่อให้ต่างจาก Hero (Warning/Yellow) */
-        .group-item.active { background: #222; color: #198754; border-left-color: #198754; font-weight: 600; }
+        .group-wrapper:hover { background: #252525; color: #fff; padding-left: 5px; }
+        .group-wrapper.active { background: #222; color: #198754; border-left-color: #198754; font-weight: 600; }
+        .group-link { flex-grow: 1; padding: 12px 10px; text-decoration: none; color: inherit; display: block; }
+        .group-actions { padding-right: 10px; opacity: 0.5; transition: 0.2s; }
+        .group-wrapper:hover .group-actions { opacity: 1; }
+
         .text-theme { color: #198754 !important; }
         .btn-theme { background-color: #198754; border-color: #198754; color: #fff; }
         .btn-theme:hover { background-color: #157347; border-color: #146c43; }
@@ -45,15 +49,22 @@
         /* Content */
         .content-panel { flex: 1; background: #121212; display: flex; flex-direction: column; overflow: hidden; }
         .top-tabs-bar { padding: 15px 20px; border-bottom: 1px solid #333; background: #181818; display: flex; gap: 10px; align-items: center; overflow-x: auto; flex-shrink: 0; }
-        .cat-tab { padding: 6px 18px; border-radius: 20px; background: #252525; border: 1px solid #333; color: #ccc; text-decoration: none; white-space: nowrap; transition: 0.2s; }
-        .cat-tab:hover { background: #333; color: #fff; }
-        .cat-tab.active { background: rgba(25, 135, 84, 0.15); color: #198754; border-color: #198754; font-weight: bold; }
+        
+        .cat-tab-wrapper {
+            padding: 6px 12px 6px 18px; border-radius: 20px; background: #252525;
+            border: 1px solid #333; color: #ccc; display: flex; align-items: center; gap: 8px;
+            white-space: nowrap; transition: 0.2s;
+        }
+        .cat-tab-wrapper:hover { background: #333; color: #fff; }
+        .cat-tab-wrapper.active { background: rgba(25, 135, 84, 0.15); color: #198754; border-color: #198754; font-weight: bold; }
+        .cat-link { text-decoration: none; color: inherit; }
 
         /* Grid & Card */
         .hero-grid-container { flex: 1; overflow-y: auto; padding: 20px; }
         .hero-card {
             background: #1e1e1e; border: 1px solid #333; border-radius: 8px; transition: transform 0.2s; 
-            position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; padding: 15px; height: 100%;
+            position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center;
+            padding: 15px; height: 100%;
         }
         .hero-card:hover { transform: translateY(-5px); border-color: #198754; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
         .hero-img { width: 100%; aspect-ratio: 3/4; object-fit: contain; border-radius: 4px; background: #121212; margin-bottom: 10px; }
@@ -69,7 +80,7 @@
         .selectable-image:hover img { opacity: 1; }
         .selectable-image.selected { border-color: #198754; }
         .selectable-image.selected img { opacity: 1; }
-        .img-name-overlay { display: none !important; } /* Hide Overlay */
+        .img-name-overlay { display: none !important; }
     </style>
 </head>
 <body class="text-light">
@@ -94,11 +105,18 @@
             <div class="group-list">
                 <% if(groups && groups.length > 0) { %>
                     <% groups.forEach(grp => { %>
-                        <a href="/admin/codex/pet?cat_id=<%= activeCatId %>&group_id=<%= grp.id %>" 
-                           class="group-item <%= activeGroupId == grp.id ? 'active' : '' %>">
-                           <span><%= grp.name %></span>
-                           <% if(activeGroupId == grp.id) { %> <i class="bi bi-chevron-right" style="font-size: 0.8rem;"></i> <% } %>
-                        </a>
+                        <div class="group-wrapper <%= activeGroupId == grp.id ? 'active' : '' %>">
+                            <a href="/admin/codex/pet?cat_id=<%= activeCatId %>&group_id=<%= grp.id %>" class="group-link">
+                                <span><%= grp.name %></span>
+                            </a>
+                            <div class="group-actions">
+                                <form action="/admin/api/codex/group/delete" method="POST" onsubmit="return confirm('Delete Group: <%= grp.name %>? This will delete all pets inside!');">
+                                    <input type="hidden" name="id" value="<%= grp.id %>">
+                                    <input type="hidden" name="type" value="pet">
+                                    <button type="submit" class="btn btn-sm text-secondary p-0 border-0 hover-danger"><i class="bi bi-trash"></i></button>
+                                </form>
+                            </div>
+                        </div>
                     <% }) %>
                 <% } else { %>
                     <div class="text-center mt-5 text-muted"><small>No groups found</small></div>
@@ -111,7 +129,16 @@
                 <span class="text-muted small fw-bold me-2">CATEGORIES:</span>
                 <% if(categories && categories.length > 0) { %>
                     <% categories.forEach(cat => { %>
-                        <a href="/admin/codex/pet?cat_id=<%= cat.id %>" class="cat-tab <%= activeCatId == cat.id ? 'active' : '' %>"><%= cat.name %></a>
+                        <div class="cat-tab-wrapper <%= activeCatId == cat.id ? 'active' : '' %>">
+                            <a href="/admin/codex/pet?cat_id=<%= cat.id %>" class="cat-link">
+                                <%= cat.name %>
+                            </a>
+                            <form action="/admin/api/codex/category/delete" method="POST" onsubmit="return confirm('Delete Category: <%= cat.name %>?');" class="d-flex">
+                                <input type="hidden" name="id" value="<%= cat.id %>">
+                                <input type="hidden" name="type" value="pet">
+                                <button type="submit" class="btn btn-sm p-0 text-secondary border-0" title="Delete Category"><i class="bi bi-x"></i></button>
+                            </form>
+                        </div>
                     <% }) %>
                 <% } %>
                 <button type="button" class="btn btn-sm btn-outline-theme rounded-circle ms-2" style="width:30px;height:30px;" data-bs-toggle="modal" data-bs-target="#addCategoryModal"><i class="bi bi-plus-lg"></i></button>
@@ -144,7 +171,7 @@
                                 <div class="hero-name"><%= pet.name %></div>
                                 <a href="/admin/codex/pet/delete/<%= pet.id %>?cat_id=<%= activeCatId %>&group_id=<%= activeGroupId %>" 
                                    class="btn btn-outline-danger btn-sm w-100 mt-auto" onclick="return confirm('Delete <%= pet.name %>?')">
-                                    <i class="bi bi-trash"></i> Delete
+                                   <i class="bi bi-trash"></i> Delete
                                 </a>
                             </div>
                         </div>
@@ -158,7 +185,8 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <form action="/admin/codex/category/add" method="POST">
-                    <input type="hidden" name="type" value="pet"> <div class="modal-body">
+                    <input type="hidden" name="type" value="pet">
+                    <div class="modal-body">
                         <label class="form-label text-muted small fw-bold">CATEGORY NAME</label>
                         <input type="text" name="name" class="form-control" required>
                     </div>
@@ -174,7 +202,8 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <form action="/admin/codex/group/add" method="POST">
-                    <input type="hidden" name="type" value="pet"> <div class="modal-body">
+                    <input type="hidden" name="type" value="pet">
+                    <div class="modal-body">
                         <input type="hidden" name="category_id" value="<%= activeCatId %>">
                         <label class="form-label text-muted small fw-bold">GROUP NAME</label>
                         <input type="text" name="name" class="form-control" required>
@@ -217,9 +246,9 @@
                             <div class="row g-2" style="max-height: 400px; overflow-y: auto;">
                                 <% availablePetImages.forEach(img => { %>
                                      <div class="col-3 col-sm-3 col-md-2 img-item-col">
-                                        <div class="selectable-image" onclick="selectImage(this, '<%= img %>')">
+                                         <div class="selectable-image" onclick="selectImage(this, '<%= img %>')">
                                             <img src="/images/pets/<%= img %>" loading="lazy">
-                                        </div>
+                                         </div>
                                    </div>
                                 <% }) %>
                             </div>
@@ -256,7 +285,8 @@
             const input = document.getElementById('imgSearch').value.toLowerCase();
             const cols = document.getElementsByClassName('img-item-col');
             for (let col of cols) {
-                const txt = col.querySelector('img').src.split('/').pop();
+                const img = col.querySelector('img');
+                const txt = img ? img.src.split('/').pop() : '';
                 col.style.display = txt.toLowerCase().includes(input) ? "" : "none";
             }
         }

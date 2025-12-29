@@ -3,19 +3,12 @@
 <head>
     <%- include('../../partials/head') %>
     <style>
-        /* --- Global & Layout (Theme from Build Manager) --- */
+        /* --- Global & Layout --- */
         body { color: #e0e0e0; }
-        .text-muted { color: #adadad !important; } /* สีเทาอ่อน */
-        .text-secondary { color: #cccccc !important; } /* สีเทาขาว */
+        .text-muted { color: #adadad !important; }
         .sidebar-header { border-bottom: 1px solid #444; }
-        .group-item { color: #bbbbbb; } /* สีกลุ่ม */
         
-        /* Layout Calculation: Navbar Height = 64px */
-        .codex-layout { 
-            display: flex;
-            height: 100vh; 
-            padding-top: 64px; 
-        }
+        .codex-layout { display: flex; height: 100vh; padding-top: 64px; }
         
         /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -25,16 +18,13 @@
 
         /* --- Navbar --- */
         .navbar-modern {
-            height: 64px;
-            background: rgba(18, 18, 18, 0.95);
+            height: 64px; background: rgba(18, 18, 18, 0.95);
             backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             position: fixed; top: 0; left: 0; right: 0; z-index: 1050;
-            padding: 0 20px;
-            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; display: flex; align-items: center; justify-content: space-between;
         }
         .nav-brand-text { font-weight: 700; letter-spacing: 0.5px; font-size: 1.1rem; color: #fff; }
-        
         .nav-btn {
             background: rgba(255, 255, 255, 0.05); color: #ccc;
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -44,162 +34,91 @@
         }
         .nav-btn:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
 
-        /* --- Left Sidebar (Groups) --- */
+        /* --- Sidebar (Groups) --- */
         .sidebar-panel { 
-            width: 280px;
-            background: #161616; 
-            border-right: 1px solid #333; 
+            width: 280px; background: #161616; border-right: 1px solid #333; 
             display: flex; flex-direction: column; flex-shrink: 0;
         }
-        .sidebar-header { 
-            padding: 15px; border-bottom: 1px solid #2a2a2a; 
-            display: flex; justify-content: space-between; align-items: center;
-        }
+        .sidebar-header { padding: 15px; border-bottom: 1px solid #2a2a2a; display: flex; justify-content: space-between; align-items: center; }
         .group-list { overflow-y: auto; flex: 1; padding: 10px; }
         
-        .group-item { 
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 12px 15px; margin-bottom: 4px;
-            cursor: pointer; border-radius: 6px; transition: all 0.2s; 
-            color: #aaa; text-decoration: none;
-            border-left: 3px solid transparent;
+        /* Modified Group Item for Delete Button */
+        .group-wrapper {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 4px; border-radius: 6px; transition: all 0.2s;
+            border-left: 3px solid transparent; color: #aaa;
         }
-        .group-item:hover { background: #252525; color: #fff; padding-left: 20px; }
-        .group-item.active { 
-            background: #222; 
-            color: #ffc107; 
-            border-left-color: #ffc107;
-            font-weight: 600;
-        }
-
-        /* --- Right Content (Heroes) --- */
-        .content-panel { 
-            flex: 1;
-            background: #121212; 
-            display: flex; flex-direction: column;
-            overflow: hidden;
-        }
+        .group-wrapper:hover { background: #252525; color: #fff; padding-left: 5px; }
+        .group-wrapper.active { background: #222; color: #ffc107; border-left-color: #ffc107; font-weight: 600; }
         
-        /* Category Tabs (Top of Content) */
-        .top-tabs-bar {
-            padding: 15px 20px;
-            border-bottom: 1px solid #333;
-            background: #181818;
-            display: flex; gap: 10px; align-items: center;
-            overflow-x: auto; flex-shrink: 0;
+        .group-link {
+            flex-grow: 1; padding: 12px 10px; text-decoration: none; color: inherit; display: block;
         }
-        .cat-tab {
-            padding: 6px 18px; border-radius: 20px; 
+        .group-actions { padding-right: 10px; opacity: 0.5; transition: 0.2s; }
+        .group-wrapper:hover .group-actions { opacity: 1; }
+
+        /* --- Content --- */
+        .content-panel { flex: 1; background: #121212; display: flex; flex-direction: column; overflow: hidden; }
+        
+        /* Modified Categories Tabs */
+        .top-tabs-bar {
+            padding: 15px 20px; border-bottom: 1px solid #333; background: #181818;
+            display: flex; gap: 10px; align-items: center; overflow-x: auto; flex-shrink: 0;
+        }
+        .cat-tab-wrapper {
+            padding: 6px 12px 6px 18px; border-radius: 20px;
             background: #252525; border: 1px solid #333;
-            color: #888; text-decoration: none; font-size: 0.9rem;
+            color: #888; display: flex; align-items: center; gap: 8px;
             white-space: nowrap; transition: 0.2s;
         }
-        .cat-tab:hover { background: #333; color: #fff; }
-        .cat-tab.active {
-            background: rgba(255, 193, 7, 0.15); 
-            color: #ffc107; 
-            border-color: #ffc107;
-            font-weight: bold;
+        .cat-tab-wrapper:hover { background: #333; color: #fff; }
+        .cat-tab-wrapper.active {
+            background: rgba(255, 193, 7, 0.15); color: #ffc107; border-color: #ffc107; font-weight: bold;
         }
+        .cat-link { text-decoration: none; color: inherit; }
+        
         .btn-add-mini {
             width: 30px; height: 30px; border-radius: 50%;
             border: 1px dashed #555; background: transparent; color: #555;
-            display: flex; align-items: center; justify-content: center;
-            transition: 0.2s;
+            display: flex; align-items: center; justify-content: center; transition: 0.2s;
         }
         .btn-add-mini:hover { border-color: #ffc107; color: #ffc107; }
 
-        /* Hero Grid Area */
-        .hero-grid-container {
-            flex: 1; overflow-y: auto; padding: 20px;
-        }
+        /* Hero Grid */
+        .hero-grid-container { flex: 1; overflow-y: auto; padding: 20px; }
         .hero-card {
             background: #1e1e1e; border: 1px solid #333; border-radius: 8px;
             transition: transform 0.2s; position: relative; overflow: hidden;
             display: flex; flex-direction: column; align-items: center;
-            padding: 15px; height: 100%;
-            cursor: pointer;
+            padding: 15px; height: 100%; cursor: pointer;
         }
-        .hero-card:hover { 
-            transform: translateY(-5px); 
-            border-color: #ffc107; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
-        .hero-img {
-            width: 100%; aspect-ratio: 3/4; object-fit: contain;
-            border-radius: 4px; background: #121212; margin-bottom: 10px;
-        }
+        .hero-card:hover { transform: translateY(-5px); border-color: #ffc107; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .hero-img { width: 100%; aspect-ratio: 3/4; object-fit: contain; border-radius: 4px; background: #121212; margin-bottom: 10px; }
         .hero-name { color: #fff; font-weight: 600; font-size: 0.95rem; margin-bottom: 8px; text-align: center; }
         
-        /* --- Skill Priority Styles --- */
-        .skill-grid {
-        display: flex; /* เปลี่ยนจาก Grid เป็น Flex เพื่อใช้ง่ายกับ direction */
-        flex-wrap: wrap;
-        flex-direction: row-reverse; /* เรียงจากขวามาซ้าย */
-        justify-content: flex-end; /* ชิดขวา */
-        gap: 15px;
-        padding: 10px;
-        }
-        .skill-priority-item {
-            width: 100px;
-            height: 100px;
-            position: relative;
-            aspect-ratio: 1;
-            border: 2px solid #333;
-            border-radius: 12px;
-            overflow: hidden;
-            cursor: pointer;
-            transition: all 0.2s;
-            background: #000;
-        }
-        .skill-priority-item img {
-            width: 100%; height: 100%; object-fit: cover;
-            filter: grayscale(0.5);
-            transition: 0.2s;
-        }
-        .skill-priority-item:hover { border-color: #ffc107; }
-        .skill-priority-item:hover img { filter: grayscale(0); }
-        .skill-priority-item.selected {
-            border-color: #ffc107;
-            box-shadow: 0 0 15px rgba(255, 193, 7, 0.3);
-        }
-        .skill-priority-item.selected img { filter: grayscale(0); }
-        .priority-badge {
-            position: absolute;
-            top: 5px; right: 5px;
-            width: 28px; height: 28px;
-            background: #ffc107;
-            color: #000;
-            font-weight: bold;
-            font-size: 1rem;
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-            transform: scale(0);
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .skill-priority-item.selected .priority-badge { transform: scale(1); }
-
-        /* --- Modal & Form Styles --- */
+        /* Modal Styles */
         .modal-content { background-color: #1e1e1e; border: 1px solid #444; }
         .form-control { background-color: #000; color: #fff; border-color: #444; }
         .form-control:focus { background-color: #000; color: #fff; border-color: #ffc107; box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25); }
         .text-warning { color: #ffc107 !important; }
         .btn-warning { background-color: #ffc107; border-color: #ffc107; color: #000; font-weight: bold; }
         
-        /* Image Selector in Add Hero Modal */
-        .selectable-image {
-            position: relative; border: 2px solid transparent; border-radius: 6px;
-            overflow: hidden; background: #121212; transition: all 0.2s; aspect-ratio: 3/4; cursor: pointer;
-        }
+        .skill-grid { display: flex; flex-wrap: wrap; flex-direction: row-reverse; justify-content: flex-end; gap: 15px; padding: 10px; }
+        .skill-priority-item { width: 100px; height: 100px; position: relative; aspect-ratio: 1; border: 2px solid #333; border-radius: 12px; overflow: hidden; cursor: pointer; transition: all 0.2s; background: #000; }
+        .skill-priority-item img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(0.5); transition: 0.2s; }
+        .skill-priority-item:hover { border-color: #ffc107; }
+        .skill-priority-item:hover img { filter: grayscale(0); }
+        .skill-priority-item.selected { border-color: #ffc107; box-shadow: 0 0 15px rgba(255, 193, 7, 0.3); }
+        .skill-priority-item.selected img { filter: grayscale(0); }
+        .priority-badge { position: absolute; top: 5px; right: 5px; width: 28px; height: 28px; background: #ffc107; color: #000; font-weight: bold; font-size: 1rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.5); transform: scale(0); transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .skill-priority-item.selected .priority-badge { transform: scale(1); }
+
+        .selectable-image { position: relative; border: 2px solid transparent; border-radius: 6px; overflow: hidden; background: #121212; transition: all 0.2s; aspect-ratio: 3/4; cursor: pointer; }
         .selectable-image img { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; transition: 0.2s; }
         .selectable-image:hover img { opacity: 1; }
         .selectable-image.selected { border-color: #ffc107; }
         .selectable-image.selected img { opacity: 1; }
-        .img-name-overlay {display: none !important;}
-        .search-wrapper { position: relative; }
-        .search-wrapper i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #666; }
-        .search-wrapper input { padding-left: 35px; border-radius: 20px; background: #000; border: 1px solid #333; }
+        .img-name-overlay { display: none !important; }
     </style>
 </head>
 <body class="text-light">
@@ -216,7 +135,6 @@
     </nav>
 
     <div class="codex-layout">
-        
         <div class="sidebar-panel">
             <div class="sidebar-header">
                 <span class="fw-bold text-white"><i class="bi bi-collection me-2 text-warning"></i>Groups</span>
@@ -224,14 +142,23 @@
                     <i class="bi bi-plus-lg"></i>
                 </button>
             </div>
+  
             <div class="group-list">
                 <% if(groups && groups.length > 0) { %>
                     <% groups.forEach(grp => { %>
-                        <a href="/admin/codex/hero?cat_id=<%= activeCatId %>&group_id=<%= grp.id %>" 
-                           class="group-item <%= activeGroupId == grp.id ? 'active' : '' %>">
-                           <span><%= grp.name %></span>
-                           <% if(activeGroupId == grp.id) { %> <i class="bi bi-chevron-right" style="font-size: 0.8rem;"></i> <% } %>
-                        </a>
+                        <div class="group-wrapper <%= activeGroupId == grp.id ? 'active' : '' %>">
+                            <a href="/admin/codex/hero?cat_id=<%= activeCatId %>&group_id=<%= grp.id %>" class="group-link">
+                                <span><%= grp.name %></span>
+                            </a>
+                            
+                            <div class="group-actions">
+                                <form action="/admin/api/codex/group/delete" method="POST" onsubmit="return confirm('Delete Group: <%= grp.name %>? This will delete all heroes inside!');">
+                                    <input type="hidden" name="id" value="<%= grp.id %>">
+                                    <input type="hidden" name="type" value="hero">
+                                    <button type="submit" class="btn btn-sm text-secondary p-0 border-0 hover-danger"><i class="bi bi-trash"></i></button>
+                                </form>
+                            </div>
+                        </div>
                     <% }) %>
                 <% } else { %>
                     <div class="text-center mt-5 text-muted">
@@ -243,17 +170,23 @@
         </div>
 
         <div class="content-panel">
-            
             <div class="top-tabs-bar">
                 <span class="text-muted small fw-bold me-2 text-uppercase" style="letter-spacing: 1px;">Categories:</span>
                 <% if(categories && categories.length > 0) { %>
                     <% categories.forEach(cat => { %>
-                        <a href="/admin/codex/hero?cat_id=<%= cat.id %>" 
-                           class="cat-tab <%= activeCatId == cat.id ? 'active' : '' %>">
-                           <%= cat.name %>
-                        </a>
+                        <div class="cat-tab-wrapper <%= activeCatId == cat.id ? 'active' : '' %>">
+                            <a href="/admin/codex/hero?cat_id=<%= cat.id %>" class="cat-link">
+                                <%= cat.name %>
+                            </a>
+                            <form action="/admin/api/codex/category/delete" method="POST" onsubmit="return confirm('Delete Category: <%= cat.name %>?');" class="d-flex">
+                                <input type="hidden" name="id" value="<%= cat.id %>">
+                                <input type="hidden" name="type" value="hero">
+                                <button type="submit" class="btn btn-sm p-0 text-secondary border-0" title="Delete Category"><i class="bi bi-x"></i></button>
+                            </form>
+                        </div>
                     <% }) %>
                 <% } %>
+    
                 <button type="button" class="btn-add-mini ms-2" data-bs-toggle="modal" data-bs-target="#addCategoryModal" title="Add Category">
                     <i class="bi bi-plus-lg"></i>
                 </button>
@@ -287,7 +220,7 @@
                     <% heroes.forEach(hero => { %>
                         <div class="col-6 col-sm-4 col-md-3 col-xl-2">
                             <div class="hero-card" 
-                                 onclick="openSkillManager(
+                                onclick="openSkillManager(
                                     '<%= hero.id %>', 
                                     '<%= hero.name %>', 
                                     '<%= hero.detectedSkillFolder %>', 
@@ -296,13 +229,11 @@
                                  )">
                                 <img src="/images/heroes/<%= hero.image_name %>" class="hero-img">
                                 <div class="hero-name"><%= hero.name %></div>
-                                
                                 <div class="text-center mb-3">
                                     <span class="badge bg-dark border border-secondary text-secondary rounded-pill" style="font-weight:normal; font-size: 0.7rem;">
                                         <i class="bi bi-lightning-fill text-warning"></i> Manage Skills
                                     </span>
                                 </div>
-
                                 <a href="/admin/codex/hero/delete/<%= hero.id %>?cat_id=<%= activeCatId %>&group_id=<%= activeGroupId %>" 
                                    class="btn btn-outline-danger btn-sm w-100 mt-auto"
                                    onclick="event.stopPropagation(); return confirm('Delete <%= hero.name %>?')">
@@ -371,8 +302,7 @@
                             <input type="hidden" name="return_cat_id" value="<%= activeCatId %>">
 
                             <div class="mb-4 text-center">
-                                <div id="previewSelected" class="d-flex align-items-center justify-content-center text-muted border border-secondary rounded bg-black mx-auto" 
-                                     style="width: 140px; aspect-ratio: 3/4; overflow: hidden;">
+                                <div id="previewSelected" class="d-flex align-items-center justify-content-center text-muted border border-secondary rounded bg-black mx-auto" style="width: 140px; aspect-ratio: 3/4; overflow: hidden;">
                                     <small>No Image</small>
                                 </div>
                                 <div class="mt-2 text-warning fw-bold small" id="previewName">Select an image</div>
@@ -394,15 +324,15 @@
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <label class="text-white fw-bold">Select Hero Image</label>
                                 <div class="search-wrapper" style="width: 200px;">
-                                    <i class="bi bi-search"></i>
-                                    <input type="text" id="imgSearch" class="form-control form-control-sm text-white" placeholder="Search..." onkeyup="filterImages()">
+                                    <i class="bi bi-search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#666;"></i>
+                                    <input type="text" id="imgSearch" class="form-control form-control-sm text-white" style="padding-left:35px; border-radius:20px; background:#000; border:1px solid #333;" placeholder="Search..." onkeyup="filterImages()">
                                 </div>
                             </div>
                             
                             <div class="image-selector-container pe-2" style="max-height: 400px; overflow-y: auto;">
                                 <div class="row g-2" id="imageGrid">
                                     <% availableHeroImages.forEach(img => { %>
-                                         <div class="col-3 col-sm-3 col-md-2 img-item-col">
+                                       <div class="col-3 col-sm-3 col-md-2 img-item-col">
                                             <div class="selectable-image" onclick="selectImage(this, '<%= img %>')">
                                                 <img src="/images/heroes/<%= img %>" loading="lazy">
                                                 <div class="img-name-overlay"><%= img %></div>
@@ -432,13 +362,8 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <p class="text-muted small mb-3">
-                        <i class="bi bi-info-circle me-1"></i> Click skills in the order you want them to be used (1, 2, 3...). Click again to unselect.
-                    </p>
-                    
-                    <div id="skillGridContainer" class="skill-grid">
-                        </div>
-
+                    <p class="text-muted small mb-3"><i class="bi bi-info-circle me-1"></i> Click skills in the order you want them to be used (1, 2, 3...). Click again to unselect.</p>
+                    <div id="skillGridContainer" class="skill-grid"></div>
                     <div id="noSkillsMsg" class="text-center py-5 text-muted d-none">
                         <i class="bi bi-exclamation-triangle display-4 mb-2"></i>
                         <p>No skills found in folder.</p>
@@ -498,13 +423,10 @@
             currentSkillFolder = folder;
             document.getElementById('skillHeroName').innerText = name;
             
-            // ใช้ savedOrder เป็นฐาน แต่ต้องกรองว่าไฟล์ยังมีอยู่จริงใน allSkills
             currentPriorityList = savedOrder.filter(s => allSkills.includes(s));
-            
             const grid = document.getElementById('skillGridContainer');
             const noMsg = document.getElementById('noSkillsMsg');
             grid.innerHTML = '';
-
             if(!allSkills || allSkills.length === 0) {
                 noMsg.classList.remove('d-none');
             } else {
@@ -514,25 +436,17 @@
                     div.className = 'skill-priority-item';
                     div.dataset.file = filename;
                     div.onclick = () => toggleSkillPriority(filename);
-                    div.innerHTML = `
-                        <img src="/images/skill/${folder}/${filename}" draggable="false">
-                        <div class="priority-badge"></div>
-                    `;
+                    div.innerHTML = `<img src="/images/skill/${folder}/${filename}" draggable="false"><div class="priority-badge"></div>`;
                     grid.appendChild(div);
                 });
                 updateSkillVisuals();
             }
-
             new bootstrap.Modal(document.getElementById('skillManagerModal')).show();
         }
 
         function toggleSkillPriority(filename) {
             const index = currentPriorityList.indexOf(filename);
-            if (index > -1) {
-                currentPriorityList.splice(index, 1);
-            } else {
-                currentPriorityList.push(filename);
-            }
+            if (index > -1) { currentPriorityList.splice(index, 1); } else { currentPriorityList.push(filename); }
             updateSkillVisuals();
         }
 
@@ -557,30 +471,21 @@
             const originalText = btn.innerHTML;
             btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Saving...';
             btn.disabled = true;
-
             fetch('/admin/api/codex/save_skill_order', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    hero_id: currentHeroId,
-                    skill_order: currentPriorityList
-                })
+                body: JSON.stringify({ hero_id: currentHeroId, skill_order: currentPriorityList })
             })
             .then(res => res.json())
             .then(data => {
-                if(data.success) {
-                    window.location.reload(); 
-                } else {
+                if(data.success) { window.location.reload(); } else {
                     alert('Error: ' + (data.error || 'Unknown error'));
-                    btn.innerHTML = originalText;
-                    btn.disabled = false;
+                    btn.innerHTML = originalText; btn.disabled = false;
                 }
             })
             .catch(err => {
-                console.error(err);
-                alert('Connection error');
-                btn.innerHTML = originalText;
-                btn.disabled = false;
+                console.error(err); alert('Connection error');
+                btn.innerHTML = originalText; btn.disabled = false;
             });
         }
     </script>

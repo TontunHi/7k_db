@@ -187,3 +187,29 @@ exports.addGroup = (req, res) => {
         res.redirect(`${redirectUrl}?cat_id=${category_id}&group_id=${this.lastID}`);
     });
 };
+
+exports.deleteCategory = (req, res) => {
+    const { id, type } = req.body;
+    db.run("DELETE FROM codex_categories WHERE id = ?", [id], (err) => {
+        if (err) {
+            console.error(err);
+            return res.send('<script>alert("Error deleting category"); window.history.back();</script>');
+        }
+        // [FIX] แก้ Redirect URL ให้ถูกต้อง (เอา /manage ออก)
+        const redirectUrl = type === 'pet' ? '/admin/codex/pet' : '/admin/codex/hero';
+        res.redirect(redirectUrl);
+    });
+};
+
+exports.deleteGroup = (req, res) => {
+    const { id, type } = req.body;
+    db.run("DELETE FROM codex_groups WHERE id = ?", [id], (err) => {
+        if (err) {
+            console.error(err);
+            return res.send('<script>alert("Error deleting group"); window.history.back();</script>');
+        }
+        // [FIX] แก้ Redirect URL ให้ถูกต้อง (เอา /manage ออก)
+        const redirectUrl = type === 'pet' ? '/admin/codex/pet' : '/admin/codex/hero';
+        res.redirect(redirectUrl);
+    });
+};

@@ -1,19 +1,165 @@
-/* เพิ่ม contrast ให้ตัวหนังสือบนพื้นหลังมืดหรือสว่าง */
-.text-shadow {
-    text-shadow: 2px 2px 4px #000000;
+/* --- Global Theme --- */
+body {
+    background-color: #050505; /* ดำสนิท */
+    color: #e0e0e0;
+    font-family: 'Kanit', sans-serif;
 }
 
-.hero-text-shadow {
-    color: #ffd700; /* สีทอง */
-    text-shadow: 
-        -1px -1px 0 #000,  
-        1px -1px 0 #000,
-        -1px 1px 0 #000,
-        1px 1px 0 #000,
-        2px 2px 4px rgba(0,0,0,0.8);
-    font-weight: bold;
+/* --- Hero/Pet Codex Page --- */
+.codex-header {
+    text-align: center;
+    padding: 60px 0 40px;
+    background: radial-gradient(circle at center, rgba(255, 193, 7, 0.1) 0%, transparent 70%);
 }
 
-.bg-black-50 {
-    background-color: rgba(0, 0, 0, 0.3);
+.codex-title {
+    font-size: 3rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    background: linear-gradient(to right, #fff, #ffc107, #fff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 10px;
+    text-shadow: 0 0 30px rgba(255, 193, 7, 0.3);
 }
+
+/* --- Filter Buttons --- */
+.filter-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 40px;
+    padding: 0 20px;
+}
+
+.filter-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #888;
+    padding: 8px 24px;
+    border-radius: 30px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filter-btn:hover {
+    background: rgba(255, 193, 7, 0.1);
+    border-color: #ffc107;
+    color: #ffc107;
+    transform: translateY(-2px);
+}
+
+.filter-btn.active {
+    background: #ffc107;
+    color: #000;
+    border-color: #ffc107;
+    box-shadow: 0 0 15px rgba(255, 193, 7, 0.4);
+    font-weight: 700;
+}
+
+/* --- Content Section --- */
+.category-section {
+    margin-bottom: 60px;
+}
+
+.category-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #ffc107;
+    border-left: 4px solid #ffc107;
+    padding-left: 15px;
+    margin-bottom: 25px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(90deg, rgba(255, 193, 7, 0.05), transparent);
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-radius: 0 10px 10px 0;
+}
+
+/* --- Grid & Cards --- */
+.codex-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); /* Responsive Grid */
+    gap: 20px;
+    padding: 0 10px;
+}
+
+.codex-card {
+    background: #121212;
+    border: 1px solid #2a2a2a;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    text-decoration: none;
+    display: block;
+}
+
+.codex-card:hover {
+    transform: translateY(-7px) scale(1.02);
+    border-color: #ffc107;
+    box-shadow: 0 10px 30px rgba(255, 193, 7, 0.15);
+    z-index: 10;
+}
+
+.card-img-wrapper {
+    width: 100%;
+    aspect-ratio: 1/1; /* รูปสี่เหลี่ยมจัตุรัส */
+    overflow: hidden;
+    background: #000;
+    position: relative;
+}
+
+.card-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.codex-card:hover .card-img-wrapper img {
+    transform: scale(1.1);
+}
+
+.card-info {
+    padding: 12px;
+    text-align: center;
+    background: #161616;
+}
+
+.card-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #ddd;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.codex-card:hover .card-name {
+    color: #ffc107;
+}
+
+.card-rarity {
+    display: inline-block;
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-top: 5px;
+    background: #333;
+    color: #aaa;
+    text-transform: uppercase;
+}
+
+/* Rarity Colors (Optional) */
+.card-rarity.legendary { background: rgba(255, 193, 7, 0.2); color: #ffc107; border: 1px solid rgba(255, 193, 7, 0.3); }
+.card-rarity.rare { background: rgba(13, 110, 253, 0.2); color: #0d6efd; border: 1px solid rgba(13, 110, 253, 0.3); }

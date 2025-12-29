@@ -50,7 +50,8 @@ router.post('/api/save_guildwar_comp', requireAdmin, adminController.saveGuildWa
 router.post('/api/delete_guildwar_comp', requireAdmin, adminController.deleteGuildWarComp);
 
 // --- CODEX ROUTES ---
-
+router.post('/api/codex/category/delete', adminCodexController.deleteCategory);
+router.post('/api/codex/group/delete', adminCodexController.deleteGroup);
 // Hero Codex
 router.get('/codex/hero', adminCodexController.getIndex);
 router.post('/codex/hero/add', adminCodexController.addHero);

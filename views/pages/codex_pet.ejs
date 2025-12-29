@@ -3,97 +3,173 @@
 <head>
     <%- include('../partials/head') %>
     <style>
-        /* Pet Theme (Greenish) */
-        body { background-color: #0b0c10; color: #c5c6c7; font-family: 'Segoe UI', sans-serif; padding-top: 70px; }
-        .codex-container { display: flex; min-height: calc(100vh - 70px); }
-        .sidebar { width: 260px; background: #1f2833; border-right: 1px solid #45a29e; flex-shrink: 0; display: flex; flex-direction: column; }
-        .content-area { flex: 1; padding: 20px; background: #0b0c10; overflow-y: auto; }
+        /* --- Dark & Gold Theme (Pet Side) --- */
+        body { 
+            background-color: #050505; 
+            color: #e0e0e0; 
+            font-family: 'Kanit', sans-serif;
+            padding-top: 64px;
+        }
         
-        .group-item { padding: 12px 20px; color: #c5c6c7; text-decoration: none; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid transparent; transition: 0.2s; }
-        .group-item:hover { background: #2c353f; color: #2ecc71; }
-        .group-item.active { background: #2c353f; color: #2ecc71; border-left-color: #2ecc71; font-weight: 600; }
-        .sidebar-title { padding: 20px; font-weight: bold; color: #2ecc71; border-bottom: 1px solid #45a29e; margin-bottom: 10px; }
+        .codex-layout { display: flex; min-height: calc(100vh - 64px); }
 
-        .nav-pills .nav-link { color: #888; border-radius: 50px; padding: 8px 20px; font-weight: 500; transition: 0.3s; border: 1px solid #333; margin-right: 8px; }
-        .nav-pills .nav-link:hover { color: #fff; border-color: #2ecc71; background: rgba(46, 204, 113, 0.1); }
-        .nav-pills .nav-link.active { background-color: #2ecc71; color: #000; font-weight: bold; border-color: #2ecc71; box-shadow: 0 0 10px rgba(46, 204, 113, 0.4); }
+        /* Sidebar */
+        .sidebar-panel {
+            width: 280px;
+            background: #0f0f0f;
+            border-right: 1px solid #222;
+            flex-shrink: 0;
+            display: flex; flex-direction: column;
+            position: fixed; top: 64px; bottom: 0; left: 0;
+            z-index: 100;
+        }
 
-        .hero-card { background: #1f2833; border: 1px solid #2f3a46; border-radius: 12px; overflow: hidden; transition: 0.3s; cursor: pointer; }
-        .hero-card:hover { transform: translateY(-5px); border-color: #2ecc71; box-shadow: 0 5px 15px rgba(46, 204, 113, 0.2); }
-        .hero-img-wrapper { aspect-ratio: 3/4; overflow: hidden; }
-        .hero-img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; }
+        .sidebar-header { padding: 20px; background: #0a0a0a; border-bottom: 1px solid #222; }
+        .sidebar-title { font-size: 1.1rem; font-weight: 700; color: #fff; text-transform: uppercase; letter-spacing: 1px; }
+
+        .group-list { flex: 1; overflow-y: auto; padding: 10px 0; }
+        .group-list::-webkit-scrollbar { width: 4px; }
+        .group-list::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+
+        .group-item {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 12px 25px; color: #888; text-decoration: none;
+            transition: all 0.2s; border-left: 3px solid transparent;
+        }
+        .group-item:hover { background: rgba(255, 255, 255, 0.03); color: #fff; padding-left: 30px; }
+        .group-item.active {
+            background: linear-gradient(90deg, rgba(255, 193, 7, 0.1), transparent);
+            color: #ffc107; border-left-color: #ffc107; font-weight: 600; padding-left: 30px;
+        }
+
+        /* Content */
+        .content-panel { flex: 1; margin-left: 280px; padding: 0; background: #050505; min-height: 100vh; }
+
+        .top-tabs-bar {
+            padding: 15px 30px; background: rgba(25, 25, 25, 0.95); backdrop-filter: blur(10px);
+            border-bottom: 1px solid #222; position: sticky; top: 64px; z-index: 90;
+            display: flex; gap: 15px; overflow-x: auto; align-items: center;
+        }
+        
+        .cat-tab {
+            padding: 8px 20px; border-radius: 30px; background: #1a1a1a;
+            border: 1px solid #333; color: #aaa; text-decoration: none; font-size: 0.9rem;
+            white-space: nowrap; transition: all 0.3s ease;
+        }
+        .cat-tab:hover { background: #333; color: #fff; transform: translateY(-2px); }
+        .cat-tab.active {
+            background: #ffc107; color: #000; border-color: #ffc107; font-weight: 700;
+            box-shadow: 0 0 15px rgba(255, 193, 7, 0.4);
+        }
+
+        /* Grid */
+        .hero-grid-container { padding: 30px; }
+        .section-title { font-size: 2rem; font-weight: 800; color: #fff; margin-bottom: 5px; text-shadow: 0 0 20px rgba(255, 193, 7, 0.2); }
+        .section-subtitle { color: #666; margin-bottom: 30px; font-size: 0.9rem; }
+
+        .hero-card {
+            background: #121212; border: 1px solid #2a2a2a; border-radius: 12px;
+            overflow: hidden; position: relative; transition: all 0.3s; cursor: pointer;
+            height: 100%; display: flex; flex-direction: column;
+        }
+        .hero-card:hover {
+            transform: translateY(-7px); border-color: #ffc107;
+            box-shadow: 0 10px 30px rgba(255, 193, 7, 0.15); z-index: 2;
+        }
+        .hero-img-wrapper { width: 100%; aspect-ratio: 3/4; overflow: hidden; background: #000; }
+        .hero-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
         .hero-card:hover .hero-img { transform: scale(1.05); }
-        .hero-info { padding: 12px; text-align: center; }
-        .hero-name { color: #fff; font-weight: 600; font-size: 1rem; margin: 0; }
+        
+        .hero-info {
+            padding: 15px; text-align: center; background: #161616;
+            border-top: 1px solid #222; flex-grow: 1; display: flex; align-items: center; justify-content: center;
+        }
+        .hero-name { font-size: 1rem; font-weight: 600; color: #e0e0e0; margin: 0; transition: color 0.3s; }
+        .hero-card:hover .hero-name { color: #ffc107; }
+
+        @media (max-width: 991px) {
+            .sidebar-panel { display: none; }
+            .content-panel { margin-left: 0; }
+            .top-tabs-bar { padding: 10px 15px; }
+            .hero-grid-container { padding: 15px; }
+        }
     </style>
 </head>
 <body>
     
     <%- include('../partials/navbar') %>
 
-    <div class="codex-container">
-        <div class="sidebar d-none d-md-flex">
-            <div class="sidebar-title"><i class="bi bi-github me-2"></i>PET GROUPS</div>
-            <div class="overflow-auto flex-grow-1">
-                <% if(groups.length > 0) { %>
+    <div class="codex-layout">
+        
+        <aside class="sidebar-panel">
+            <div class="sidebar-header">
+                <div class="sidebar-title">
+                    <i class="bi bi-paw-fill text-warning"></i> Pet Groups
+                </div>
+            </div>
+            <div class="group-list">
+                <% if(groups && groups.length > 0) { %>
                     <% groups.forEach(grp => { %>
                         <a href="/codex/pet?cat_id=<%= activeCatId %>&group_id=<%= grp.id %>" 
                            class="group-item <%= activeGroupId == grp.id ? 'active' : '' %>">
-                           <%= grp.name %> <i class="bi bi-chevron-right small opacity-50"></i>
+                           <span><%= grp.name %></span>
+                           <% if(activeGroupId == grp.id) { %> <i class="bi bi-chevron-right small"></i> <% } %>
                         </a>
                     <% }) %>
                 <% } else { %>
-                    <div class="p-3 text-muted text-center">No Groups</div>
+                    <div class="text-center p-4 text-muted small">No Groups</div>
                 <% } %>
             </div>
-        </div>
+        </aside>
 
-        <div class="content-area">
-            <div class="d-md-none mb-3">
-                <select class="form-select bg-dark text-white border-secondary" onchange="window.location.href=this.value">
-                    <% groups.forEach(grp => { %>
-                        <option value="/codex/pet?cat_id=<%= activeCatId %>&group_id=<%= grp.id %>" <%= activeGroupId == grp.id ? 'selected' : '' %>>
-                            <%= grp.name %>
-                        </option>
+        <main class="content-panel">
+            <div class="top-tabs-bar">
+                <span class="text-white small fw-bold me-2 text-uppercase opacity-50" style="letter-spacing: 1px;">Categories:</span>
+                <% if(categories && categories.length > 0) { %>
+                    <% categories.forEach(cat => { %>
+                        <a href="/codex/pet?cat_id=<%= cat.id %>" 
+                           class="cat-tab <%= activeCatId == cat.id ? 'active' : '' %>">
+                           <%= cat.name %>
+                        </a>
                     <% }) %>
-                </select>
+                <% } %>
             </div>
 
-            <ul class="nav nav-pills mb-4 pb-2 border-bottom border-secondary">
-                <% categories.forEach(cat => { %>
-                    <li class="nav-item">
-                        <a class="nav-link <%= activeCatId == cat.id ? 'active' : '' %>" href="/codex/pet?cat_id=<%= cat.id %>"><%= cat.name %></a>
-                    </li>
-                <% }) %>
-            </ul>
+            <div class="hero-grid-container">
+                <% const currentGroup = groups.find(g => g.id == activeGroupId); %>
+                
+                <div class="mb-4">
+                    <h1 class="section-title"><%= currentGroup ? currentGroup.name : 'Select a Group' %></h1>
+                    <p class="section-subtitle">
+                        <%= currentGroup ? `Collection of pets from ${currentGroup.name}.` : 'Select a pet group to view collection.' %>
+                    </p>
+                </div>
 
-            <div class="container-fluid p-0">
-                <% if(pets.length > 0) { %>
-                    <h4 class="text-white mb-4 fw-bold border-start border-4 border-success ps-3">
-                        <%= groups.find(g => g.id == activeGroupId)?.name || 'Pets' %>
-                    </h4>
-                    <div class="row g-4">
-                        <% pets.forEach(pet => { %>
-                            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-                                <div class="hero-card">
-                                    <div class="hero-img-wrapper">
-                                        <img src="/images/pets/<%= pet.image_name %>" class="hero-img" loading="lazy">
-                                    </div>
-                                    <div class="hero-info">
-                                        <h6 class="hero-name"><%= pet.name %></h6>
-                                    </div>
+                <div class="row g-4">
+                    <% if(pets.length === 0) { %>
+                        <div class="col-12">
+                            <div class="text-center py-5 text-muted" style="border: 2px dashed #222; border-radius: 12px;">
+                                <i class="bi bi-box-seam display-4 mb-3 opacity-25"></i>
+                                <h5>No pets found here</h5>
+                            </div>
+                        </div>
+                    <% } %>
+
+                    <% pets.forEach(pet => { %>
+                        <div class="col-6 col-sm-4 col-md-3 col-xl-2">
+                            <div class="hero-card">
+                                <div class="hero-img-wrapper">
+                                    <img src="/images/pets/<%= pet.image_name %>" class="hero-img" loading="lazy" alt="<%= pet.name %>">
+                                </div>
+                                <div class="hero-info">
+                                    <h3 class="hero-name"><%= pet.name %></h3>
                                 </div>
                             </div>
-                        <% }) %>
-                    </div>
-                <% } else { %>
-                    <div class="text-center py-5 text-muted border border-secondary border-dashed rounded mt-4">
-                        <i class="bi bi-search display-4 mb-3 d-block opacity-50"></i>
-                        <h5>No Pets found</h5>
-                    </div>
-                <% } %>
+                        </div>
+                    <% }) %>
+                </div>
             </div>
-        </div>
+        </main>
     </div>
 
     <%- include('../partials/footer') %>

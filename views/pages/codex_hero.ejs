@@ -3,168 +3,391 @@
 <head>
     <%- include('../partials/head') %>
     <style>
-        /* Modern Dark Theme */
-        body { background-color: #0b0c10; color: #c5c6c7; font-family: 'Segoe UI', sans-serif; padding-top: 70px; }
-        
-        /* Layout Grid */
-        .codex-container { display: flex; min-height: calc(100vh - 70px); }
-        .sidebar { width: 260px; background: #1f2833; border-right: 1px solid #45a29e; flex-shrink: 0; display: flex; flex-direction: column; }
-        .content-area { flex: 1; padding: 20px; background: #0b0c10; overflow-y: auto; }
-
-        /* Sidebar Items */
-        .group-item {
-            padding: 12px 20px; color: #c5c6c7; text-decoration: none; display: flex; justify-content: space-between; align-items: center;
-            border-left: 3px solid transparent; transition: 0.2s;
+        /* --- Dark & Gold Theme (User Side) --- */
+        body { 
+            background-color: #050505; 
+            color: #e0e0e0; 
+            font-family: 'Kanit', sans-serif;
+            padding-top: 64px; /* เผื่อ Navbar */
         }
-        .group-item:hover { background: #2c353f; color: #66fcf1; }
-        .group-item.active { background: #2c353f; color: #66fcf1; border-left-color: #66fcf1; font-weight: 600; }
-        .sidebar-title { padding: 20px; font-weight: bold; color: #66fcf1; border-bottom: 1px solid #45a29e; margin-bottom: 10px; }
+        
+        /* Layout */
+        .codex-layout { 
+            display: flex; 
+            min-height: calc(100vh - 64px);
+        }
+
+        /* --- Sidebar --- */
+        .sidebar-panel {
+            width: 280px;
+            background: #0f0f0f;
+            border-right: 1px solid #222;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            position: fixed; /* Fix sidebar */
+            top: 64px; bottom: 0; left: 0;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            background: #0a0a0a;
+            border-bottom: 1px solid #222;
+        }
+
+        .sidebar-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex; align-items: center; gap: 10px;
+        }
+
+        .group-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 0;
+        }
+
+        /* Scrollbar Style */
+        .group-list::-webkit-scrollbar { width: 4px; }
+        .group-list::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+
+        .group-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 25px;
+            color: #888;
+            text-decoration: none;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+            font-size: 0.95rem;
+        }
+
+        .group-item:hover {
+            background: rgba(255, 255, 255, 0.03);
+            color: #fff;
+            padding-left: 30px;
+        }
+
+        .group-item.active {
+            background: linear-gradient(90deg, rgba(255, 193, 7, 0.1), transparent);
+            color: #ffc107;
+            border-left-color: #ffc107;
+            font-weight: 600;
+            padding-left: 30px;
+        }
+
+        /* --- Content Area --- */
+        .content-panel {
+            flex: 1;
+            margin-left: 280px; /* เว้นที่ให้ Sidebar */
+            padding: 0;
+            background: #050505;
+            min-height: 100vh;
+        }
 
         /* Top Tabs (Categories) */
-        .nav-pills .nav-link { 
-            color: #888; border-radius: 50px; padding: 8px 20px; font-weight: 500; transition: 0.3s; 
-            border: 1px solid #333; margin-right: 8px;
-        }
-        .nav-pills .nav-link:hover { color: #fff; border-color: #66fcf1; background: rgba(102, 252, 241, 0.1); }
-        .nav-pills .nav-link.active { background-color: #66fcf1; color: #0b0c10; font-weight: bold; border-color: #66fcf1; box-shadow: 0 0 10px rgba(102, 252, 241, 0.4); }
-
-        /* Hero Card */
-        .hero-card {
-            background: #1f2833; border: 1px solid #2f3a46; border-radius: 12px; overflow: hidden;
-            transition: transform 0.3s, box-shadow 0.3s; cursor: pointer; position: relative;
-        }
-        .hero-card:hover { transform: translateY(-5px); border-color: #66fcf1; box-shadow: 0 5px 15px rgba(102, 252, 241, 0.2); }
-        .hero-img-wrapper { aspect-ratio: 3/4; overflow: hidden; position: relative; }
-        .hero-img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; }
-        .hero-card:hover .hero-img { transform: scale(1.05); }
-        .hero-info { padding: 12px; text-align: center; }
-        .hero-name { color: #fff; font-weight: 600; font-size: 1rem; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-        /* Modal Styles */
-        .modal-content { background-color: #1f2833; border: 1px solid #45a29e; color: #fff; }
-        .modal-header { border-bottom: 1px solid #45a29e; }
-        .modal-title { color: #66fcf1; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
-        .btn-close { filter: invert(1); }
-
-        /* Skill Priority Display */
-        .skill-priority-wrapper { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px; }
-        .skill-item { position: relative; width: 60px; height: 60px; border-radius: 8px; border: 2px solid #45a29e; overflow: hidden; background: #000; }
-        .skill-item img { width: 100%; height: 100%; object-fit: cover; }
-        .priority-badge {
-            position: absolute; top: 0; left: 0; background: #66fcf1; color: #000;
-            width: 20px; height: 20px; font-size: 12px; font-weight: bold;
-            display: flex; align-items: center; justify-content: center;
-            border-bottom-right-radius: 6px;
+        .top-tabs-bar {
+            padding: 15px 30px;
+            background: rgba(25, 25, 25, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #222;
+            position: sticky;
+            top: 64px;
+            z-index: 90;
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            align-items: center;
         }
         
-        .hero-detail-img { width: 100%; border-radius: 12px; border: 2px solid #45a29e; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+        .cat-tab {
+            padding: 8px 20px;
+            border-radius: 30px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            color: #aaa;
+            text-decoration: none;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+
+        .cat-tab:hover {
+            background: #333;
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .cat-tab.active {
+            background: #ffc107;
+            color: #000;
+            border-color: #ffc107;
+            font-weight: 700;
+            box-shadow: 0 0 15px rgba(255, 193, 7, 0.4);
+        }
+
+        /* Hero Grid */
+        .hero-grid-container {
+            padding: 30px;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 5px;
+            text-shadow: 0 0 20px rgba(255, 193, 7, 0.2);
+        }
+        
+        .section-subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.9rem;
+        }
+
+        .hero-card {
+            background: #121212;
+            border: 1px solid #2a2a2a;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            cursor: pointer;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .hero-card:hover {
+            transform: translateY(-7px);
+            border-color: #ffc107;
+            box-shadow: 0 10px 30px rgba(255, 193, 7, 0.15);
+            z-index: 2;
+        }
+
+        .hero-img-wrapper {
+            width: 100%;
+            aspect-ratio: 3/4;
+            overflow: hidden;
+            background: #000;
+            position: relative;
+        }
+
+        .hero-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .hero-card:hover .hero-img {
+            transform: scale(1.05);
+        }
+
+        .hero-info {
+            padding: 15px;
+            text-align: center;
+            background: #161616;
+            border-top: 1px solid #222;
+            flex-grow: 1;
+            display: flex; flex-direction: column; justify-content: center;
+        }
+
+        .hero-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #e0e0e0;
+            margin: 0;
+            transition: color 0.3s;
+        }
+
+        .hero-card:hover .hero-name {
+            color: #ffc107;
+        }
+
+        /* --- Modal Styles --- */
+        .modal-content {
+            background-color: #1a1a1a;
+            border: 1px solid #444;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+        
+        .modal-header {
+            border-bottom: 1px solid #333;
+            background: #141414;
+        }
+        
+        .modal-title {
+            color: #fff;
+            font-weight: 700;
+        }
+        
+        .modal-body {
+            padding: 30px;
+        }
+
+        .skill-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .skill-item {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            background: #000;
+            border: 2px solid #333;
+            overflow: hidden;
+            position: relative;
+            transition: 0.2s;
+        }
+        
+        .skill-item:hover {
+            border-color: #ffc107;
+            transform: scale(1.1);
+        }
+
+        .skill-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .priority-badge {
+            position: absolute;
+            top: 0; right: 0;
+            background: #ffc107;
+            color: #000;
+            font-size: 0.7rem;
+            font-weight: 800;
+            width: 20px; height: 20px;
+            display: flex; align-items: center; justify-content: center;
+            border-bottom-left-radius: 8px;
+        }
+
+        /* Responsive */
+        @media (max-width: 991px) {
+            .sidebar-panel { display: none; } /* ซ่อน Sidebar ในมือถือ (อาจจะทำเป็น Offcanvas ทีหลัง) */
+            .content-panel { margin-left: 0; }
+            .top-tabs-bar { padding: 10px 15px; }
+            .hero-grid-container { padding: 15px; }
+            .section-title { font-size: 1.5rem; }
+        }
     </style>
 </head>
 <body>
     
     <%- include('../partials/navbar') %>
 
-    <div class="codex-container">
-        <div class="sidebar d-none d-md-flex">
-            <div class="sidebar-title"><i class="bi bi-collection-fill me-2"></i>GROUPS</div>
-            <div class="overflow-auto flex-grow-1">
-                <% if(groups.length > 0) { %>
+    <div class="codex-layout">
+        
+        <aside class="sidebar-panel">
+            <div class="sidebar-header">
+                <div class="sidebar-title">
+                    <i class="bi bi-collection-fill text-warning"></i> Groups
+                </div>
+            </div>
+            <div class="group-list">
+                <% if(groups && groups.length > 0) { %>
                     <% groups.forEach(grp => { %>
                         <a href="/codex/hero?cat_id=<%= activeCatId %>&group_id=<%= grp.id %>" 
                            class="group-item <%= activeGroupId == grp.id ? 'active' : '' %>">
-                           <%= grp.name %> <i class="bi bi-chevron-right small opacity-50"></i>
+                           <span><%= grp.name %></span>
+                           <% if(activeGroupId == grp.id) { %> <i class="bi bi-chevron-right small"></i> <% } %>
                         </a>
                     <% }) %>
                 <% } else { %>
-                    <div class="p-3 text-muted text-center">No Groups</div>
+                    <div class="text-center p-4 text-muted small">No Groups</div>
                 <% } %>
             </div>
-        </div>
+        </aside>
 
-        <div class="content-area">
-            <div class="d-md-none mb-3">
-                <select class="form-select bg-dark text-white border-secondary" onchange="window.location.href=this.value">
-                    <% groups.forEach(grp => { %>
-                        <option value="/codex/hero?cat_id=<%= activeCatId %>&group_id=<%= grp.id %>" <%= activeGroupId == grp.id ? 'selected' : '' %>>
-                            <%= grp.name %>
-                        </option>
-                    <% }) %>
-                </select>
-            </div>
-
-            <ul class="nav nav-pills mb-4 pb-2 border-bottom border-secondary">
-                <% categories.forEach(cat => { %>
-                    <li class="nav-item">
-                        <a class="nav-link <%= activeCatId == cat.id ? 'active' : '' %>" 
-                           href="/codex/hero?cat_id=<%= cat.id %>">
+        <main class="content-panel">
+            
+            <div class="top-tabs-bar">
+                <span class="text-white small fw-bold me-2 text-uppercase opacity-50" style="letter-spacing: 1px;">Categories:</span>
+                <% if(categories && categories.length > 0) { %>
+                    <% categories.forEach(cat => { %>
+                        <a href="/codex/hero?cat_id=<%= cat.id %>" 
+                           class="cat-tab <%= activeCatId == cat.id ? 'active' : '' %>">
                            <%= cat.name %>
                         </a>
-                    </li>
-                <% }) %>
-            </ul>
-
-            <div class="container-fluid p-0">
-                <% if(heroes.length > 0) { %>
-                    <h4 class="text-white mb-4 fw-bold border-start border-4 border-info ps-3">
-                        <%= groups.find(g => g.id == activeGroupId)?.name || 'Heroes' %>
-                    </h4>
-                    
-                    <div class="row g-4">
-                        <% heroes.forEach(hero => { %>
-                            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-                                <div class="hero-card" onclick="openHeroModal(this)"
-                                     data-name="<%= hero.name %>"
-                                     data-img="<%= hero.image_name %>"
-                                     data-folder="<%= hero.skillFolder %>"
-                                     data-priority='<%- JSON.stringify(hero.skillOrder) %>'
-                                >
-                                    <div class="hero-img-wrapper">
-                                        <img src="/images/heroes/<%= hero.image_name %>" class="hero-img" loading="lazy">
-                                    </div>
-                                    <div class="hero-info">
-                                        <h6 class="hero-name"><%= hero.name %></h6>
-                                    </div>
-                                </div>
-                            </div>
-                        <% }) %>
-                    </div>
-                <% } else { %>
-                    <div class="text-center py-5 text-muted border border-secondary border-dashed rounded mt-4">
-                        <i class="bi bi-search display-4 mb-3 d-block opacity-50"></i>
-                        <h5>No Heroes in this group</h5>
-                    </div>
+                    <% }) %>
                 <% } %>
             </div>
-        </div>
+
+            <div class="hero-grid-container">
+                <% const currentGroup = groups.find(g => g.id == activeGroupId); %>
+                
+                <div class="mb-4">
+                    <h1 class="section-title"><%= currentGroup ? currentGroup.name : 'Select a Group' %></h1>
+                    <p class="section-subtitle">
+                        <%= currentGroup ? `Explore heroes from the ${currentGroup.name} group.` : 'Please select a group from the sidebar to view heroes.' %>
+                    </p>
+                </div>
+
+                <div class="row g-4">
+                    <% if(heroes.length === 0) { %>
+                        <div class="col-12">
+                            <div class="text-center py-5 text-muted" style="border: 2px dashed #222; border-radius: 12px;">
+                                <i class="bi bi-person-slash display-4 mb-3 opacity-25"></i>
+                                <h5>No heroes found in this group</h5>
+                                <p class="small opacity-50">Try selecting a different category or group.</p>
+                            </div>
+                        </div>
+                    <% } %>
+
+                    <% heroes.forEach(hero => { %>
+                        <div class="col-6 col-sm-4 col-md-3 col-xl-2">
+                            <div class="hero-card" 
+                                 onclick="openHeroModal(this)"
+                                 data-name="<%= hero.name %>"
+                                 data-img="<%= hero.image_name %>"
+                                 data-folder="<%= hero.detectedSkillFolder %>"
+                                 data-priority='<%= JSON.stringify(hero.skillOrder || []) %>'>
+                                
+                                <div class="hero-img-wrapper">
+                                    <img src="/images/heroes/<%= hero.image_name %>" class="hero-img" loading="lazy" alt="<%= hero.name %>">
+                                </div>
+                                <div class="hero-info">
+                                    <h3 class="hero-name"><%= hero.name %></h3>
+                                </div>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+            </div>
+
+        </main>
     </div>
 
     <div class="modal fade" id="heroDetailModal" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modalHeroName">HERO NAME</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <h5 class="modal-title"><i class="bi bi-stars text-warning me-2"></i><span id="modalHeroName">Hero Name</span></h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body p-4">
-                    <div class="row">
-                        <div class="col-md-5 mb-3 mb-md-0">
-                            <img src="" id="modalHeroImg" class="hero-detail-img">
+                <div class="modal-body text-center">
+                    <div class="mb-4 d-inline-block p-1 border border-warning rounded" style="background: #000;">
+                        <img id="modalHeroImg" src="" style="width: 120px; aspect-ratio: 3/4; object-fit: cover; border-radius: 4px;">
+                    </div>
+                    
+                    <h6 class="text-uppercase text-muted small fw-bold mb-3" style="letter-spacing: 1px;">Skill Priority</h6>
+                    
+                    <div id="modalSkillContainer" class="skill-list">
                         </div>
-                        
-                        <div class="col-md-7">
-                            <h5 class="text-info border-bottom border-secondary pb-2 mb-3">
-                                <i class="bi bi-lightning-charge-fill me-2"></i>SKILL PRIORITY
-                            </h5>
-                            
-                            <p class="text-muted small mb-2">Recommended skill usage order:</p>
-                            
-                            <div id="modalSkillContainer" class="skill-priority-wrapper">
-                                </div>
-
-                            <div id="modalNoSkills" class="alert alert-secondary mt-3 d-none">
-                                <i class="bi bi-info-circle me-2"></i>No specific skill priority set.
-                            </div>
-                        </div>
+                    
+                    <div id="modalNoSkills" class="text-muted small mt-3 d-none">
+                        No skill priority data available.
                     </div>
                 </div>
             </div>
@@ -192,8 +415,9 @@
                 priority.forEach((filename, index) => {
                     const div = document.createElement('div');
                     div.className = 'skill-item';
+                    div.title = `Priority ${index + 1}`;
                     div.innerHTML = `
-                        <img src="/images/skill/${folder}/${filename}" onerror="this.src='https://via.placeholder.com/60?text=Skill'">
+                        <img src="/images/skill/${folder}/${filename}" onerror="this.src='https://via.placeholder.com/80?text=Skill'">
                         <div class="priority-badge">${index + 1}</div>
                     `;
                     container.appendChild(div);
