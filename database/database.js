@@ -30,8 +30,8 @@ function initTables() {
         armor2_img TEXT,
         armor2_stat TEXT,
         
-        accessories TEXT, -- เก็บ JSON Array ของชื่อไฟล์รูป
-        substats TEXT,    -- เก็บ JSON Array ของ Stat ที่เลือกเรียงตามลำดับ
+        accessories TEXT, 
+        substats TEXT,    
         description TEXT
     )`);
 
@@ -130,6 +130,11 @@ function initTables() {
         description TEXT,
         youtube_link TEXT
     )`);
+
+    db.run(`CREATE INDEX IF NOT EXISTS idx_codex_groups_cat_id ON codex_groups(category_id)`);
+    db.run(`CREATE INDEX IF NOT EXISTS idx_codex_heroes_group_id ON codex_heroes(group_id)`);
+    db.run(`CREATE INDEX IF NOT EXISTS idx_codex_pets_group_id ON codex_pets(group_id)`);
+    db.run(`CREATE INDEX IF NOT EXISTS idx_raid_teams_raid_id ON raid_teams(raid_id)`);
 }
 
 module.exports = db;

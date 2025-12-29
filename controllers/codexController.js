@@ -1,7 +1,7 @@
-// [file: controllers/codexController.js]
 const db = require("../database/database");
 const path = require("path");
-const fs = require("fs");
+const fs = require("fs").promises; 
+const fsSync = require("fs");
 
 exports.getHeroCodex = (req, res) => {
   const catId = req.query.cat_id ? parseInt(req.query.cat_id) : null;
@@ -31,53 +31,58 @@ exports.getHeroCodex = (req, res) => {
           db.all(
             "SELECT * FROM codex_heroes WHERE group_id = ?",
             [activeGroupId],
-            (err, heroes) => {
+            // [Update] เปลี่ยน Callback เป็น Async เพื่อใช้ await ข้างในได้
+            async (err, heroes) => {
               if (err) return res.render("error", { message: "DB Error" });
 
-              // Process Skills & Priority
-              const heroesData = heroes.map((hero) => {
-                // Skill Order
-                let skillOrder = [];
-                try {
-                  skillOrder = JSON.parse(hero.skill_order || "[]");
-                } catch (e) {}
+              try {
+                // [Update] ใช้ Promise.all เพื่ออ่านไฟล์แบบ Parallel (ขนานกัน) แทนการรอทีละไฟล์
+                const heroesData = await Promise.all(heroes.map(async (hero) => {
+                    // Skill Order Parsing
+                    let skillOrder = [];
+                    try {
+                      skillOrder = JSON.parse(hero.skill_order || "[]");
+                    } catch (e) {}
+    
+                    let imageName = hero.image_name || "";
+                    let folder = hero.skill_folder || imageName.replace(/\.[^/.]+$/, "");
+    
+                    let allSkills = [];
+                    const skillPath = path.join(__dirname, "../public/images/skill", folder);
+    
+                    // Check logic แบบ Async
+                    try {
+                        // เช็คว่า Folder มีอยู่จริงไหม (stat)
+                        await fs.stat(skillPath);
+                        
+                        // อ่านไฟล์ใน Folder (readdir)
+                        const files = await fs.readdir(skillPath);
+                        allSkills = files.filter((f) => /\.(png|jpg|jpeg|gif)$/i.test(f));
+                    } catch (error) {
+                        // ถ้าไม่เจอ Folder หรือ Error ให้ข้ามไป (allSkills เป็น [])
+                    }
+    
+                    return {
+                      ...hero,
+                      skillFolder: folder,
+                      skillOrder: skillOrder,
+                      allSkills: allSkills,
+                    };
+                }));
 
-                // [Update] ป้องกัน error กรณีไม่มีชื่อรูป
-                let imageName = hero.image_name || "";
-                let folder =
-                  hero.skill_folder || imageName.replace(/\.[^/.]+$/, "");
+                res.render("pages/codex_hero", {
+                    title: "Hero Codex",
+                    categories,
+                    groups,
+                    heroes: heroesData,
+                    activeCatId,
+                    activeGroupId,
+                });
 
-                let allSkills = [];
-                const skillPath = path.join(
-                  __dirname,
-                  "../public/images/skill",
-                  folder
-                );
-
-                // ตรงนี้ถ้าใช้ Sync ควรระวังเรื่อง Performance แต่ถ้าโฟลเดอร์สกิลไม่เยอะมากก็พอรับได้
-                // แต่ควรเช็คว่า folder ไม่ใช่ string ว่างเปล่า
-                if (folder && fs.existsSync(skillPath)) {
-                  allSkills = fs
-                    .readdirSync(skillPath)
-                    .filter((f) => /\.(png|jpg|jpeg|gif)$/i.test(f));
-                }
-
-                return {
-                  ...hero,
-                  skillFolder: folder,
-                  skillOrder: skillOrder,
-                  allSkills: allSkills,
-                };
-              });
-
-              res.render("pages/codex_hero", {
-                title: "Hero Codex",
-                categories,
-                groups,
-                heroes: heroesData,
-                activeCatId,
-                activeGroupId,
-              });
+              } catch (processError) {
+                  console.error("Error processing hero files:", processError);
+                  res.render("error", { message: "Server Processing Error" });
+              }
             }
           );
         }
