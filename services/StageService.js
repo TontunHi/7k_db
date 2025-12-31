@@ -19,7 +19,6 @@ class StageService {
         const stages = await this.query('all', metadataSql);
 
         // 2. Fetch Team Members
-        // In a larger app, we might fetch only for specific IDs, but here we load all.
         const membersSql = `SELECT * FROM stage_team_members`;
         const members = await this.query('all', membersSql);
 
@@ -32,14 +31,13 @@ class StageService {
             }
         });
 
-        // 4. Group Logic (Preserving existing Frontend structure)
+        // 4. Group Logic
         const groupedStages = {};
 
         stages.forEach(r => {
             // Attach heroes from relation table
             r.heroes = memberMap[r.id] || Array(5).fill(null);
 
-            // Key for grouping (e.g., Stage_20_30)
             const key = `${r.type}_${r.stage_main}_${r.stage_sub}`;
 
             if (!groupedStages[key]) {
@@ -56,15 +54,16 @@ class StageService {
         return Object.values(groupedStages);
     }
 
+    // [Update] แก้ไข Bug บันทึกไม่ครบ โดยการรอ stmt.finalize และใช้ Transaction
     static async saveStage(data) {
         const { id, stage_main, stage_sub, type, formation, heroes, description } = data;
-        // Note: We no longer rely on 'heroes' column in stage_comps, 
-        // but we keep the column structure purely for legacy safety if needed, or ignore it.
-        // Here we just save metadata.
 
         return new Promise((resolve, reject) => {
             db.serialize(async () => {
                 try {
+                    // 1. Start Transaction
+                    await new Promise((res, rej) => db.run("BEGIN TRANSACTION", (err) => err ? rej(err) : res()));
+
                     let targetId = id;
 
                     if (id) {
@@ -77,24 +76,39 @@ class StageService {
                         // Insert Metadata
                         const result = await this.query('run',
                             `INSERT INTO stage_comps (stage_main, stage_sub, type, formation, description, heroes) VALUES (?,?,?,?,?,?)`,
-                            [stage_main, stage_sub, type, formation, description, '[]'] // Insert empty JSON for legacy column
+                            [stage_main, stage_sub, type, formation, description, '[]']
                         );
                         targetId = result.lastID;
                     }
 
-                    // Manage Members (Delete All -> Re-insert)
+                    // 2. Clear Old Members
                     await this.query('run', "DELETE FROM stage_team_members WHERE stage_id = ?", [targetId]);
 
+                    // 3. Insert New Members (Wait for completion)
                     if (Array.isArray(heroes)) {
-                        const stmt = db.prepare("INSERT INTO stage_team_members (stage_id, hero_filename, slot_index) VALUES (?, ?, ?)");
-                        heroes.forEach((h, index) => {
-                            if (h) stmt.run(targetId, h, index);
+                        await new Promise((res, rej) => {
+                            const stmt = db.prepare("INSERT INTO stage_team_members (stage_id, hero_filename, slot_index) VALUES (?, ?, ?)");
+                            
+                            heroes.forEach((h, index) => {
+                                if (h) stmt.run(targetId, h, index);
+                            });
+
+                            // [Update] สำคัญ: รอให้ finalize ทำงานเสร็จก่อนค่อย resolve
+                            stmt.finalize((err) => {
+                                if (err) rej(err);
+                                else res();
+                            });
                         });
-                        stmt.finalize();
                     }
 
+                    // 4. Commit Transaction
+                    await new Promise((res, rej) => db.run("COMMIT", (err) => err ? rej(err) : res()));
+                    
                     resolve({ success: true, id: targetId });
+
                 } catch (err) {
+                    console.error("Save Stage Error:", err);
+                    db.run("ROLLBACK"); // ยกเลิกการเปลี่ยนแปลงหากมี error
                     reject(err);
                 }
             });
@@ -102,7 +116,6 @@ class StageService {
     }
 
     static async deleteStage(id) {
-        // ON DELETE CASCADE in schema handles the members automatically
         await this.query('run', "DELETE FROM stage_comps WHERE id = ?", [id]);
         return { success: true };
     }

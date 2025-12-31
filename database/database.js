@@ -139,12 +139,13 @@ function initTables() {
         db.run(`CREATE TABLE IF NOT EXISTS raid_teams (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             raid_id INTEGER,
-            team_name TEXT,             -- ชื่อทีม (Admin ตั้งเองไว้อ้างอิง)
-            formation TEXT,             -- เช่น 1-4, 4-1
-            hero_ids TEXT,              -- JSON Array [id1, id2, id3, id4, id5]
-            skill_priority TEXT,        -- JSON Array ["heroId_skillFile", ...]
+            team_name TEXT,
+            formation TEXT,
+            hero_ids TEXT,
+            skill_priority TEXT,
             description TEXT,
             youtube_link TEXT,
+            pet_id TEXT,  -- [New Column] ใส่ไว้ที่นี่เลย
             FOREIGN KEY(raid_id) REFERENCES raid_bosses(id)
         )`);
 
