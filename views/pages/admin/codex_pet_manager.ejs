@@ -1,94 +1,328 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <%- include('../../partials/head') %>
-    <style>
-        /* --- ใช้ Theme เดียวกับ Hero แต่ปรับแต่งนิดหน่อย --- */
-        body { background-color: #0f0f0f; overflow: hidden; font-family: 'Segoe UI', sans-serif; color: #e0e0e0; }
-        .codex-layout { display: flex; height: 100vh; padding-top: 64px; }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #1a1a1a; }
-        ::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
-        
-        /* Navbar */
-        .navbar-modern {
-            height: 64px; background: rgba(18, 18, 18, 0.95); backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            position: fixed; top: 0; left: 0; right: 0; z-index: 1050;
-            padding: 0 20px; display: flex; align-items: center; justify-content: space-between;
-        }
-        .nav-brand-text { font-weight: 700; color: #fff; font-size: 1.1rem; }
-        .nav-btn {
-            background: rgba(255, 255, 255, 0.05); color: #ccc; border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; text-decoration: none;
-            display: inline-flex; align-items: center; gap: 6px; transition: 0.2s;
-        }
-        .nav-btn:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
+        <style>
+            /* --- ใช้ Theme เดียวกับ Hero แต่ปรับแต่งนิดหน่อย --- */
+            body {
+                background-color: #0f0f0f;
+                overflow: hidden;
+                font-family: 'Segoe UI', sans-serif;
+                color: #e0e0e0;
+            }
 
-        /* Sidebar (Groups) */
-        .sidebar-panel { width: 280px; background: #161616; border-right: 1px solid #333; display: flex; flex-direction: column; flex-shrink: 0; }
-        .sidebar-header { padding: 15px; border-bottom: 1px solid #444; display: flex; justify-content: space-between; align-items: center; }
-        .group-list { overflow-y: auto; flex: 1; padding: 10px; }
-        
-        .group-wrapper {
-            display: flex; align-items: center; justify-content: space-between;
-            margin-bottom: 4px; border-radius: 6px; border-left: 3px solid transparent; color: #bbb;
-        }
-        .group-wrapper:hover { background: #252525; color: #fff; padding-left: 5px; }
-        .group-wrapper.active { background: #222; color: #198754; border-left-color: #198754; font-weight: 600; }
-        .group-link { flex-grow: 1; padding: 12px 10px; text-decoration: none; color: inherit; display: block; }
-        .group-actions { padding-right: 10px; opacity: 0.5; transition: 0.2s; }
-        .group-wrapper:hover .group-actions { opacity: 1; }
+            .codex-layout {
+                display: flex;
+                height: 100vh;
+                padding-top: 64px;
+            }
 
-        .text-theme { color: #198754 !important; }
-        .btn-theme { background-color: #198754; border-color: #198754; color: #fff; }
-        .btn-theme:hover { background-color: #157347; border-color: #146c43; }
-        .btn-outline-theme { color: #198754; border: 1px solid #198754; }
-        .btn-outline-theme:hover { background: #198754; color: #fff; }
+            ::-webkit-scrollbar {
+                width: 6px;
+                height: 6px;
+            }
 
-        /* Content */
-        .content-panel { flex: 1; background: #121212; display: flex; flex-direction: column; overflow: hidden; }
-        .top-tabs-bar { padding: 15px 20px; border-bottom: 1px solid #333; background: #181818; display: flex; gap: 10px; align-items: center; overflow-x: auto; flex-shrink: 0; }
-        
-        .cat-tab-wrapper {
-            padding: 6px 12px 6px 18px; border-radius: 20px; background: #252525;
-            border: 1px solid #333; color: #ccc; display: flex; align-items: center; gap: 8px;
-            white-space: nowrap; transition: 0.2s;
-        }
-        .cat-tab-wrapper:hover { background: #333; color: #fff; }
-        .cat-tab-wrapper.active { background: rgba(25, 135, 84, 0.15); color: #198754; border-color: #198754; font-weight: bold; }
-        .cat-link { text-decoration: none; color: inherit; }
+            ::-webkit-scrollbar-track {
+                background: #1a1a1a;
+            }
 
-        /* Grid & Card */
-        .hero-grid-container { flex: 1; overflow-y: auto; padding: 20px; }
-        .hero-card {
-            background: #1e1e1e; border: 1px solid #333; border-radius: 8px; transition: transform 0.2s; 
-            position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center;
-            padding: 15px; height: 100%;
-        }
-        .hero-card:hover { transform: translateY(-5px); border-color: #198754; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-        .hero-img { width: 100%; aspect-ratio: 3/4; object-fit: contain; border-radius: 4px; background: #121212; margin-bottom: 10px; }
-        .hero-name { color: #fff; font-weight: 600; font-size: 0.95rem; margin-bottom: 8px; text-align: center; }
+            ::-webkit-scrollbar-thumb {
+                background: #444;
+                border-radius: 3px;
+            }
 
-        /* Modal Styles */
-        .modal-content { background-color: #1e1e1e; border: 1px solid #444; }
-        .form-control { background-color: #000; color: #fff; border-color: #444; }
-        .form-control:focus { background-color: #000; color: #fff; border-color: #198754; box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.25); }
-        .text-muted { color: #adadad !important; }
-        .selectable-image { position: relative; border: 2px solid transparent; border-radius: 6px; overflow: hidden; background: #121212; aspect-ratio: 3/4; cursor: pointer; }
-        .selectable-image img { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; }
-        .selectable-image:hover img { opacity: 1; }
-        .selectable-image.selected { border-color: #198754; }
-        .selectable-image.selected img { opacity: 1; }
-        .img-name-overlay { display: none !important; }
-    </style>
+            /* Navbar */
+            .navbar-modern {
+                height: 64px;
+                background: rgba(18, 18, 18, 0.95);
+                backdrop-filter: blur(10px);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 1050;
+                padding: 0 20px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            .nav-brand-text {
+                font-weight: 700;
+                color: #fff;
+                font-size: 1.1rem;
+            }
+
+            .nav-btn {
+                background: rgba(255, 255, 255, 0.05);
+                color: #ccc;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                padding: 6px 16px;
+                border-radius: 20px;
+                font-size: 0.85rem;
+                text-decoration: none;
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                transition: 0.2s;
+            }
+
+            .nav-btn:hover {
+                background: rgba(255, 255, 255, 0.1);
+                color: #fff;
+            }
+
+            /* Sidebar (Groups) */
+            .sidebar-panel {
+                width: 280px;
+                background: #161616;
+                border-right: 1px solid #333;
+                display: flex;
+                flex-direction: column;
+                flex-shrink: 0;
+            }
+
+            .sidebar-header {
+                padding: 15px;
+                border-bottom: 1px solid #444;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .group-list {
+                overflow-y: auto;
+                flex: 1;
+                padding: 10px;
+            }
+
+            .group-wrapper {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 4px;
+                border-radius: 6px;
+                border-left: 3px solid transparent;
+                color: #bbb;
+            }
+
+            .group-wrapper:hover {
+                background: #252525;
+                color: #fff;
+                padding-left: 5px;
+            }
+
+            .group-wrapper.active {
+                background: #222;
+                color: #198754;
+                border-left-color: #198754;
+                font-weight: 600;
+            }
+
+            .group-link {
+                flex-grow: 1;
+                padding: 12px 10px;
+                text-decoration: none;
+                color: inherit;
+                display: block;
+            }
+
+            .group-actions {
+                padding-right: 10px;
+                opacity: 0.5;
+                transition: 0.2s;
+            }
+
+            .group-wrapper:hover .group-actions {
+                opacity: 1;
+            }
+
+            .text-theme {
+                color: #198754 !important;
+            }
+
+            .btn-theme {
+                background-color: #198754;
+                border-color: #198754;
+                color: #fff;
+            }
+
+            .btn-theme:hover {
+                background-color: #157347;
+                border-color: #146c43;
+            }
+
+            .btn-outline-theme {
+                color: #198754;
+                border: 1px solid #198754;
+            }
+
+            .btn-outline-theme:hover {
+                background: #198754;
+                color: #fff;
+            }
+
+            /* Content */
+            .content-panel {
+                flex: 1;
+                background: #121212;
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+            }
+
+            .top-tabs-bar {
+                padding: 15px 20px;
+                border-bottom: 1px solid #333;
+                background: #181818;
+                display: flex;
+                gap: 10px;
+                align-items: center;
+                overflow-x: auto;
+                flex-shrink: 0;
+            }
+
+            .cat-tab-wrapper {
+                padding: 6px 12px 6px 18px;
+                border-radius: 20px;
+                background: #252525;
+                border: 1px solid #333;
+                color: #ccc;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                white-space: nowrap;
+                transition: 0.2s;
+            }
+
+            .cat-tab-wrapper:hover {
+                background: #333;
+                color: #fff;
+            }
+
+            .cat-tab-wrapper.active {
+                background: rgba(25, 135, 84, 0.15);
+                color: #198754;
+                border-color: #198754;
+                font-weight: bold;
+            }
+
+            .cat-link {
+                text-decoration: none;
+                color: inherit;
+            }
+
+            /* Grid & Card */
+            .hero-grid-container {
+                flex: 1;
+                overflow-y: auto;
+                padding: 20px;
+            }
+
+            .hero-card {
+                background: #1e1e1e;
+                border: 1px solid #333;
+                border-radius: 8px;
+                transition: transform 0.2s;
+                position: relative;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding: 15px;
+                height: 100%;
+            }
+
+            .hero-card:hover {
+                transform: translateY(-5px);
+                border-color: #198754;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            }
+
+            .hero-img {
+                width: 100%;
+                aspect-ratio: 3/4;
+                object-fit: contain;
+                border-radius: 4px;
+                background: #121212;
+                margin-bottom: 10px;
+            }
+
+            .hero-name {
+                color: #fff;
+                font-weight: 600;
+                font-size: 0.95rem;
+                margin-bottom: 8px;
+                text-align: center;
+            }
+
+            /* Modal Styles */
+            .modal-content {
+                background-color: #1e1e1e;
+                border: 1px solid #444;
+            }
+
+            .form-control {
+                background-color: #000;
+                color: #fff;
+                border-color: #444;
+            }
+
+            .form-control:focus {
+                background-color: #000;
+                color: #fff;
+                border-color: #198754;
+                box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.25);
+            }
+
+            .text-muted {
+                color: #adadad !important;
+            }
+
+            .selectable-image {
+                position: relative;
+                border: 2px solid transparent;
+                border-radius: 6px;
+                overflow: hidden;
+                background: #121212;
+                aspect-ratio: 3/4;
+                cursor: pointer;
+            }
+
+            .selectable-image img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                opacity: 0.7;
+            }
+
+            .selectable-image:hover img {
+                opacity: 1;
+            }
+
+            .selectable-image.selected {
+                border-color: #198754;
+            }
+
+            .selectable-image.selected img {
+                opacity: 1;
+            }
+
+            .img-name-overlay {
+                display: none !important;
+            }
+        </style>
 </head>
+
 <body class="text-light">
-    
+
     <nav class="navbar-modern">
         <div class="d-flex align-items-center gap-3">
             <img src="/images/about_website/logo_seven_knights_rebirth.png" alt="Logo" style="height: 40px;">
-            <span class="nav-brand-text">7K Rebirth <span style="font-weight:400; opacity:0.7;">| Pet Codex</span></span>
+            <span class="nav-brand-text">7K Rebirth <span style="font-weight:400; opacity:0.7;">| Pet
+                    Codex</span></span>
         </div>
         <div class="d-flex align-items-center gap-3">
             <a href="/admin/dashboard" class="nav-btn"><i class="bi bi-grid-fill"></i> Dashboard</a>
@@ -100,82 +334,101 @@
         <div class="sidebar-panel">
             <div class="sidebar-header">
                 <span class="fw-bold text-white"><i class="bi bi-collection me-2 text-theme"></i>Groups</span>
-                <button class="btn btn-sm btn-outline-theme border-0" data-bs-toggle="modal" data-bs-target="#addGroupModal"><i class="bi bi-plus-lg"></i></button>
+                <button class="btn btn-sm btn-outline-theme border-0" data-bs-toggle="modal"
+                    data-bs-target="#addGroupModal"><i class="bi bi-plus-lg"></i></button>
             </div>
             <div class="group-list">
-                <% if(groups && groups.length > 0) { %>
-                    <% groups.forEach(grp => { %>
+                <% if(groups && groups.length> 0) { %>
+                    <% groups.forEach(grp=> { %>
                         <div class="group-wrapper <%= activeGroupId == grp.id ? 'active' : '' %>">
-                            <a href="/admin/codex/pet?cat_id=<%= activeCatId %>&group_id=<%= grp.id %>" class="group-link">
-                                <span><%= grp.name %></span>
+                            <a href="/admin/codex/pet?cat_id=<%= activeCatId %>&group_id=<%= grp.id %>"
+                                class="group-link">
+                                <span>
+                                    <%= grp.name %>
+                                </span>
                             </a>
                             <div class="group-actions">
-                                <form action="/admin/api/codex/group/delete" method="POST" onsubmit="return confirm('Delete Group: <%= grp.name %>? This will delete all pets inside!');">
+                                <form action="/admin/api/codex/group/delete" method="POST"
+                                    onsubmit="return confirm('Delete Group: <%= grp.name %>? This will delete all pets inside!');">
                                     <input type="hidden" name="id" value="<%= grp.id %>">
                                     <input type="hidden" name="type" value="pet">
-                                    <button type="submit" class="btn btn-sm text-secondary p-0 border-0 hover-danger"><i class="bi bi-trash"></i></button>
+                                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                    <button type="submit" class="btn btn-sm text-secondary p-0 border-0 hover-danger"><i
+                                            class="bi bi-trash"></i></button>
                                 </form>
                             </div>
                         </div>
-                    <% }) %>
-                <% } else { %>
-                    <div class="text-center mt-5 text-muted"><small>No groups found</small></div>
-                <% } %>
+                        <% }) %>
+                            <% } else { %>
+                                <div class="text-center mt-5 text-muted"><small>No groups found</small></div>
+                                <% } %>
             </div>
         </div>
 
         <div class="content-panel">
             <div class="top-tabs-bar">
                 <span class="text-muted small fw-bold me-2">CATEGORIES:</span>
-                <% if(categories && categories.length > 0) { %>
-                    <% categories.forEach(cat => { %>
+                <% if(categories && categories.length> 0) { %>
+                    <% categories.forEach(cat=> { %>
                         <div class="cat-tab-wrapper <%= activeCatId == cat.id ? 'active' : '' %>">
                             <a href="/admin/codex/pet?cat_id=<%= cat.id %>" class="cat-link">
                                 <%= cat.name %>
                             </a>
-                            <form action="/admin/api/codex/category/delete" method="POST" onsubmit="return confirm('Delete Category: <%= cat.name %>?');" class="d-flex">
+                            <form action="/admin/api/codex/category/delete" method="POST"
+                                onsubmit="return confirm('Delete Category: <%= cat.name %>?');" class="d-flex">
                                 <input type="hidden" name="id" value="<%= cat.id %>">
                                 <input type="hidden" name="type" value="pet">
-                                <button type="submit" class="btn btn-sm p-0 text-secondary border-0" title="Delete Category"><i class="bi bi-x"></i></button>
+                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                <button type="submit" class="btn btn-sm p-0 text-secondary border-0"
+                                    title="Delete Category"><i class="bi bi-x"></i></button>
                             </form>
                         </div>
-                    <% }) %>
-                <% } %>
-                <button type="button" class="btn btn-sm btn-outline-theme rounded-circle ms-2" style="width:30px;height:30px;" data-bs-toggle="modal" data-bs-target="#addCategoryModal"><i class="bi bi-plus-lg"></i></button>
+                        <% }) %>
+                            <% } %>
+                                <button type="button" class="btn btn-sm btn-outline-theme rounded-circle ms-2"
+                                    style="width:30px;height:30px;" data-bs-toggle="modal"
+                                    data-bs-target="#addCategoryModal"><i class="bi bi-plus-lg"></i></button>
             </div>
 
             <div class="hero-grid-container">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
-                        <% const currentGroup = groups.find(g => g.id == activeGroupId); %>
-                        <h3 class="m-0 text-white fw-bold"><%= currentGroup ? currentGroup.name : 'Select a Group' %></h3>
+                        <% const currentGroup=groups.find(g=> g.id == activeGroupId); %>
+                            <h3 class="m-0 text-white fw-bold">
+                                <%= currentGroup ? currentGroup.name : 'Select a Group' %>
+                            </h3>
                     </div>
                     <% if(activeGroupId) { %>
-                        <button class="btn btn-theme px-4 rounded-pill shadow-sm" onclick="openAddPetModal('<%= activeGroupId %>', '<%= currentGroup ? currentGroup.name : '' %>')">
+                        <button class="btn btn-theme px-4 rounded-pill shadow-sm"
+                            onclick="openAddPetModal('<%= activeGroupId %>', '<%= currentGroup ? currentGroup.name : '' %>')">
                             <i class="bi bi-plus-lg me-1"></i> Add Pet
                         </button>
-                    <% } %>
+                        <% } %>
                 </div>
 
                 <div class="row g-3">
-                    <% if(pets.length === 0) { %>
-                        <div class="col-12 text-center py-5 text-muted" style="border: 2px dashed #333; border-radius: 10px;">
+                    <% if(pets.length===0) { %>
+                        <div class="col-12 text-center py-5 text-muted"
+                            style="border: 2px dashed #333; border-radius: 10px;">
                             <h5>No pets in this group</h5>
                         </div>
-                    <% } %>
+                        <% } %>
 
-                    <% pets.forEach(pet => { %>
-                        <div class="col-6 col-sm-4 col-md-3 col-xl-2">
-                            <div class="hero-card">
-                                <img src="/images/pets/<%= pet.image_name %>" class="hero-img">
-                                <div class="hero-name"><%= pet.name %></div>
-                                <a href="/admin/codex/pet/delete/<%= pet.id %>?cat_id=<%= activeCatId %>&group_id=<%= activeGroupId %>" 
-                                   class="btn btn-outline-danger btn-sm w-100 mt-auto" onclick="return confirm('Delete <%= pet.name %>?')">
-                                   <i class="bi bi-trash"></i> Delete
-                                </a>
-                            </div>
-                        </div>
-                    <% }) %>
+                            <% pets.forEach(pet=> { %>
+                                <div class="col-6 col-sm-4 col-md-3 col-xl-2">
+                                    <div class="hero-card">
+                                        <img src="/images/pets/<%= pet.image_name %>" class="hero-img">
+                                        <div class="hero-name">
+                                            <%= pet.name %>
+                                        </div>
+                                        <a href="/admin/codex/pet/delete/<%= pet.id %>?cat_id=<%= activeCatId %>&group_id=<%= activeGroupId %>"
+                                            class="btn btn-outline-danger btn-sm w-100 mt-auto"
+                                            onclick="return confirm('Delete <%= pet.name %>?')">
+                                            <i class="bi bi-trash"></i> Delete
+                                        </a>
+                                    </div>
+                                </div>
+                                <% }) %>
                 </div>
             </div>
         </div>
@@ -186,6 +439,7 @@
             <div class="modal-content">
                 <form action="/admin/codex/category/add" method="POST">
                     <input type="hidden" name="type" value="pet">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                     <div class="modal-body">
                         <label class="form-label text-muted small fw-bold">CATEGORY NAME</label>
                         <input type="text" name="name" class="form-control" required>
@@ -203,6 +457,7 @@
             <div class="modal-content">
                 <form action="/admin/codex/group/add" method="POST">
                     <input type="hidden" name="type" value="pet">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                     <div class="modal-body">
                         <input type="hidden" name="category_id" value="<%= activeCatId %>">
                         <label class="form-label text-muted small fw-bold">GROUP NAME</label>
@@ -220,37 +475,44 @@
         <div class="modal-dialog modal-xl modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header border-secondary">
-                    <h5 class="modal-title text-white">Add Pet to <span id="modalGroupName" class="text-theme fw-bold"></span></h5>
+                    <h5 class="modal-title text-white">Add Pet to <span id="modalGroupName"
+                            class="text-theme fw-bold"></span></h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <form action="/admin/codex/pet/add" method="POST">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                     <div class="modal-body row g-4">
                         <div class="col-lg-4 border-end border-secondary">
                             <input type="hidden" name="group_id" id="modalGroupId">
                             <input type="hidden" name="return_cat_id" value="<%= activeCatId %>">
                             <div class="mb-4 text-center">
-                                <div id="previewSelected" class="d-flex align-items-center justify-content-center text-muted border border-secondary rounded bg-black mx-auto" style="width: 140px; aspect-ratio: 3/4;">
+                                <div id="previewSelected"
+                                    class="d-flex align-items-center justify-content-center text-muted border border-secondary rounded bg-black mx-auto"
+                                    style="width: 140px; aspect-ratio: 3/4;">
                                     <small>No Image</small>
                                 </div>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label text-muted small fw-bold">SELECTED FILE</label>
-                                <input type="text" name="image_name" id="selectedImageInput" class="form-control form-control-sm text-theme fw-bold" readonly required>
+                                <input type="text" name="image_name" id="selectedImageInput"
+                                    class="form-control form-control-sm text-theme fw-bold" readonly required>
                             </div>
                         </div>
                         <div class="col-lg-8">
                             <div class="d-flex justify-content-between mb-3">
                                 <label class="text-white fw-bold">Select Pet Image</label>
-                                <input type="text" id="imgSearch" class="form-control form-control-sm text-white" style="width: 200px; background:#000; border-color:#333;" placeholder="Search..." onkeyup="filterImages()">
+                                <input type="text" id="imgSearch" class="form-control form-control-sm text-white"
+                                    style="width: 200px; background:#000; border-color:#333;" placeholder="Search..."
+                                    onkeyup="filterImages()">
                             </div>
                             <div class="row g-2" style="max-height: 400px; overflow-y: auto;">
-                                <% availablePetImages.forEach(img => { %>
-                                     <div class="col-3 col-sm-3 col-md-2 img-item-col">
-                                         <div class="selectable-image" onclick="selectImage(this, '<%= img %>')">
+                                <% availablePetImages.forEach(img=> { %>
+                                    <div class="col-3 col-sm-3 col-md-2 img-item-col">
+                                        <div class="selectable-image" onclick="selectImage(this, '<%= img %>')">
                                             <img src="/images/pets/<%= img %>" loading="lazy">
-                                         </div>
-                                   </div>
-                                <% }) %>
+                                        </div>
+                                    </div>
+                                    <% }) %>
                             </div>
                         </div>
                     </div>
@@ -264,32 +526,33 @@
 
     <%- include('../../partials/footer') %>
 
-    <script>
-        function openAddPetModal(groupId, groupName) {
-            document.getElementById('modalGroupId').value = groupId;
-            document.getElementById('modalGroupName').innerText = groupName;
-            document.getElementById('selectedImageInput').value = '';
-            document.getElementById('previewSelected').innerHTML = '<small>No Image</small>';
-            document.querySelectorAll('.selectable-image').forEach(el => el.classList.remove('selected'));
-            new bootstrap.Modal(document.getElementById('addPetModal')).show();
-        }
-
-        function selectImage(el, filename) {
-            document.querySelectorAll('.selectable-image').forEach(div => div.classList.remove('selected'));
-            el.classList.add('selected');
-            document.getElementById('selectedImageInput').value = filename;
-            document.getElementById('previewSelected').innerHTML = `<img src="/images/pets/${filename}" style="width:100%; height:100%; object-fit:cover;">`;
-        }
-
-        function filterImages() {
-            const input = document.getElementById('imgSearch').value.toLowerCase();
-            const cols = document.getElementsByClassName('img-item-col');
-            for (let col of cols) {
-                const img = col.querySelector('img');
-                const txt = img ? img.src.split('/').pop() : '';
-                col.style.display = txt.toLowerCase().includes(input) ? "" : "none";
+        <script>
+            function openAddPetModal(groupId, groupName) {
+                document.getElementById('modalGroupId').value = groupId;
+                document.getElementById('modalGroupName').innerText = groupName;
+                document.getElementById('selectedImageInput').value = '';
+                document.getElementById('previewSelected').innerHTML = '<small>No Image</small>';
+                document.querySelectorAll('.selectable-image').forEach(el => el.classList.remove('selected'));
+                new bootstrap.Modal(document.getElementById('addPetModal')).show();
             }
-        }
-    </script>
+
+            function selectImage(el, filename) {
+                document.querySelectorAll('.selectable-image').forEach(div => div.classList.remove('selected'));
+                el.classList.add('selected');
+                document.getElementById('selectedImageInput').value = filename;
+                document.getElementById('previewSelected').innerHTML = `<img src="/images/pets/${filename}" style="width:100%; height:100%; object-fit:cover;">`;
+            }
+
+            function filterImages() {
+                const input = document.getElementById('imgSearch').value.toLowerCase();
+                const cols = document.getElementsByClassName('img-item-col');
+                for (let col of cols) {
+                    const img = col.querySelector('img');
+                    const txt = img ? img.src.split('/').pop() : '';
+                    col.style.display = txt.toLowerCase().includes(input) ? "" : "none";
+                }
+            }
+        </script>
 </body>
+
 </html>

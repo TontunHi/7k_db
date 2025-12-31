@@ -3,25 +3,26 @@ const db = require('../database/database');
 const fileHelper = require('../utils/fileHelper');
 const fs = require('fs'); // อย่าลืม require fs ถ้ายังไม่มี
 const path = require('path');
+const BuildService = require('../services/buildService');
 
 // --- Auth Section ---
 exports.getLoginPage = (req, res) => {
-    res.render('pages/admin/login', { 
-        title: 'Admin Login', 
+    res.render('pages/admin/login', {
+        title: 'Admin Login',
         error: null,
-        layout: false 
+        layout: false
     });
 };
 
 exports.postLogin = (req, res) => {
     const { username, password } = req.body;
-    
+
     if (username === process.env.ADMIN_USER && password === process.env.ADMIN_PASS) {
         req.session.isAdmin = true;
         res.redirect('/admin/dashboard');
     } else {
-        res.render('pages/admin/login', { 
-            title: 'Admin Login', 
+        res.render('pages/admin/login', {
+            title: 'Admin Login',
             error: 'Username or Password incorrect',
             layout: false
         });
@@ -42,43 +43,21 @@ exports.getDashboard = (req, res) => {
 };
 
 // --- Tier List Manager Section ---
-exports.getTierListManager = (req, res) => {
-    const category = req.query.category || 'PVP'; 
-    const isPetCategory = category === 'PET';
-    const folder = isPetCategory ? 'pets' : 'heroes';
-    
-    // 1. ดึงข้อมูลรูปภาพ
-    const allItems = fileHelper.getSortedImages(folder);
+// --- Tier List Manager Section ---
+exports.getTierListManager = async (req, res) => {
+    try {
+        const category = req.query.category || 'PVP';
+        const isPetCategory = category === 'PET';
+        const folder = isPetCategory ? 'pets' : 'heroes';
 
-    // 2. ดึงข้อมูลจาก DB
-    const sql = `SELECT * FROM tier_rankings WHERE category = ?`;
-    
-    db.all(sql, [category], (err, rows) => {
-        if (err) { return res.status(500).send(err.message); }
+        // 1. Get Images
+        const imageFiles = fileHelper.getSortedImages(folder);
+        const allItems = imageFiles.map(file => fileHelper.getGradeAndName(file));
 
-        const assignedMap = {}; 
-        rows.forEach(row => {
-            assignedMap[row.char_filename] = row.rank;
-        });
-
-        // [Update] เปลี่ยน Ranks เป็นชุดใหม่
-        const ranks = ['EX', 'S', 'A', 'B', 'C', 'D', 'E'];
-        
-        const tierData = {};
-        ranks.forEach(r => tierData[r] = []);
-        const poolData = [];
-
-        allItems.forEach(item => {
-            const rank = assignedMap[item.filename];
-            
-            // [Update] เพิ่มเงื่อนไขตรวจสอบว่า Rank นั้นมีอยู่ในระบบใหม่หรือไม่ (tierData[rank])
-            // ถ้าเป็น Rank เก่า (เช่น SSS) หรือไม่มี Rank ให้โยนเข้า Pool
-            if (rank && tierData[rank]) {
-                tierData[rank].push(item);
-            } else {
-                poolData.push(item);
-            }
-        });
+        // 2. Get Data via Service
+        const TierListService = require('../services/TierListService');
+        const assignedMap = await TierListService.getTierData(category);
+        const { ranks, tierData, poolData } = TierListService.processTierData(allItems, assignedMap);
 
         res.render('pages/admin/tierlist_manager', {
             title: 'Admin Panel - Tier List',
@@ -89,308 +68,184 @@ exports.getTierListManager = (req, res) => {
             poolData: poolData,
             folder: folder
         });
-    });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send(err.message);
+    }
 };
 
-// --- API Save Tier (ส่วนที่เคยหายไป) ---
-exports.saveTierList = (req, res) => {
-    const { category, data } = req.body; 
-    
-    db.serialize(() => {
-        const stmt = db.prepare("INSERT OR REPLACE INTO tier_rankings (category, rank, char_filename, char_type) VALUES (?, ?, ?, ?)");
-        
-        db.run("DELETE FROM tier_rankings WHERE category = ?", [category], (err) => {
-            if (err) console.error(err);
-            
-            if (data && data.length > 0) {
-                data.forEach(item => {
-                    stmt.run(category, item.rank, item.filename, 'HERO'); 
-                });
-            }
-            stmt.finalize();
-            res.json({ success: true });
-        });
-    });
+// --- API Save Tier ---
+exports.saveTierList = async (req, res) => {
+    try {
+        const { category, data } = req.body;
+        const TierListService = require('../services/TierListService');
+        const result = await TierListService.saveTierList(category, data);
+        res.json(result);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, error: err.message });
+    }
 };
 
 // --- Build Manager ---
-exports.getBuildManager = (req, res) => {
-    const gradeParam = req.params.grade.toLowerCase();
-    
-    // 1. Get Heroes
-    const heroes = fileHelper.getSortedImages('heroes');
-    const filteredHeroes = heroes.filter(h => {
-        if (gradeParam === 'legendary') return h.grade.startsWith('l');
-        if (gradeParam === 'rare') return h.grade === 'r';
-        return true;
-    });
+exports.getBuildManager = async (req, res) => {
+    try {
+        const gradeParam = req.params.grade.toLowerCase();
 
-    // 2. Get Items Images (New Paths)
-    const weaponImages = fileHelper.getImageFiles('items/weapon');
-    const armorImages = fileHelper.getImageFiles('items/armor');
-    const accImages = fileHelper.getImageFiles('items/accessories');
-
-    // 3. Get Builds Data
-    db.all("SELECT * FROM builds", [], (err, builds) => {
-        if (err) return res.send("DB Error");
-
-        const buildsMap = {};
-        builds.forEach(b => {
-            if (!buildsMap[b.hero_filename]) buildsMap[b.hero_filename] = [];
-            try {
-                b.accessories = JSON.parse(b.accessories || '[]');
-                b.substats = JSON.parse(b.substats || '[]');
-            } catch (e) {
-                b.accessories = [];
-                b.substats = [];
-            }
-            buildsMap[b.hero_filename].push(b);
+        // 1. Get Heroes
+        const heroFiles = fileHelper.getSortedImages('heroes');
+        const heroes = heroFiles.map(file => fileHelper.getGradeAndName(file));
+        const filteredHeroes = heroes.filter(h => {
+            if (gradeParam === 'legendary') return h.grade.startsWith('l'); // Matches l, l+, l++
+            if (gradeParam === 'rare') return ['r', 'uc', 'c'].includes(h.grade); // Matches Rare, Common, Uncommon
+            return true;
         });
+
+        // 2. Get Items Images (New Paths)
+        const weaponImages = fileHelper.getImageFiles('items/weapon');
+        const armorImages = fileHelper.getImageFiles('items/armor');
+        const accImages = fileHelper.getImageFiles('items/accessories');
+
+        // 3. Get Builds Data via Service
+        const builds = await BuildService.getAllBuilds();
+        const buildsMap = BuildService.processBuildsForDisplay(builds);
 
         res.render('pages/admin/build_manager', {
             title: `Manage Builds - ${gradeParam}`,
             grade: gradeParam,
             heroes: filteredHeroes,
             buildsMap: buildsMap,
-            // ส่งข้อมูลรูปภาพไอเทมไปด้วย
             itemImages: {
                 weapons: weaponImages,
                 armors: armorImages,
                 accessories: accImages
             }
         });
-    });
-};
-
-exports.saveBuild = (req, res) => {
-    const { 
-        id, hero_filename, build_name, c_level, mode,
-        weapon1_img, weapon1_stat, armor1_img, armor1_stat,
-        weapon2_img, weapon2_stat, armor2_img, armor2_stat,
-        accessories, substats, description 
-    } = req.body;
-
-    const accJson = JSON.stringify(accessories || []);
-    const subJson = JSON.stringify(substats || []);
-
-    if (id) {
-        // Update Existing
-        const sql = `UPDATE builds SET 
-            build_name=?, c_level=?, mode=?, 
-            weapon1_img=?, weapon1_stat=?, armor1_img=?, armor1_stat=?,
-            weapon2_img=?, weapon2_stat=?, armor2_img=?, armor2_stat=?,
-            accessories=?, substats=?, description=?
-            WHERE id=?`;
-        db.run(sql, [
-            build_name, c_level, mode, 
-            weapon1_img, weapon1_stat, armor1_img, armor1_stat,
-            weapon2_img, weapon2_stat, armor2_img, armor2_stat,
-            accJson, subJson, description, id
-        ], (err) => {
-            if (err) return res.json({ success: false, error: err.message });
-            res.json({ success: true, id: id });
-        });
-    } else {
-        // Insert New
-        const sql = `INSERT INTO builds (
-            hero_filename, build_name, c_level, mode, 
-            weapon1_img, weapon1_stat, armor1_img, armor1_stat,
-            weapon2_img, weapon2_stat, armor2_img, armor2_stat,
-            accessories, substats, description
-        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
-        
-        db.run(sql, [
-            hero_filename, build_name, c_level, mode, 
-            weapon1_img, weapon1_stat, armor1_img, armor1_stat,
-            weapon2_img, weapon2_stat, armor2_img, armor2_stat,
-            accJson, subJson, description
-        ], function(err) {
-            if (err) return res.json({ success: false, error: err.message });
-            res.json({ success: true, id: this.lastID });
-        });
+    } catch (err) {
+        console.error(err);
+        res.send("DB Error");
     }
 };
 
-exports.deleteBuild = (req, res) => {
-    const { id } = req.body;
-    db.run("DELETE FROM builds WHERE id = ?", [id], (err) => {
-        if (err) return res.json({ success: false });
+exports.saveBuild = async (req, res) => {
+    try {
+        const result = await BuildService.saveBuild(req.body);
+        res.json(result);
+    } catch (err) {
+        res.json({ success: false, error: err.message });
+    }
+};
+
+exports.deleteBuild = async (req, res) => {
+    try {
+        const { id } = req.body;
+        await BuildService.deleteBuild(id);
         res.json({ success: true });
-    });
+    } catch (err) {
+        res.json({ success: false, error: err.message });
+    }
 };
 
 // --- Stage & Nightmare Manager ---
-exports.getStageCompManager = (req, res) => {
-    const heroes = fileHelper.getSortedImages('heroes');
-    
-    // ดึงข้อมูลและเรียงลำดับ: Type (Stage มาก่อน) -> Main -> Sub
-    const sql = `SELECT * FROM stage_comps ORDER BY 
-                 CASE WHEN type = 'Stage' THEN 1 ELSE 2 END, 
-                 stage_main ASC, stage_sub ASC`;
+// --- Stage & Nightmare Manager ---
+exports.getStageCompManager = async (req, res) => {
+    try {
+        const heroFiles = fileHelper.getSortedImages('heroes');
+        const heroes = heroFiles.map(file => fileHelper.getGradeAndName(file));
 
-    db.all(sql, [], (err, rows) => {
-        if (err) return res.send("DB Error");
-
-        // --- Logic จัดกลุ่ม: รวมทีมที่อยู่ด่านเดียวกันไว้ด้วยกัน ---
-        const groupedStages = {};
-        
-        rows.forEach(r => {
-            // Parse Heroes JSON
-            try { r.heroes = JSON.parse(r.heroes); } catch(e) { r.heroes = Array(5).fill(null); }
-            
-            // Key สำหรับจัดกลุ่ม (เช่น Stage_20_30)
-            const key = `${r.type}_${r.stage_main}_${r.stage_sub}`;
-            
-            if (!groupedStages[key]) {
-                groupedStages[key] = {
-                    type: r.type,
-                    stage_main: r.stage_main,
-                    stage_sub: r.stage_sub,
-                    teams: [] // เตรียม Array ไว้เก็บหลายทีม
-                };
-            }
-            // เพิ่มทีมเข้าไปในด่านนี้
-            groupedStages[key].teams.push(r);
-        });
-
-        // แปลง Object กลับเป็น Array เพื่อส่งให้ Frontend วนลูป
-        const stagesList = Object.values(groupedStages);
+        const StageService = require('../services/StageService');
+        const stagesList = await StageService.getAllStages();
 
         res.render('pages/admin/stage_manager', {
             title: 'Manage Stage & Nightmare',
             category: 'Stage',
             heroes: heroes,
-            stages: stagesList // ส่งตัวแปร stages ที่จัดกลุ่มแล้วไปแทน
+            stages: stagesList
         });
-    });
-};
-
-exports.saveStageComp = (req, res) => {
-    const { id, stage_main, stage_sub, type, formation, heroes, description } = req.body;
-    const heroesJson = JSON.stringify(heroes || []);
-
-    if (id) {
-        // Update
-        db.run(`UPDATE stage_comps SET stage_main=?, stage_sub=?, type=?, formation=?, heroes=?, description=? WHERE id=?`, 
-            [stage_main, stage_sub, type, formation, heroesJson, description, id], 
-            (err) => {
-                if(err) return res.json({success: false, error: err.message});
-                res.json({success: true, id});
-            });
-    } else {
-        // Insert
-        db.run(`INSERT INTO stage_comps (stage_main, stage_sub, type, formation, heroes, description) VALUES (?,?,?,?,?,?)`, 
-            [stage_main, stage_sub, type, formation, heroesJson, description], 
-            function(err) {
-                if(err) return res.json({success: false, error: err.message});
-                res.json({success: true, id: this.lastID});
-            });
+    } catch (err) {
+        console.error(err);
+        res.send("DB Error");
     }
 };
 
-exports.deleteStageComp = (req, res) => {
-    const { id } = req.body;
-    db.run("DELETE FROM stage_comps WHERE id = ?", [id], (err) => {
-        if(err) return res.json({success: false});
-        res.json({success: true});
-    });
+exports.saveStageComp = async (req, res) => {
+    try {
+        const StageService = require('../services/StageService');
+        const result = await StageService.saveStage(req.body);
+        res.json(result);
+    } catch (err) {
+        res.json({ success: false, error: err.message });
+    }
+};
+
+exports.deleteStageComp = async (req, res) => {
+    try {
+        const { id } = req.body;
+        const StageService = require('../services/StageService');
+        await StageService.deleteStage(id);
+        res.json({ success: true });
+    } catch (err) {
+        res.json({ success: false, error: err.message });
+    }
 };
 
 // --- Dungeon Manager ---
-exports.getDungeonManager = (req, res) => {
-    const heroes = fileHelper.getSortedImages('heroes');
-    
-    // 1. อ่านไฟล์รูป Banner ทั้งหมดจากโฟลเดอร์ dungeon
-    const dungeonDir = path.join(__dirname, '../public/images/dungeon');
-    let dungeonBanners = [];
-    
+exports.getDungeonManager = async (req, res) => {
     try {
-        if (fs.existsSync(dungeonDir)) {
-            dungeonBanners = fs.readdirSync(dungeonDir).filter(file => {
-                return ['.png', '.jpg', '.jpeg', '.webp'].includes(path.extname(file).toLowerCase());
-            });
-        }
-    } catch (err) {
-        console.error("Error reading dungeon directory:", err);
-    }
+        const heroFiles = fileHelper.getSortedImages('heroes');
+        const heroes = heroFiles.map(file => fileHelper.getGradeAndName(file));
 
-    // 2. ดึงข้อมูลทีมทั้งหมดจาก DB
-    db.all("SELECT * FROM dungeon_comps", [], (err, rows) => {
-        if (err) return res.send("DB Error");
-
-        // 3. จัดกลุ่มทีม (Teams) เข้ากับดันเจี้ยน (Banners)
-        const groupedDungeons = dungeonBanners.map(banner => {
-            const teams = rows.filter(r => r.dungeon_name === banner).map(r => {
-                try { r.heroes = JSON.parse(r.heroes); } catch(e) { r.heroes = []; }
-                return r;
-            });
-            return {
-                banner: banner,
-                teams: teams
-            };
-        });
+        const DungeonService = require('../services/DungeonService');
+        const groupedDungeons = await DungeonService.getDungeonData();
 
         res.render('pages/admin/dungeon_manager', {
             title: 'Manage Dungeon',
             dungeons: groupedDungeons,
             heroes: heroes
         });
-    });
-};
-
-exports.saveDungeonComp = (req, res) => {
-    const { id, dungeon_name, formation, heroes, description } = req.body;
-    const heroesJson = JSON.stringify(heroes || []);
-
-    if (id) {
-        // Update
-        db.run(`UPDATE dungeon_comps SET dungeon_name=?, formation=?, heroes=?, description=? WHERE id=?`, 
-            [dungeon_name, formation, heroesJson, description, id], 
-            (err) => {
-                if(err) return res.json({success: false, error: err.message});
-                res.json({success: true});
-            });
-    } else {
-        // Insert
-        db.run(`INSERT INTO dungeon_comps (dungeon_name, formation, heroes, description) VALUES (?,?,?,?)`, 
-            [dungeon_name, formation, heroesJson, description], 
-            function(err) {
-                if(err) return res.json({success: false, error: err.message});
-                res.json({success: true});
-            });
+    } catch (err) {
+        console.error(err);
+        res.send("DB Error");
     }
 };
 
-exports.deleteDungeonComp = (req, res) => {
-    const { id } = req.body;
-    db.run("DELETE FROM dungeon_comps WHERE id = ?", [id], (err) => {
-        if(err) return res.json({success: false});
-        res.json({success: true});
-    });
+exports.saveDungeonComp = async (req, res) => {
+    try {
+        const DungeonService = require('../services/DungeonService');
+        const result = await DungeonService.saveDungeon(req.body);
+        res.json(result);
+    } catch (err) {
+        res.json({ success: false, error: err.message });
+    }
+};
+
+exports.deleteDungeonComp = async (req, res) => {
+    try {
+        const { id } = req.body;
+        const DungeonService = require('../services/DungeonService');
+        await DungeonService.deleteDungeon(id);
+        res.json({ success: true });
+    } catch (err) {
+        res.json({ success: false, error: err.message });
+    }
 };
 
 // --- Guild War Manager ---
-exports.getGuildWarManager = (req, res) => {
-    const heroes = fileHelper.getSortedImages('heroes');
-    
-    // สมมติว่ามี Helper ดึงรูป Pet (ถ้าไม่มีให้ใช้ Logic เดียวกับ Hero)
-    let pets = [];
+// --- Guild War Manager ---
+exports.getGuildWarManager = async (req, res) => {
     try {
-        const petDir = path.join(__dirname, '../public/images/pets');
-        if (fs.existsSync(petDir)) {
-            pets = fs.readdirSync(petDir).filter(f => ['.png','.webp','.jpg'].includes(path.extname(f).toLowerCase()));
-        }
-    } catch(e) { console.log("No pets folder found"); }
+        const heroFiles = fileHelper.getSortedImages('heroes');
+        const heroes = heroFiles.map(file => fileHelper.getGradeAndName(file));
+        let pets = [];
+        try {
+            const petDir = path.join(__dirname, '../public/images/pets');
+            if (fs.existsSync(petDir)) {
+                pets = fs.readdirSync(petDir).filter(f => ['.png', '.webp', '.jpg'].includes(path.extname(f).toLowerCase()));
+            }
+        } catch (e) { }
 
-    db.all("SELECT * FROM guildwar_comps", [], (err, rows) => {
-        if (err) return res.send("DB Error");
-
-        // Format Data
-        const comps = rows.map(r => {
-            try { r.heroes = JSON.parse(r.heroes); } catch(e) { r.heroes = []; }
-            try { r.skill_order = JSON.parse(r.skill_order); } catch(e) { r.skill_order = []; }
-            return r;
-        });
+        const GuildWarService = require('../services/GuildWarService');
+        const comps = await GuildWarService.getAllComps();
 
         res.render('pages/admin/guildwar_manager', {
             title: 'Manage Guild War',
@@ -398,41 +253,29 @@ exports.getGuildWarManager = (req, res) => {
             heroes: heroes,
             pets: pets
         });
-    });
-};
-
-exports.saveGuildWarComp = (req, res) => {
-    const { id, team_name, formation, description, pet, skill_order_json } = req.body;
-    // heroes[] จะส่งมาเป็น array
-    let heroes = req.body['heroes[]'];
-    if (!heroes) heroes = [];
-    if (!Array.isArray(heroes)) heroes = [heroes];
-    
-    // ตัดให้เหลือแค่ 3 ตัวเพื่อความชัวร์
-    heroes = heroes.slice(0, 3);
-    const heroesJson = JSON.stringify(heroes);
-
-    if (id) {
-        db.run(`UPDATE guildwar_comps SET team_name=?, formation=?, heroes=?, pet=?, skill_order=?, description=? WHERE id=?`, 
-            [team_name, formation, heroesJson, pet, skill_order_json, description, id], 
-            (err) => {
-                if(err) return res.json({success: false, error: err.message});
-                res.json({success: true});
-            });
-    } else {
-        db.run(`INSERT INTO guildwar_comps (team_name, formation, heroes, pet, skill_order, description) VALUES (?,?,?,?,?,?)`, 
-            [team_name, formation, heroesJson, pet, skill_order_json, description], 
-            function(err) {
-                if(err) return res.json({success: false, error: err.message});
-                res.json({success: true});
-            });
+    } catch (err) {
+        console.error(err);
+        res.send("DB Error");
     }
 };
 
-exports.deleteGuildWarComp = (req, res) => {
-    const { id } = req.body;
-    db.run("DELETE FROM guildwar_comps WHERE id = ?", [id], (err) => {
-        if(err) return res.json({success: false});
-        res.json({success: true});
-    });
+exports.saveGuildWarComp = async (req, res) => {
+    try {
+        const GuildWarService = require('../services/GuildWarService');
+        await GuildWarService.saveComp(req.body);
+        res.json({ success: true });
+    } catch (err) {
+        res.json({ success: false, error: err.message });
+    }
+};
+
+exports.deleteGuildWarComp = async (req, res) => {
+    try {
+        const { id } = req.body;
+        const GuildWarService = require('../services/GuildWarService');
+        await GuildWarService.deleteComp(id);
+        res.json({ success: true });
+    } catch (err) {
+        res.json({ success: false, error: err.message });
+    }
 };

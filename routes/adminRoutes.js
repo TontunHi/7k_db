@@ -5,9 +5,7 @@ const adminCodexController = require('../controllers/adminCodexController');
 const raidController = require('../controllers/raidController');
 const castleRushController = require('../controllers/castleRushController');
 
-// Middleware: Body Parser
-router.use(express.urlencoded({ extended: true }));
-router.use(express.json());
+
 
 // Middleware: Check Auth
 const requireAdmin = (req, res, next) => {
@@ -70,6 +68,7 @@ router.post('/codex/group/add', adminCodexController.addGroup);
 // --- RAID MANAGER --- [NEW SECTION]
 router.get('/manage/raid', requireAdmin, raidController.getIndex);
 router.post('/api/raid/add_boss', requireAdmin, raidController.addRaidBoss);
+router.post('/api/raid/edit_boss', requireAdmin, raidController.editRaidBoss);
 router.post('/api/raid/delete_boss', requireAdmin, raidController.deleteRaidBoss);
 router.post('/api/raid/save_team', requireAdmin, raidController.saveTeam);
 router.post('/api/raid/delete_team', requireAdmin, raidController.deleteTeam);

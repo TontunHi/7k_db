@@ -23,14 +23,15 @@ exports.getIndex = (req, res) => {
             id: filename,
             name: filename.replace(/\.[^/.]+$/, ""),
             image_name: filename,
-            skill_folder: filename.replace(/\.[^/.]+$/, "")
+            skill_folder: filename.replace(/\.[^/.]+$/, ""),
+            skills: getFilesFromDir(`images/skill/${filename.replace(/\.[^/.]+$/, "")}`)
         };
     });
 
     if (activeStageKey) {
         // [DETAIL VIEW] ดึงทีมของด่านนั้นๆ
         const currentStage = STAGES.find(s => s.key === activeStageKey);
-        
+
         // ป้องกัน user มั่ว URL
         if (!currentStage) return res.redirect('/admin/manage/castle-rush');
 
@@ -71,9 +72,9 @@ exports.getIndex = (req, res) => {
 };
 
 exports.saveTeam = (req, res) => {
-    const { 
-        id, stage_key, team_name, formation, 
-        hero_ids, skill_priority, description, youtube_link 
+    const {
+        id, stage_key, team_name, formation,
+        hero_ids, skill_priority, description, youtube_link
     } = req.body;
 
     const heroIdsJson = JSON.stringify(hero_ids || []);
@@ -83,10 +84,10 @@ exports.saveTeam = (req, res) => {
         // Update
         db.run(`UPDATE castle_rush_teams SET 
             team_name=?, formation=?, hero_ids=?, skill_priority=?, description=?, youtube_link=? 
-            WHERE id=?`, 
+            WHERE id=?`,
             [team_name, formation, heroIdsJson, skillPriorityJson, description, youtube_link, id],
             (err) => {
-                if(err) return res.json({ success: false, error: err.message });
+                if (err) return res.json({ success: false, error: err.message });
                 res.json({ success: true });
             }
         );
@@ -97,7 +98,7 @@ exports.saveTeam = (req, res) => {
             VALUES (?, ?, ?, ?, ?, ?, ?)`,
             [stage_key, team_name, formation, heroIdsJson, skillPriorityJson, description, youtube_link],
             (err) => {
-                if(err) return res.json({ success: false, error: err.message });
+                if (err) return res.json({ success: false, error: err.message });
                 res.json({ success: true });
             }
         );
@@ -124,7 +125,8 @@ exports.getUserIndex = (req, res) => {
             id: filename,
             name: filename.replace(/\.[^/.]+$/, ""),
             image_name: filename,
-            skill_folder: filename.replace(/\.[^/.]+$/, "")
+            skill_folder: filename.replace(/\.[^/.]+$/, ""),
+            skills: getFilesFromDir(`images/skill/${filename.replace(/\.[^/.]+$/, "")}`)
         };
     });
 

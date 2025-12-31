@@ -1,132 +1,415 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <%- include('../../partials/head') %>
-    <style>
-        /* --- Global & Layout --- */
-        body { color: #e0e0e0; }
-        .text-muted { color: #adadad !important; }
-        .sidebar-header { border-bottom: 1px solid #444; }
-        
-        .codex-layout { display: flex; height: 100vh; padding-top: 64px; }
-        
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #1a1a1a; }
-        ::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #666; }
+        <style>
+            /* --- Global & Layout --- */
+            body {
+                color: #e0e0e0;
+            }
 
-        /* --- Navbar --- */
-        .navbar-modern {
-            height: 64px; background: rgba(18, 18, 18, 0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            position: fixed; top: 0; left: 0; right: 0; z-index: 1050;
-            padding: 0 20px; display: flex; align-items: center; justify-content: space-between;
-        }
-        .nav-brand-text { font-weight: 700; letter-spacing: 0.5px; font-size: 1.1rem; color: #fff; }
-        .nav-btn {
-            background: rgba(255, 255, 255, 0.05); color: #ccc;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 6px 16px; border-radius: 20px; font-size: 0.85rem;
-            transition: all 0.2s; text-decoration: none;
-            display: inline-flex; align-items: center; gap: 6px;
-        }
-        .nav-btn:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
+            .text-muted {
+                color: #adadad !important;
+            }
 
-        /* --- Sidebar (Groups) --- */
-        .sidebar-panel { 
-            width: 280px; background: #161616; border-right: 1px solid #333; 
-            display: flex; flex-direction: column; flex-shrink: 0;
-        }
-        .sidebar-header { padding: 15px; border-bottom: 1px solid #2a2a2a; display: flex; justify-content: space-between; align-items: center; }
-        .group-list { overflow-y: auto; flex: 1; padding: 10px; }
-        
-        /* Modified Group Item for Delete Button */
-        .group-wrapper {
-            display: flex; align-items: center; justify-content: space-between;
-            margin-bottom: 4px; border-radius: 6px; transition: all 0.2s;
-            border-left: 3px solid transparent; color: #aaa;
-        }
-        .group-wrapper:hover { background: #252525; color: #fff; padding-left: 5px; }
-        .group-wrapper.active { background: #222; color: #ffc107; border-left-color: #ffc107; font-weight: 600; }
-        
-        .group-link {
-            flex-grow: 1; padding: 12px 10px; text-decoration: none; color: inherit; display: block;
-        }
-        .group-actions { padding-right: 10px; opacity: 0.5; transition: 0.2s; }
-        .group-wrapper:hover .group-actions { opacity: 1; }
+            .sidebar-header {
+                border-bottom: 1px solid #444;
+            }
 
-        /* --- Content --- */
-        .content-panel { flex: 1; background: #121212; display: flex; flex-direction: column; overflow: hidden; }
-        
-        /* Modified Categories Tabs */
-        .top-tabs-bar {
-            padding: 15px 20px; border-bottom: 1px solid #333; background: #181818;
-            display: flex; gap: 10px; align-items: center; overflow-x: auto; flex-shrink: 0;
-        }
-        .cat-tab-wrapper {
-            padding: 6px 12px 6px 18px; border-radius: 20px;
-            background: #252525; border: 1px solid #333;
-            color: #888; display: flex; align-items: center; gap: 8px;
-            white-space: nowrap; transition: 0.2s;
-        }
-        .cat-tab-wrapper:hover { background: #333; color: #fff; }
-        .cat-tab-wrapper.active {
-            background: rgba(255, 193, 7, 0.15); color: #ffc107; border-color: #ffc107; font-weight: bold;
-        }
-        .cat-link { text-decoration: none; color: inherit; }
-        
-        .btn-add-mini {
-            width: 30px; height: 30px; border-radius: 50%;
-            border: 1px dashed #555; background: transparent; color: #555;
-            display: flex; align-items: center; justify-content: center; transition: 0.2s;
-        }
-        .btn-add-mini:hover { border-color: #ffc107; color: #ffc107; }
+            .codex-layout {
+                display: flex;
+                height: 100vh;
+                padding-top: 64px;
+            }
 
-        /* Hero Grid */
-        .hero-grid-container { flex: 1; overflow-y: auto; padding: 20px; }
-        .hero-card {
-            background: #1e1e1e; border: 1px solid #333; border-radius: 8px;
-            transition: transform 0.2s; position: relative; overflow: hidden;
-            display: flex; flex-direction: column; align-items: center;
-            padding: 15px; height: 100%; cursor: pointer;
-        }
-        .hero-card:hover { transform: translateY(-5px); border-color: #ffc107; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-        .hero-img { width: 100%; aspect-ratio: 3/4; object-fit: contain; border-radius: 4px; background: #121212; margin-bottom: 10px; }
-        .hero-name { color: #fff; font-weight: 600; font-size: 0.95rem; margin-bottom: 8px; text-align: center; }
-        
-        /* Modal Styles */
-        .modal-content { background-color: #1e1e1e; border: 1px solid #444; }
-        .form-control { background-color: #000; color: #fff; border-color: #444; }
-        .form-control:focus { background-color: #000; color: #fff; border-color: #ffc107; box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25); }
-        .text-warning { color: #ffc107 !important; }
-        .btn-warning { background-color: #ffc107; border-color: #ffc107; color: #000; font-weight: bold; }
-        
-        .skill-grid { display: flex; flex-wrap: wrap; flex-direction: row-reverse; justify-content: flex-end; gap: 15px; padding: 10px; }
-        .skill-priority-item { width: 100px; height: 100px; position: relative; aspect-ratio: 1; border: 2px solid #333; border-radius: 12px; overflow: hidden; cursor: pointer; transition: all 0.2s; background: #000; }
-        .skill-priority-item img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(0.5); transition: 0.2s; }
-        .skill-priority-item:hover { border-color: #ffc107; }
-        .skill-priority-item:hover img { filter: grayscale(0); }
-        .skill-priority-item.selected { border-color: #ffc107; box-shadow: 0 0 15px rgba(255, 193, 7, 0.3); }
-        .skill-priority-item.selected img { filter: grayscale(0); }
-        .priority-badge { position: absolute; top: 5px; right: 5px; width: 28px; height: 28px; background: #ffc107; color: #000; font-weight: bold; font-size: 1rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.5); transform: scale(0); transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .skill-priority-item.selected .priority-badge { transform: scale(1); }
+            /* Custom Scrollbar */
+            ::-webkit-scrollbar {
+                width: 6px;
+                height: 6px;
+            }
 
-        .selectable-image { position: relative; border: 2px solid transparent; border-radius: 6px; overflow: hidden; background: #121212; transition: all 0.2s; aspect-ratio: 3/4; cursor: pointer; }
-        .selectable-image img { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; transition: 0.2s; }
-        .selectable-image:hover img { opacity: 1; }
-        .selectable-image.selected { border-color: #ffc107; }
-        .selectable-image.selected img { opacity: 1; }
-        .img-name-overlay { display: none !important; }
-    </style>
+            ::-webkit-scrollbar-track {
+                background: #1a1a1a;
+            }
+
+            ::-webkit-scrollbar-thumb {
+                background: #444;
+                border-radius: 3px;
+            }
+
+            ::-webkit-scrollbar-thumb:hover {
+                background: #666;
+            }
+
+            /* --- Navbar --- */
+            .navbar-modern {
+                height: 64px;
+                background: rgba(18, 18, 18, 0.95);
+                backdrop-filter: blur(10px);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 1050;
+                padding: 0 20px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            .nav-brand-text {
+                font-weight: 700;
+                letter-spacing: 0.5px;
+                font-size: 1.1rem;
+                color: #fff;
+            }
+
+            .nav-btn {
+                background: rgba(255, 255, 255, 0.05);
+                color: #ccc;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                padding: 6px 16px;
+                border-radius: 20px;
+                font-size: 0.85rem;
+                transition: all 0.2s;
+                text-decoration: none;
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+            }
+
+            .nav-btn:hover {
+                background: rgba(255, 255, 255, 0.1);
+                color: #fff;
+            }
+
+            /* --- Sidebar (Groups) --- */
+            .sidebar-panel {
+                width: 280px;
+                background: #161616;
+                border-right: 1px solid #333;
+                display: flex;
+                flex-direction: column;
+                flex-shrink: 0;
+            }
+
+            .sidebar-header {
+                padding: 15px;
+                border-bottom: 1px solid #2a2a2a;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .group-list {
+                overflow-y: auto;
+                flex: 1;
+                padding: 10px;
+            }
+
+            /* Modified Group Item for Delete Button */
+            .group-wrapper {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 4px;
+                border-radius: 6px;
+                transition: all 0.2s;
+                border-left: 3px solid transparent;
+                color: #aaa;
+            }
+
+            .group-wrapper:hover {
+                background: #252525;
+                color: #fff;
+                padding-left: 5px;
+            }
+
+            .group-wrapper.active {
+                background: #222;
+                color: #ffc107;
+                border-left-color: #ffc107;
+                font-weight: 600;
+            }
+
+            .group-link {
+                flex-grow: 1;
+                padding: 12px 10px;
+                text-decoration: none;
+                color: inherit;
+                display: block;
+            }
+
+            .group-actions {
+                padding-right: 10px;
+                opacity: 0.5;
+                transition: 0.2s;
+            }
+
+            .group-wrapper:hover .group-actions {
+                opacity: 1;
+            }
+
+            /* --- Content --- */
+            .content-panel {
+                flex: 1;
+                background: #121212;
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+            }
+
+            /* Modified Categories Tabs */
+            .top-tabs-bar {
+                padding: 15px 20px;
+                border-bottom: 1px solid #333;
+                background: #181818;
+                display: flex;
+                gap: 10px;
+                align-items: center;
+                overflow-x: auto;
+                flex-shrink: 0;
+            }
+
+            .cat-tab-wrapper {
+                padding: 6px 12px 6px 18px;
+                border-radius: 20px;
+                background: #252525;
+                border: 1px solid #333;
+                color: #888;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                white-space: nowrap;
+                transition: 0.2s;
+            }
+
+            .cat-tab-wrapper:hover {
+                background: #333;
+                color: #fff;
+            }
+
+            .cat-tab-wrapper.active {
+                background: rgba(255, 193, 7, 0.15);
+                color: #ffc107;
+                border-color: #ffc107;
+                font-weight: bold;
+            }
+
+            .cat-link {
+                text-decoration: none;
+                color: inherit;
+            }
+
+            .btn-add-mini {
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+                border: 1px dashed #555;
+                background: transparent;
+                color: #555;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: 0.2s;
+            }
+
+            .btn-add-mini:hover {
+                border-color: #ffc107;
+                color: #ffc107;
+            }
+
+            /* Hero Grid */
+            .hero-grid-container {
+                flex: 1;
+                overflow-y: auto;
+                padding: 20px;
+            }
+
+            .hero-card {
+                background: #1e1e1e;
+                border: 1px solid #333;
+                border-radius: 8px;
+                transition: transform 0.2s;
+                position: relative;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding: 15px;
+                height: 100%;
+                cursor: pointer;
+            }
+
+            .hero-card:hover {
+                transform: translateY(-5px);
+                border-color: #ffc107;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            }
+
+            .hero-img {
+                width: 100%;
+                aspect-ratio: 3/4;
+                object-fit: contain;
+                border-radius: 4px;
+                background: #121212;
+                margin-bottom: 10px;
+            }
+
+            .hero-name {
+                color: #fff;
+                font-weight: 600;
+                font-size: 0.95rem;
+                margin-bottom: 8px;
+                text-align: center;
+            }
+
+            /* Modal Styles */
+            .modal-content {
+                background-color: #1e1e1e;
+                border: 1px solid #444;
+            }
+
+            .form-control {
+                background-color: #000;
+                color: #fff;
+                border-color: #444;
+            }
+
+            .form-control:focus {
+                background-color: #000;
+                color: #fff;
+                border-color: #ffc107;
+                box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+            }
+
+            .text-warning {
+                color: #ffc107 !important;
+            }
+
+            .btn-warning {
+                background-color: #ffc107;
+                border-color: #ffc107;
+                color: #000;
+                font-weight: bold;
+            }
+
+            .skill-grid {
+                display: flex;
+                flex-wrap: wrap;
+                flex-direction: row-reverse;
+                justify-content: flex-end;
+                gap: 15px;
+                padding: 10px;
+            }
+
+            .skill-priority-item {
+                width: 100px;
+                height: 100px;
+                position: relative;
+                aspect-ratio: 1;
+                border: 2px solid #333;
+                border-radius: 12px;
+                overflow: hidden;
+                cursor: pointer;
+                transition: all 0.2s;
+                background: #000;
+            }
+
+            .skill-priority-item img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                filter: grayscale(0.5);
+                transition: 0.2s;
+            }
+
+            .skill-priority-item:hover {
+                border-color: #ffc107;
+            }
+
+            .skill-priority-item:hover img {
+                filter: grayscale(0);
+            }
+
+            .skill-priority-item.selected {
+                border-color: #ffc107;
+                box-shadow: 0 0 15px rgba(255, 193, 7, 0.3);
+            }
+
+            .skill-priority-item.selected img {
+                filter: grayscale(0);
+            }
+
+            .priority-badge {
+                position: absolute;
+                top: 5px;
+                right: 5px;
+                width: 28px;
+                height: 28px;
+                background: #ffc107;
+                color: #000;
+                font-weight: bold;
+                font-size: 1rem;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+                transform: scale(0);
+                transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            }
+
+            .skill-priority-item.selected .priority-badge {
+                transform: scale(1);
+            }
+
+            .selectable-image {
+                position: relative;
+                border: 2px solid transparent;
+                border-radius: 6px;
+                overflow: hidden;
+                background: #121212;
+                transition: all 0.2s;
+                aspect-ratio: 3/4;
+                cursor: pointer;
+            }
+
+            .selectable-image img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                opacity: 0.7;
+                transition: 0.2s;
+            }
+
+            .selectable-image:hover img {
+                opacity: 1;
+            }
+
+            .selectable-image.selected {
+                border-color: #ffc107;
+            }
+
+            .selectable-image.selected img {
+                opacity: 1;
+            }
+
+            .img-name-overlay {
+                display: none !important;
+            }
+        </style>
 </head>
+
 <body class="text-light">
-    
+
     <nav class="navbar-modern">
         <div class="d-flex align-items-center gap-3">
             <img src="/images/about_website/logo_seven_knights_rebirth.png" alt="Logo" style="height: 40px;">
-            <span class="nav-brand-text">7K Rebirth <span style="font-weight:400; opacity:0.7;">| Codex Manager</span></span>
+            <span class="nav-brand-text">7K Rebirth <span style="font-weight:400; opacity:0.7;">| Codex
+                    Manager</span></span>
         </div>
         <div class="d-flex align-items-center gap-3">
             <a href="/admin/dashboard" class="nav-btn"><i class="bi bi-grid-fill"></i> Dashboard</a>
@@ -138,110 +421,131 @@
         <div class="sidebar-panel">
             <div class="sidebar-header">
                 <span class="fw-bold text-white"><i class="bi bi-collection me-2 text-warning"></i>Groups</span>
-                <button class="btn btn-sm btn-outline-secondary border-0 text-warning" data-bs-toggle="modal" data-bs-target="#addGroupModal" title="Add Group">
+                <button class="btn btn-sm btn-outline-secondary border-0 text-warning" data-bs-toggle="modal"
+                    data-bs-target="#addGroupModal" title="Add Group">
                     <i class="bi bi-plus-lg"></i>
                 </button>
             </div>
-  
+
             <div class="group-list">
-                <% if(groups && groups.length > 0) { %>
-                    <% groups.forEach(grp => { %>
+                <% if(groups && groups.length> 0) { %>
+                    <% groups.forEach(grp=> { %>
                         <div class="group-wrapper <%= activeGroupId == grp.id ? 'active' : '' %>">
-                            <a href="/admin/codex/hero?cat_id=<%= activeCatId %>&group_id=<%= grp.id %>" class="group-link">
-                                <span><%= grp.name %></span>
+                            <a href="/admin/codex/hero?cat_id=<%= activeCatId %>&group_id=<%= grp.id %>"
+                                class="group-link">
+                                <span>
+                                    <%= grp.name %>
+                                </span>
                             </a>
-                            
+
                             <div class="group-actions">
-                                <form action="/admin/api/codex/group/delete" method="POST" onsubmit="return confirm('Delete Group: <%= grp.name %>? This will delete all heroes inside!');">
+                                <form action="/admin/api/codex/group/delete" method="POST"
+                                    onsubmit="return confirm('Delete Group: <%= grp.name %>? This will delete all heroes inside!');">
                                     <input type="hidden" name="id" value="<%= grp.id %>">
                                     <input type="hidden" name="type" value="hero">
-                                    <button type="submit" class="btn btn-sm text-secondary p-0 border-0 hover-danger"><i class="bi bi-trash"></i></button>
+                                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                    <button type="submit" class="btn btn-sm text-secondary p-0 border-0 hover-danger"><i
+                                            class="bi bi-trash"></i></button>
                                 </form>
                             </div>
                         </div>
-                    <% }) %>
-                <% } else { %>
-                    <div class="text-center mt-5 text-muted">
-                        <i class="bi bi-inbox fs-2 mb-2 d-block opacity-50"></i>
-                        <small>No groups found</small>
-                    </div>
-                <% } %>
+                        <% }) %>
+                            <% } else { %>
+                                <div class="text-center mt-5 text-muted">
+                                    <i class="bi bi-inbox fs-2 mb-2 d-block opacity-50"></i>
+                                    <small>No groups found</small>
+                                </div>
+                                <% } %>
             </div>
         </div>
 
         <div class="content-panel">
             <div class="top-tabs-bar">
-                <span class="text-muted small fw-bold me-2 text-uppercase" style="letter-spacing: 1px;">Categories:</span>
-                <% if(categories && categories.length > 0) { %>
-                    <% categories.forEach(cat => { %>
+                <span class="text-muted small fw-bold me-2 text-uppercase"
+                    style="letter-spacing: 1px;">Categories:</span>
+                <% if(categories && categories.length> 0) { %>
+                    <% categories.forEach(cat=> { %>
                         <div class="cat-tab-wrapper <%= activeCatId == cat.id ? 'active' : '' %>">
                             <a href="/admin/codex/hero?cat_id=<%= cat.id %>" class="cat-link">
                                 <%= cat.name %>
                             </a>
-                            <form action="/admin/api/codex/category/delete" method="POST" onsubmit="return confirm('Delete Category: <%= cat.name %>?');" class="d-flex">
+                            <form action="/admin/api/codex/category/delete" method="POST"
+                                onsubmit="return confirm('Delete Category: <%= cat.name %>?');" class="d-flex">
                                 <input type="hidden" name="id" value="<%= cat.id %>">
                                 <input type="hidden" name="type" value="hero">
-                                <button type="submit" class="btn btn-sm p-0 text-secondary border-0" title="Delete Category"><i class="bi bi-x"></i></button>
+                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                <button type="submit" class="btn btn-sm p-0 text-secondary border-0"
+                                    title="Delete Category"><i class="bi bi-x"></i></button>
                             </form>
                         </div>
-                    <% }) %>
-                <% } %>
-    
-                <button type="button" class="btn-add-mini ms-2" data-bs-toggle="modal" data-bs-target="#addCategoryModal" title="Add Category">
-                    <i class="bi bi-plus-lg"></i>
-                </button>
+                        <% }) %>
+                            <% } %>
+
+                                <button type="button" class="btn-add-mini ms-2" data-bs-toggle="modal"
+                                    data-bs-target="#addCategoryModal" title="Add Category">
+                                    <i class="bi bi-plus-lg"></i>
+                                </button>
             </div>
 
             <div class="hero-grid-container">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
-                        <% const currentGroup = groups.find(g => g.id == activeGroupId); %>
-                        <h3 class="m-0 text-white fw-bold"><%= currentGroup ? currentGroup.name : 'Select a Group' %></h3>
-                        <small class="text-muted">Click on a hero to manage skill priority</small>
+                        <% const currentGroup=groups.find(g=> g.id == activeGroupId); %>
+                            <h3 class="m-0 text-white fw-bold">
+                                <%= currentGroup ? currentGroup.name : 'Select a Group' %>
+                            </h3>
+                            <small class="text-muted">Click on a hero to manage skill priority</small>
                     </div>
                     <% if(activeGroupId) { %>
-                        <button class="btn btn-warning px-4 rounded-pill shadow-sm" onclick="openAddHeroModal('<%= activeGroupId %>', '<%= currentGroup ? currentGroup.name : '' %>')">
+                        <button class="btn btn-warning px-4 rounded-pill shadow-sm"
+                            onclick="openAddHeroModal('<%= activeGroupId %>', '<%= currentGroup ? currentGroup.name : '' %>')">
                             <i class="bi bi-plus-lg me-1"></i> Add Hero
                         </button>
-                    <% } %>
+                        <% } %>
                 </div>
 
                 <div class="row g-3">
-                    <% if(heroes.length === 0) { %>
+                    <% if(heroes.length===0) { %>
                         <div class="col-12">
-                            <div class="d-flex flex-column align-items-center justify-content-center py-5 text-muted" style="border: 2px dashed #333; border-radius: 10px;">
+                            <div class="d-flex flex-column align-items-center justify-content-center py-5 text-muted"
+                                style="border: 2px dashed #333; border-radius: 10px;">
                                 <i class="bi bi-people display-4 mb-3 opacity-25"></i>
                                 <h5>No heroes in this group</h5>
-                                <% if(!activeGroupId) { %><p class="small">Please select a group from the sidebar</p><% } %>
+                                <% if(!activeGroupId) { %>
+                                    <p class="small">Please select a group from the sidebar</p>
+                                    <% } %>
                             </div>
                         </div>
-                    <% } %>
+                        <% } %>
 
-                    <% heroes.forEach(hero => { %>
-                        <div class="col-6 col-sm-4 col-md-3 col-xl-2">
-                            <div class="hero-card" 
-                                onclick="openSkillManager(
+                            <% heroes.forEach(hero=> { %>
+                                <div class="col-6 col-sm-4 col-md-3 col-xl-2">
+                                    <div class="hero-card" onclick="openSkillManager(
                                     '<%= hero.id %>', 
                                     '<%= hero.name %>', 
                                     '<%= hero.detectedSkillFolder %>', 
                                     <%= JSON.stringify(hero.skillImages) %>,
                                     <%= JSON.stringify(hero.skillOrder || []) %>
                                  )">
-                                <img src="/images/heroes/<%= hero.image_name %>" class="hero-img">
-                                <div class="hero-name"><%= hero.name %></div>
-                                <div class="text-center mb-3">
-                                    <span class="badge bg-dark border border-secondary text-secondary rounded-pill" style="font-weight:normal; font-size: 0.7rem;">
-                                        <i class="bi bi-lightning-fill text-warning"></i> Manage Skills
-                                    </span>
+                                        <img src="/images/heroes/<%= hero.image_name %>" class="hero-img">
+                                        <div class="hero-name">
+                                            <%= hero.name %>
+                                        </div>
+                                        <div class="text-center mb-3">
+                                            <span
+                                                class="badge bg-dark border border-secondary text-secondary rounded-pill"
+                                                style="font-weight:normal; font-size: 0.7rem;">
+                                                <i class="bi bi-lightning-fill text-warning"></i> Manage Skills
+                                            </span>
+                                        </div>
+                                        <a href="/admin/codex/hero/delete/<%= hero.id %>?cat_id=<%= activeCatId %>&group_id=<%= activeGroupId %>"
+                                            class="btn btn-outline-danger btn-sm w-100 mt-auto"
+                                            onclick="event.stopPropagation(); return confirm('Delete <%= hero.name %>?')">
+                                            <i class="bi bi-trash"></i> Delete
+                                        </a>
+                                    </div>
                                 </div>
-                                <a href="/admin/codex/hero/delete/<%= hero.id %>?cat_id=<%= activeCatId %>&group_id=<%= activeGroupId %>" 
-                                   class="btn btn-outline-danger btn-sm w-100 mt-auto"
-                                   onclick="event.stopPropagation(); return confirm('Delete <%= hero.name %>?')">
-                                    <i class="bi bi-trash"></i> Delete
-                                </a>
-                            </div>
-                        </div>
-                    <% }) %>
+                                <% }) %>
                 </div>
             </div>
         </div>
@@ -255,6 +559,7 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <form action="/admin/codex/category/add" method="POST">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                     <div class="modal-body">
                         <label class="form-label text-muted small fw-bold">CATEGORY NAME</label>
                         <input type="text" name="name" class="form-control" placeholder="e.g. Special Heroes" required>
@@ -271,10 +576,13 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header border-secondary">
-                    <h5 class="modal-title text-white">Add Group to <span class="text-warning"><%= categories.find(c => c.id == activeCatId)?.name %></span></h5>
+                    <h5 class="modal-title text-white">Add Group to <span class="text-warning">
+                            <%= categories.find(c=> c.id == activeCatId)?.name %>
+                        </span></h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <form action="/admin/codex/group/add" method="POST">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                     <div class="modal-body">
                         <input type="hidden" name="category_id" value="<%= activeCatId %>">
                         <label class="form-label text-muted small fw-bold">GROUP NAME</label>
@@ -292,17 +600,21 @@
         <div class="modal-dialog modal-xl modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header border-secondary">
-                    <h5 class="modal-title text-white">Add Hero to <span id="modalGroupName" class="text-warning fw-bold"></span></h5>
+                    <h5 class="modal-title text-white">Add Hero to <span id="modalGroupName"
+                            class="text-warning fw-bold"></span></h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <form action="/admin/codex/hero/add" method="POST">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                     <div class="modal-body row g-4">
                         <div class="col-lg-4 border-end border-secondary">
                             <input type="hidden" name="group_id" id="modalGroupId">
                             <input type="hidden" name="return_cat_id" value="<%= activeCatId %>">
 
                             <div class="mb-4 text-center">
-                                <div id="previewSelected" class="d-flex align-items-center justify-content-center text-muted border border-secondary rounded bg-black mx-auto" style="width: 140px; aspect-ratio: 3/4; overflow: hidden;">
+                                <div id="previewSelected"
+                                    class="d-flex align-items-center justify-content-center text-muted border border-secondary rounded bg-black mx-auto"
+                                    style="width: 140px; aspect-ratio: 3/4; overflow: hidden;">
                                     <small>No Image</small>
                                 </div>
                                 <div class="mt-2 text-warning fw-bold small" id="previewName">Select an image</div>
@@ -310,13 +622,16 @@
 
                             <div class="mb-3">
                                 <label class="form-label text-muted small fw-bold">SELECTED IMAGE FILE</label>
-                                <input type="text" name="image_name" id="selectedImageInput" class="form-control form-control-sm text-warning fw-bold" readonly required>
+                                <input type="text" name="image_name" id="selectedImageInput"
+                                    class="form-control form-control-sm text-warning fw-bold" readonly required>
                             </div>
 
                             <div class="mb-3">
                                 <label class="form-label text-muted small fw-bold">SKILL FOLDER</label>
-                                <input type="text" name="skill_folder" id="skillFolderInput" class="form-control form-control-sm" placeholder="Auto-fill...">
-                                <small class="text-muted" style="font-size: 0.7rem;">Folder in <code>public/images/skill/</code></small>
+                                <input type="text" name="skill_folder" id="skillFolderInput"
+                                    class="form-control form-control-sm" placeholder="Auto-fill...">
+                                <small class="text-muted" style="font-size: 0.7rem;">Folder in
+                                    <code>public/images/skill/</code></small>
                             </div>
                         </div>
 
@@ -324,23 +639,28 @@
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <label class="text-white fw-bold">Select Hero Image</label>
                                 <div class="search-wrapper" style="width: 200px;">
-                                    <i class="bi bi-search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#666;"></i>
-                                    <input type="text" id="imgSearch" class="form-control form-control-sm text-white" style="padding-left:35px; border-radius:20px; background:#000; border:1px solid #333;" placeholder="Search..." onkeyup="filterImages()">
+                                    <i class="bi bi-search"
+                                        style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#666;"></i>
+                                    <input type="text" id="imgSearch" class="form-control form-control-sm text-white"
+                                        style="padding-left:35px; border-radius:20px; background:#000; border:1px solid #333;"
+                                        placeholder="Search..." onkeyup="filterImages()">
                                 </div>
                             </div>
-                            
+
                             <div class="image-selector-container pe-2" style="max-height: 400px; overflow-y: auto;">
                                 <div class="row g-2" id="imageGrid">
-                                    <% availableHeroImages.forEach(img => { %>
-                                       <div class="col-3 col-sm-3 col-md-2 img-item-col">
+                                    <% availableHeroImages.forEach(img=> { %>
+                                        <div class="col-3 col-sm-3 col-md-2 img-item-col">
                                             <div class="selectable-image" onclick="selectImage(this, '<%= img %>')">
                                                 <img src="/images/heroes/<%= img %>" loading="lazy">
-                                                <div class="img-name-overlay"><%= img %></div>
+                                                <div class="img-name-overlay">
+                                                    <%= img %>
+                                                </div>
                                             </div>
-                                       </div>
-                                    <% }) %>
+                                        </div>
+                                        <% }) %>
                                 </div>
-                             </div>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer border-secondary">
@@ -357,12 +677,14 @@
             <div class="modal-content">
                 <div class="modal-header border-secondary">
                     <div class="d-flex align-items-center gap-3">
-                        <h5 class="modal-title text-white">Skill Priority: <span id="skillHeroName" class="text-warning"></span></h5>
+                        <h5 class="modal-title text-white">Skill Priority: <span id="skillHeroName"
+                                class="text-warning"></span></h5>
                     </div>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <p class="text-muted small mb-3"><i class="bi bi-info-circle me-1"></i> Click skills in the order you want them to be used (1, 2, 3...). Click again to unselect.</p>
+                    <p class="text-muted small mb-3"><i class="bi bi-info-circle me-1"></i> Click skills in the order
+                        you want them to be used (1, 2, 3...). Click again to unselect.</p>
                     <div id="skillGridContainer" class="skill-grid"></div>
                     <div id="noSkillsMsg" class="text-center py-5 text-muted d-none">
                         <i class="bi bi-exclamation-triangle display-4 mb-2"></i>
@@ -381,113 +703,118 @@
 
     <%- include('../../partials/footer') %>
 
-    <script>
-        // --- Add Hero & General Functions ---
-        function openAddHeroModal(groupId, groupName) {
-            document.getElementById('modalGroupId').value = groupId;
-            document.getElementById('modalGroupName').innerText = groupName;
-            document.getElementById('selectedImageInput').value = '';
-            document.getElementById('skillFolderInput').value = '';
-            document.getElementById('previewSelected').innerHTML = '<small>No Image</small>';
-            document.getElementById('previewName').innerText = 'Select an image';
-            document.querySelectorAll('.selectable-image').forEach(el => el.classList.remove('selected'));
-            new bootstrap.Modal(document.getElementById('addHeroModal')).show();
-        }
-
-        function selectImage(el, filename) {
-            document.querySelectorAll('.selectable-image').forEach(div => div.classList.remove('selected'));
-            el.classList.add('selected');
-            document.getElementById('selectedImageInput').value = filename;
-            const folderName = filename.replace(/\.[^/.]+$/, "");
-            document.getElementById('skillFolderInput').value = folderName;
-            document.getElementById('previewSelected').innerHTML = `<img src="/images/heroes/${filename}" style="width:100%; height:100%; object-fit:cover;">`;
-            document.getElementById('previewName').innerText = filename;
-        }
-
-        function filterImages() {
-            const input = document.getElementById('imgSearch').value.toLowerCase();
-            const cols = document.getElementsByClassName('img-item-col');
-            for (let col of cols) {
-                const txt = col.innerText || col.textContent;
-                col.style.display = txt.toLowerCase().includes(input) ? "" : "none";
+        <script>
+            // --- Add Hero & General Functions ---
+            function openAddHeroModal(groupId, groupName) {
+                document.getElementById('modalGroupId').value = groupId;
+                document.getElementById('modalGroupName').innerText = groupName;
+                document.getElementById('selectedImageInput').value = '';
+                document.getElementById('skillFolderInput').value = '';
+                document.getElementById('previewSelected').innerHTML = '<small>No Image</small>';
+                document.getElementById('previewName').innerText = 'Select an image';
+                document.querySelectorAll('.selectable-image').forEach(el => el.classList.remove('selected'));
+                new bootstrap.Modal(document.getElementById('addHeroModal')).show();
             }
-        }
 
-        // --- Skill Priority Manager Functions ---
-        let currentHeroId = null;
-        let currentSkillFolder = '';
-        let currentPriorityList = [];
+            function selectImage(el, filename) {
+                document.querySelectorAll('.selectable-image').forEach(div => div.classList.remove('selected'));
+                el.classList.add('selected');
+                document.getElementById('selectedImageInput').value = filename;
+                const folderName = filename.replace(/\.[^/.]+$/, "");
+                document.getElementById('skillFolderInput').value = folderName;
+                document.getElementById('previewSelected').innerHTML = `<img src="/images/heroes/${filename}" style="width:100%; height:100%; object-fit:cover;">`;
+                document.getElementById('previewName').innerText = filename;
+            }
 
-        function openSkillManager(id, name, folder, allSkills, savedOrder) {
-            currentHeroId = id;
-            currentSkillFolder = folder;
-            document.getElementById('skillHeroName').innerText = name;
-            
-            currentPriorityList = savedOrder.filter(s => allSkills.includes(s));
-            const grid = document.getElementById('skillGridContainer');
-            const noMsg = document.getElementById('noSkillsMsg');
-            grid.innerHTML = '';
-            if(!allSkills || allSkills.length === 0) {
-                noMsg.classList.remove('d-none');
-            } else {
-                noMsg.classList.add('d-none');
-                allSkills.forEach(filename => {
-                    const div = document.createElement('div');
-                    div.className = 'skill-priority-item';
-                    div.dataset.file = filename;
-                    div.onclick = () => toggleSkillPriority(filename);
-                    div.innerHTML = `<img src="/images/skill/${folder}/${filename}" draggable="false"><div class="priority-badge"></div>`;
-                    grid.appendChild(div);
-                });
+            function filterImages() {
+                const input = document.getElementById('imgSearch').value.toLowerCase();
+                const cols = document.getElementsByClassName('img-item-col');
+                for (let col of cols) {
+                    const txt = col.innerText || col.textContent;
+                    col.style.display = txt.toLowerCase().includes(input) ? "" : "none";
+                }
+            }
+
+            // --- Skill Priority Manager Functions ---
+            let currentHeroId = null;
+            let currentSkillFolder = '';
+            let currentPriorityList = [];
+
+            function openSkillManager(id, name, folder, allSkills, savedOrder) {
+                currentHeroId = id;
+                currentSkillFolder = folder;
+                document.getElementById('skillHeroName').innerText = name;
+
+                currentPriorityList = savedOrder.filter(s => allSkills.includes(s));
+                const grid = document.getElementById('skillGridContainer');
+                const noMsg = document.getElementById('noSkillsMsg');
+                grid.innerHTML = '';
+                if (!allSkills || allSkills.length === 0) {
+                    noMsg.classList.remove('d-none');
+                } else {
+                    noMsg.classList.add('d-none');
+                    allSkills.forEach(filename => {
+                        const div = document.createElement('div');
+                        div.className = 'skill-priority-item';
+                        div.dataset.file = filename;
+                        div.onclick = () => toggleSkillPriority(filename);
+                        div.innerHTML = `<img src="/images/skill/${folder}/${filename}" draggable="false"><div class="priority-badge"></div>`;
+                        grid.appendChild(div);
+                    });
+                    updateSkillVisuals();
+                }
+                new bootstrap.Modal(document.getElementById('skillManagerModal')).show();
+            }
+
+            function toggleSkillPriority(filename) {
+                const index = currentPriorityList.indexOf(filename);
+                if (index > -1) { currentPriorityList.splice(index, 1); } else { currentPriorityList.push(filename); }
                 updateSkillVisuals();
             }
-            new bootstrap.Modal(document.getElementById('skillManagerModal')).show();
-        }
 
-        function toggleSkillPriority(filename) {
-            const index = currentPriorityList.indexOf(filename);
-            if (index > -1) { currentPriorityList.splice(index, 1); } else { currentPriorityList.push(filename); }
-            updateSkillVisuals();
-        }
+            function updateSkillVisuals() {
+                const items = document.querySelectorAll('.skill-priority-item');
+                items.forEach(item => {
+                    const file = item.dataset.file;
+                    const idx = currentPriorityList.indexOf(file);
+                    if (idx > -1) {
+                        item.classList.add('selected');
+                        item.querySelector('.priority-badge').innerText = idx + 1;
+                    } else {
+                        item.classList.remove('selected');
+                        item.querySelector('.priority-badge').innerText = '';
+                    }
+                });
+            }
 
-        function updateSkillVisuals() {
-            const items = document.querySelectorAll('.skill-priority-item');
-            items.forEach(item => {
-                const file = item.dataset.file;
-                const idx = currentPriorityList.indexOf(file);
-                if (idx > -1) {
-                    item.classList.add('selected');
-                    item.querySelector('.priority-badge').innerText = idx + 1;
-                } else {
-                    item.classList.remove('selected');
-                    item.querySelector('.priority-badge').innerText = '';
-                }
-            });
-        }
-
-        function saveSkillPriority() {
-            if(!currentHeroId) return;
-            const btn = document.querySelector('#skillManagerModal .btn-success');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Saving...';
-            btn.disabled = true;
-            fetch('/admin/api/codex/save_skill_order', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ hero_id: currentHeroId, skill_order: currentPriorityList })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if(data.success) { window.location.reload(); } else {
-                    alert('Error: ' + (data.error || 'Unknown error'));
-                    btn.innerHTML = originalText; btn.disabled = false;
-                }
-            })
-            .catch(err => {
-                console.error(err); alert('Connection error');
-                btn.innerHTML = originalText; btn.disabled = false;
-            });
-        }
-    </script>
+            function saveSkillPriority() {
+                if (!currentHeroId) return;
+                const btn = document.querySelector('#skillManagerModal .btn-success');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Saving...';
+                btn.disabled = true;
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                fetch('/admin/api/codex/save_skill_order', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'CSRF-Token': csrfToken
+                    },
+                    body: JSON.stringify({ hero_id: currentHeroId, skill_order: currentPriorityList })
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) { window.location.reload(); } else {
+                            alert('Error: ' + (data.error || 'Unknown error'));
+                            btn.innerHTML = originalText; btn.disabled = false;
+                        }
+                    })
+                    .catch(err => {
+                        console.error(err); alert('Connection error');
+                        btn.innerHTML = originalText; btn.disabled = false;
+                    });
+            }
+        </script>
 </body>
+
 </html>

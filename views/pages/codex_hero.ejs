@@ -1,433 +1,498 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <%- include('../partials/head') %>
-    <style>
-        /* --- Dark & Gold Theme (User Side) --- */
-        body { 
-            background-color: #050505; 
-            color: #e0e0e0; 
-            font-family: 'Kanit', sans-serif;
-            padding-top: 64px; /* เผื่อ Navbar */
-        }
-        
-        /* Layout */
-        .codex-layout { 
-            display: flex; 
-            min-height: calc(100vh - 64px);
-        }
+        <style>
+            /* --- Dark & Gold Theme (User Side) --- */
+            body {
+                background-color: #050505;
+                color: #e0e0e0;
+                font-family: 'Kanit', sans-serif;
+                padding-top: 64px;
+                /* เผื่อ Navbar */
+            }
 
-        /* --- Sidebar --- */
-        .sidebar-panel {
-            width: 280px;
-            background: #0f0f0f;
-            border-right: 1px solid #222;
-            flex-shrink: 0;
-            display: flex;
-            flex-direction: column;
-            position: fixed; /* Fix sidebar */
-            top: 64px; bottom: 0; left: 0;
-            z-index: 100;
-        }
+            /* Layout */
+            .codex-layout {
+                display: flex;
+                min-height: calc(100vh - 64px);
+            }
 
-        .sidebar-header {
-            padding: 20px;
-            background: #0a0a0a;
-            border-bottom: 1px solid #222;
-        }
+            /* --- Sidebar --- */
+            .sidebar-panel {
+                width: 280px;
+                background: #0f0f0f;
+                border-right: 1px solid #222;
+                flex-shrink: 0;
+                display: flex;
+                flex-direction: column;
+                position: fixed;
+                /* Fix sidebar */
+                top: 64px;
+                bottom: 0;
+                left: 0;
+                z-index: 100;
+            }
 
-        .sidebar-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #fff;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            display: flex; align-items: center; gap: 10px;
-        }
+            .sidebar-header {
+                padding: 20px;
+                background: #0a0a0a;
+                border-bottom: 1px solid #222;
+            }
 
-        .group-list {
-            flex: 1;
-            overflow-y: auto;
-            padding: 10px 0;
-        }
+            .sidebar-title {
+                font-size: 1.1rem;
+                font-weight: 700;
+                color: #fff;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
 
-        /* Scrollbar Style */
-        .group-list::-webkit-scrollbar { width: 4px; }
-        .group-list::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+            .group-list {
+                flex: 1;
+                overflow-y: auto;
+                padding: 10px 0;
+            }
 
-        .group-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 25px;
-            color: #888;
-            text-decoration: none;
-            transition: all 0.2s;
-            border-left: 3px solid transparent;
-            font-size: 0.95rem;
-        }
+            /* Scrollbar Style */
+            .group-list::-webkit-scrollbar {
+                width: 4px;
+            }
 
-        .group-item:hover {
-            background: rgba(255, 255, 255, 0.03);
-            color: #fff;
-            padding-left: 30px;
-        }
+            .group-list::-webkit-scrollbar-thumb {
+                background: #333;
+                border-radius: 2px;
+            }
 
-        .group-item.active {
-            background: linear-gradient(90deg, rgba(255, 193, 7, 0.1), transparent);
-            color: #ffc107;
-            border-left-color: #ffc107;
-            font-weight: 600;
-            padding-left: 30px;
-        }
+            .group-item {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 12px 25px;
+                color: #888;
+                text-decoration: none;
+                transition: all 0.2s;
+                border-left: 3px solid transparent;
+                font-size: 0.95rem;
+            }
 
-        /* --- Content Area --- */
-        .content-panel {
-            flex: 1;
-            margin-left: 280px; /* เว้นที่ให้ Sidebar */
-            padding: 0;
-            background: #050505;
-            min-height: 100vh;
-        }
+            .group-item:hover {
+                background: rgba(255, 255, 255, 0.03);
+                color: #fff;
+                padding-left: 30px;
+            }
 
-        /* Top Tabs (Categories) */
-        .top-tabs-bar {
-            padding: 15px 30px;
-            background: rgba(25, 25, 25, 0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid #222;
-            position: sticky;
-            top: 64px;
-            z-index: 90;
-            display: flex;
-            gap: 15px;
-            overflow-x: auto;
-            align-items: center;
-        }
-        
-        .cat-tab {
-            padding: 8px 20px;
-            border-radius: 30px;
-            background: #1a1a1a;
-            border: 1px solid #333;
-            color: #aaa;
-            text-decoration: none;
-            font-size: 0.9rem;
-            white-space: nowrap;
-            transition: all 0.3s ease;
-        }
+            .group-item.active {
+                background: linear-gradient(90deg, rgba(255, 193, 7, 0.1), transparent);
+                color: #ffc107;
+                border-left-color: #ffc107;
+                font-weight: 600;
+                padding-left: 30px;
+            }
 
-        .cat-tab:hover {
-            background: #333;
-            color: #fff;
-            transform: translateY(-2px);
-        }
+            /* --- Content Area --- */
+            .content-panel {
+                flex: 1;
+                margin-left: 280px;
+                /* เว้นที่ให้ Sidebar */
+                padding: 0;
+                background: #050505;
+                min-height: 100vh;
+            }
 
-        .cat-tab.active {
-            background: #ffc107;
-            color: #000;
-            border-color: #ffc107;
-            font-weight: 700;
-            box-shadow: 0 0 15px rgba(255, 193, 7, 0.4);
-        }
+            /* Top Tabs (Categories) */
+            .top-tabs-bar {
+                padding: 15px 30px;
+                background: rgba(25, 25, 25, 0.95);
+                backdrop-filter: blur(10px);
+                border-bottom: 1px solid #222;
+                position: sticky;
+                top: 64px;
+                z-index: 90;
+                display: flex;
+                gap: 15px;
+                overflow-x: auto;
+                align-items: center;
+            }
 
-        /* Hero Grid */
-        .hero-grid-container {
-            padding: 30px;
-        }
+            .cat-tab {
+                padding: 8px 20px;
+                border-radius: 30px;
+                background: #1a1a1a;
+                border: 1px solid #333;
+                color: #aaa;
+                text-decoration: none;
+                font-size: 0.9rem;
+                white-space: nowrap;
+                transition: all 0.3s ease;
+            }
 
-        .section-title {
-            font-size: 2rem;
-            font-weight: 800;
-            color: #fff;
-            margin-bottom: 5px;
-            text-shadow: 0 0 20px rgba(255, 193, 7, 0.2);
-        }
-        
-        .section-subtitle {
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 0.9rem;
-        }
+            .cat-tab:hover {
+                background: #333;
+                color: #fff;
+                transform: translateY(-2px);
+            }
 
-        .hero-card {
-            background: #121212;
-            border: 1px solid #2a2a2a;
-            border-radius: 12px;
-            overflow: hidden;
-            position: relative;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            cursor: pointer;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
+            .cat-tab.active {
+                background: #ffc107;
+                color: #000;
+                border-color: #ffc107;
+                font-weight: 700;
+                box-shadow: 0 0 15px rgba(255, 193, 7, 0.4);
+            }
 
-        .hero-card:hover {
-            transform: translateY(-7px);
-            border-color: #ffc107;
-            box-shadow: 0 10px 30px rgba(255, 193, 7, 0.15);
-            z-index: 2;
-        }
+            /* Hero Grid */
+            .hero-grid-container {
+                padding: 30px;
+            }
 
-        .hero-img-wrapper {
-            width: 100%;
-            aspect-ratio: 3/4;
-            overflow: hidden;
-            background: #000;
-            position: relative;
-        }
+            .section-title {
+                font-size: 2rem;
+                font-weight: 800;
+                color: #fff;
+                margin-bottom: 5px;
+                text-shadow: 0 0 20px rgba(255, 193, 7, 0.2);
+            }
 
-        .hero-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-        }
+            .section-subtitle {
+                color: #666;
+                margin-bottom: 30px;
+                font-size: 0.9rem;
+            }
 
-        .hero-card:hover .hero-img {
-            transform: scale(1.05);
-        }
+            .hero-card {
+                background: #121212;
+                border: 1px solid #2a2a2a;
+                border-radius: 12px;
+                overflow: hidden;
+                position: relative;
+                transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+                cursor: pointer;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+            }
 
-        .hero-info {
-            padding: 15px;
-            text-align: center;
-            background: #161616;
-            border-top: 1px solid #222;
-            flex-grow: 1;
-            display: flex; flex-direction: column; justify-content: center;
-        }
+            .hero-card:hover {
+                transform: translateY(-7px);
+                border-color: #ffc107;
+                box-shadow: 0 10px 30px rgba(255, 193, 7, 0.15);
+                z-index: 2;
+            }
 
-        .hero-name {
-            font-size: 1rem;
-            font-weight: 600;
-            color: #e0e0e0;
-            margin: 0;
-            transition: color 0.3s;
-        }
+            .hero-img-wrapper {
+                width: 100%;
+                aspect-ratio: 3/4;
+                overflow: hidden;
+                background: #000;
+                position: relative;
+            }
 
-        .hero-card:hover .hero-name {
-            color: #ffc107;
-        }
+            .hero-img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: transform 0.5s ease;
+            }
 
-        /* --- Modal Styles --- */
-        .modal-content {
-            background-color: #1a1a1a;
-            border: 1px solid #444;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-        }
-        
-        .modal-header {
-            border-bottom: 1px solid #333;
-            background: #141414;
-        }
-        
-        .modal-title {
-            color: #fff;
-            font-weight: 700;
-        }
-        
-        .modal-body {
-            padding: 30px;
-        }
+            .hero-card:hover .hero-img {
+                transform: scale(1.05);
+            }
 
-        .skill-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            justify-content: center;
-            margin-top: 20px;
-        }
+            .hero-info {
+                padding: 15px;
+                text-align: center;
+                background: #161616;
+                border-top: 1px solid #222;
+                flex-grow: 1;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
 
-        .skill-item {
-            width: 80px;
-            height: 80px;
-            border-radius: 12px;
-            background: #000;
-            border: 2px solid #333;
-            overflow: hidden;
-            position: relative;
-            transition: 0.2s;
-        }
-        
-        .skill-item:hover {
-            border-color: #ffc107;
-            transform: scale(1.1);
-        }
+            .hero-name {
+                font-size: 1rem;
+                font-weight: 600;
+                color: #e0e0e0;
+                margin: 0;
+                transition: color 0.3s;
+            }
 
-        .skill-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+            .hero-card:hover .hero-name {
+                color: #ffc107;
+            }
 
-        .priority-badge {
-            position: absolute;
-            top: 0; right: 0;
-            background: #ffc107;
-            color: #000;
-            font-size: 0.7rem;
-            font-weight: 800;
-            width: 20px; height: 20px;
-            display: flex; align-items: center; justify-content: center;
-            border-bottom-left-radius: 8px;
-        }
+            /* --- Modal Styles --- */
+            .modal-content {
+                background-color: #1a1a1a;
+                border: 1px solid #444;
+                box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            }
 
-        /* Responsive */
-        @media (max-width: 991px) {
-            .sidebar-panel { display: none; } /* ซ่อน Sidebar ในมือถือ (อาจจะทำเป็น Offcanvas ทีหลัง) */
-            .content-panel { margin-left: 0; }
-            .top-tabs-bar { padding: 10px 15px; }
-            .hero-grid-container { padding: 15px; }
-            .section-title { font-size: 1.5rem; }
-        }
-    </style>
+            .modal-header {
+                border-bottom: 1px solid #333;
+                background: #141414;
+            }
+
+            .modal-title {
+                color: #fff;
+                font-weight: 700;
+            }
+
+            .modal-body {
+                padding: 30px;
+            }
+
+            .skill-list {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 15px;
+                justify-content: center;
+                margin-top: 20px;
+            }
+
+            .skill-item {
+                width: 80px;
+                height: 80px;
+                border-radius: 12px;
+                background: #000;
+                border: 2px solid #333;
+                overflow: hidden;
+                position: relative;
+                transition: 0.2s;
+            }
+
+            .skill-item:hover {
+                border-color: #ffc107;
+                transform: scale(1.1);
+            }
+
+            .skill-item img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            .priority-badge {
+                position: absolute;
+                top: 0;
+                right: 0;
+                background: #ffc107;
+                color: #000;
+                font-size: 0.7rem;
+                font-weight: 800;
+                width: 20px;
+                height: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-bottom-left-radius: 8px;
+            }
+
+            /* Responsive */
+            @media (max-width: 991px) {
+                .sidebar-panel {
+                    display: none;
+                }
+
+                /* ซ่อน Sidebar ในมือถือ (อาจจะทำเป็น Offcanvas ทีหลัง) */
+                .content-panel {
+                    margin-left: 0;
+                }
+
+                .top-tabs-bar {
+                    padding: 10px 15px;
+                }
+
+                .hero-grid-container {
+                    padding: 15px;
+                }
+
+                .section-title {
+                    font-size: 1.5rem;
+                }
+            }
+        </style>
 </head>
+
 <body>
-    
+
     <%- include('../partials/navbar') %>
 
-    <div class="codex-layout">
-        
-        <aside class="sidebar-panel">
-            <div class="sidebar-header">
-                <div class="sidebar-title">
-                    <i class="bi bi-collection-fill text-warning"></i> Groups
-                </div>
-            </div>
-            <div class="group-list">
-                <% if(groups && groups.length > 0) { %>
-                    <% groups.forEach(grp => { %>
-                        <a href="/codex/hero?cat_id=<%= activeCatId %>&group_id=<%= grp.id %>" 
-                           class="group-item <%= activeGroupId == grp.id ? 'active' : '' %>">
-                           <span><%= grp.name %></span>
-                           <% if(activeGroupId == grp.id) { %> <i class="bi bi-chevron-right small"></i> <% } %>
-                        </a>
-                    <% }) %>
-                <% } else { %>
-                    <div class="text-center p-4 text-muted small">No Groups</div>
-                <% } %>
-            </div>
-        </aside>
+        <div class="codex-layout">
 
-        <main class="content-panel">
-            
-            <div class="top-tabs-bar">
-                <span class="text-white small fw-bold me-2 text-uppercase opacity-50" style="letter-spacing: 1px;">Categories:</span>
-                <% if(categories && categories.length > 0) { %>
-                    <% categories.forEach(cat => { %>
-                        <a href="/codex/hero?cat_id=<%= cat.id %>" 
-                           class="cat-tab <%= activeCatId == cat.id ? 'active' : '' %>">
-                           <%= cat.name %>
-                        </a>
-                    <% }) %>
-                <% } %>
-            </div>
-
-            <div class="hero-grid-container">
-                <% const currentGroup = groups.find(g => g.id == activeGroupId); %>
-                
-                <div class="mb-4">
-                    <h1 class="section-title"><%= currentGroup ? currentGroup.name : 'Select a Group' %></h1>
-                    <p class="section-subtitle">
-                        <%= currentGroup ? `Explore heroes from the ${currentGroup.name} group.` : 'Please select a group from the sidebar to view heroes.' %>
-                    </p>
-                </div>
-
-                <div class="row g-4">
-                    <% if(heroes.length === 0) { %>
-                        <div class="col-12">
-                            <div class="text-center py-5 text-muted" style="border: 2px dashed #222; border-radius: 12px;">
-                                <i class="bi bi-person-slash display-4 mb-3 opacity-25"></i>
-                                <h5>No heroes found in this group</h5>
-                                <p class="small opacity-50">Try selecting a different category or group.</p>
-                            </div>
-                        </div>
-                    <% } %>
-
-                    <% heroes.forEach(hero => { %>
-                        <div class="col-6 col-sm-4 col-md-3 col-xl-2">
-                            <div class="hero-card" 
-                                 onclick="openHeroModal(this)"
-                                 data-name="<%= hero.name %>"
-                                 data-img="<%= hero.image_name %>"
-                                 data-folder="<%= hero.detectedSkillFolder %>"
-                                 data-priority='<%= JSON.stringify(hero.skillOrder || []) %>'>
-                                
-                                <div class="hero-img-wrapper">
-                                    <img src="/images/heroes/<%= hero.image_name %>" class="hero-img" loading="lazy" alt="<%= hero.name %>">
-                                </div>
-                                <div class="hero-info">
-                                    <h3 class="hero-name"><%= hero.name %></h3>
-                                </div>
-                            </div>
-                        </div>
-                    <% }) %>
-                </div>
-            </div>
-
-        </main>
-    </div>
-
-    <div class="modal fade" id="heroDetailModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="bi bi-stars text-warning me-2"></i><span id="modalHeroName">Hero Name</span></h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body text-center">
-                    <div class="mb-4 d-inline-block p-1 border border-warning rounded" style="background: #000;">
-                        <img id="modalHeroImg" src="" style="width: 120px; aspect-ratio: 3/4; object-fit: cover; border-radius: 4px;">
+            <aside class="sidebar-panel">
+                <div class="sidebar-header">
+                    <div class="sidebar-title">
+                        <i class="bi bi-collection-fill text-warning"></i> Groups
                     </div>
-                    
-                    <h6 class="text-uppercase text-muted small fw-bold mb-3" style="letter-spacing: 1px;">Skill Priority</h6>
-                    
-                    <div id="modalSkillContainer" class="skill-list">
+                </div>
+                <div class="group-list">
+                    <% if(groups && groups.length> 0) { %>
+                        <% groups.forEach(grp=> { %>
+                            <a href="/codex/hero?cat_id=<%= activeCatId %>&group_id=<%= grp.id %>"
+                                class="group-item <%= activeGroupId == grp.id ? 'active' : '' %>">
+                                <span>
+                                    <%= grp.name %>
+                                </span>
+                                <% if(activeGroupId==grp.id) { %> <i class="bi bi-chevron-right small"></i>
+                                    <% } %>
+                            </a>
+                            <% }) %>
+                                <% } else { %>
+                                    <div class="text-center p-4 text-muted small">No Groups</div>
+                                    <% } %>
+                </div>
+            </aside>
+
+            <main class="content-panel">
+
+                <div class="top-tabs-bar">
+                    <span class="text-white small fw-bold me-2 text-uppercase opacity-50"
+                        style="letter-spacing: 1px;">Categories:</span>
+                    <% if(categories && categories.length> 0) { %>
+                        <% categories.forEach(cat=> { %>
+                            <a href="/codex/hero?cat_id=<%= cat.id %>"
+                                class="cat-tab <%= activeCatId == cat.id ? 'active' : '' %>">
+                                <%= cat.name %>
+                            </a>
+                            <% }) %>
+                                <% } %>
+                </div>
+
+                <div class="hero-grid-container">
+                    <% const currentGroup=groups.find(g=> g.id == activeGroupId); %>
+
+                        <div class="mb-4">
+                            <h1 class="section-title">
+                                <%= currentGroup ? currentGroup.name : 'Select a Group' %>
+                            </h1>
+                            <p class="section-subtitle">
+                                <%= currentGroup ? `Explore heroes from the ${currentGroup.name} group.`
+                                    : 'Please select a group from the sidebar to view heroes.' %>
+                            </p>
                         </div>
-                    
-                    <div id="modalNoSkills" class="text-muted small mt-3 d-none">
-                        No skill priority data available.
+
+                        <div class="row g-4">
+                            <% if(heroes.length===0) { %>
+                                <div class="col-12">
+                                    <div class="text-center py-5 text-muted"
+                                        style="border: 2px dashed #222; border-radius: 12px;">
+                                        <i class="bi bi-person-slash display-4 mb-3 opacity-25"></i>
+                                        <h5>No heroes found in this group</h5>
+                                        <p class="small opacity-50">Try selecting a different category or group.</p>
+                                    </div>
+                                </div>
+                                <% } %>
+
+                                    <% heroes.forEach(hero=> { %>
+                                        <div class="col-6 col-sm-4 col-md-3 col-xl-2">
+                                            <div class="hero-card" onclick="openHeroModal(this)"
+                                                data-name="<%= hero.name %>" data-img="<%= hero.image_name %>"
+                                                data-folder="<%= hero.skillFolder %>"
+                                                data-allskills='<%= JSON.stringify(hero.allSkills || []) %>'
+                                                data-priority='<%= JSON.stringify(hero.skillOrder || []) %>'>
+
+                                                <div class="hero-img-wrapper">
+                                                    <img src="/images/heroes/<%= hero.image_name %>" class="hero-img"
+                                                        loading="lazy" alt="<%= hero.name %>">
+                                                </div>
+                                                <div class="hero-info">
+                                                    <h3 class="hero-name">
+                                                        <%= hero.name %>
+                                                    </h3>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <% }) %>
+                        </div>
+                </div>
+
+            </main>
+        </div>
+
+        <div class="modal fade" id="heroDetailModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title"><i class="bi bi-stars text-warning me-2"></i><span
+                                id="modalHeroName">Hero Name</span></h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <div class="mb-4 d-inline-block p-1 border border-warning rounded" style="background: #000;">
+                            <img id="modalHeroImg" src=""
+                                style="width: 120px; aspect-ratio: 3/4; object-fit: cover; border-radius: 4px;">
+                        </div>
+
+                        <h6 class="text-uppercase text-warning small fw-bold mb-3" style="letter-spacing: 1px;">Skill
+                            Priority</h6>
+
+                        <div id="modalSkillContainer" class="skill-list">
+                        </div>
+
+                        <div id="modalNoSkills" class="text-muted small mt-3 d-none">
+                            No skill priority data available.
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <%- include('../partials/footer') %>
+        <%- include('../partials/footer') %>
 
-    <script>
-        function openHeroModal(element) {
-            const name = element.getAttribute('data-name');
-            const img = element.getAttribute('data-img');
-            const folder = element.getAttribute('data-folder');
-            const priority = JSON.parse(element.getAttribute('data-priority') || '[]');
+            <script>
+                function openHeroModal(element) {
+                    const name = element.getAttribute('data-name');
+                    const img = element.getAttribute('data-img');
+                    const folder = element.getAttribute('data-folder');
+                    const allSkills = JSON.parse(element.getAttribute('data-allskills') || '[]');
+                    const priority = JSON.parse(element.getAttribute('data-priority') || '[]');
 
-            document.getElementById('modalHeroName').innerText = name;
-            document.getElementById('modalHeroImg').src = `/images/heroes/${img}`;
-            
-            const container = document.getElementById('modalSkillContainer');
-            const noSkillsMsg = document.getElementById('modalNoSkills');
-            container.innerHTML = '';
+                    // Sort Descending (3.png -> 1.png)
+                    allSkills.sort((a, b) => {
+                        const numA = parseInt(a) || 0;
+                        const numB = parseInt(b) || 0;
+                        return numB - numA;
+                    });
 
-            if (priority && priority.length > 0) {
-                noSkillsMsg.classList.add('d-none');
-                priority.forEach((filename, index) => {
-                    const div = document.createElement('div');
-                    div.className = 'skill-item';
-                    div.title = `Priority ${index + 1}`;
-                    div.innerHTML = `
-                        <img src="/images/skill/${folder}/${filename}" onerror="this.src='https://via.placeholder.com/80?text=Skill'">
-                        <div class="priority-badge">${index + 1}</div>
-                    `;
-                    container.appendChild(div);
-                });
-            } else {
-                noSkillsMsg.classList.remove('d-none');
-            }
+                    document.getElementById('modalHeroName').innerText = name;
+                    document.getElementById('modalHeroImg').src = `/images/heroes/${img}`;
 
-            new bootstrap.Modal(document.getElementById('heroDetailModal')).show();
-        }
-    </script>
+                    const container = document.getElementById('modalSkillContainer');
+                    const noSkillsMsg = document.getElementById('modalNoSkills');
+                    container.innerHTML = '';
+
+                    if (allSkills && allSkills.length > 0) {
+                        noSkillsMsg.classList.add('d-none');
+                        allSkills.forEach((filename) => {
+                            const div = document.createElement('div');
+                            div.className = 'skill-item';
+                            div.title = filename;
+
+                            // Check Priority
+                            let badgeHtml = '';
+                            const pIdx = priority.indexOf(filename);
+                            if (pIdx > -1) {
+                                badgeHtml = `<div class="priority-badge">${pIdx + 1}</div>`;
+                            }
+
+                            div.innerHTML = `
+                                <img src="/images/skill/${folder}/${filename}" onerror="this.src='https://via.placeholder.com/80?text=Skill'">
+                                ${badgeHtml}
+                            `;
+                            container.appendChild(div);
+                        });
+                    } else {
+                        noSkillsMsg.classList.remove('d-none');
+                    }
+                    new bootstrap.Modal(document.getElementById('heroDetailModal')).show();
+                }
+            </script>
 </body>
+
 </html>

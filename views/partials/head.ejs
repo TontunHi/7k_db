@@ -1,6 +1,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title><%= typeof title !== 'undefined' ? title : '7K Rebirth' %></title>
+<meta name="csrf-token" content="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+<title>
+    <%= typeof title !=='undefined' ? title : '7K Rebirth' %>
+</title>
 
 <link rel="icon" type="image/png" href="/images/about_website/logo_seven_knights_rebirth.png">
 

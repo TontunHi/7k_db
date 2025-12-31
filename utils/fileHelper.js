@@ -2,25 +2,44 @@ const fs = require('fs');
 const path = require('path');
 
 // 1. กำหนดน้ำหนักของ Grade แต่ละประเภท
-const heroGradeWeight = { 'l++': 4, 'l+': 3, 'l': 2, 'r': 1 };
+const heroGradeWeight = { 'l++': 6, 'l+': 5, 'l': 4, 'r': 3, 'uc': 2, 'c': 1 };
 const petGradeWeight = { 'l': 2, 'r': 1 };
 // เพิ่มน้ำหนักสำหรับ Items (Accessory/Weapon/Armor)
 const itemGradeWeight = { 'l': 4, 'r': 3, 'un': 2, 'c': 1 };
 
 // Helper: แยก Grade และ Name (สำหรับ Hero/Pet)
 const getGradeAndName = (filename) => {
-    const parts = filename.split('_');
-    const grade = parts[0]; 
-    const nameWithExt = parts.slice(1).join('_'); 
-    const name = nameWithExt.replace(/\.[^/.]+$/, "");
-    
-    return { grade, name, filename };
+    // แยกด้วย _ แต่ต้องระวังกรณีชื่อไฟล์มี _ หลายตัว หรือ Grade มี +
+    const lowerName = filename.toLowerCase();
+    let grade = 'c'; // Default
+    let name = filename;
+
+    // ตรวจสอบ Grade จาก Prefix โดยเรียงจากยาวไปสั้นเพื่อป้องกันการทับซ้อน (L++ ก่อน L)
+    const grades = Object.keys(heroGradeWeight).sort((a, b) => b.length - a.length);
+
+    for (const g of grades) {
+        if (lowerName.startsWith(g + '_')) {
+            grade = g;
+            // ตัด Prefix ออกเพื่อได้ชื่อ
+            // เช่น l++_rudy.png -> rudy
+            name = filename.substring(g.length + 1).replace(/\.[^/.]+$/, "");
+            break;
+        }
+    }
+
+    // Fallback กรณีหา Grade ไม่เจอจากชื่อไฟล์ (หรืออาจจะเป็นไฟล์แบบเก่า)
+    // ถ้าไม่เจอ prefix ให้ถือว่าเป็น C หรือตาม logic เดิม
+    if (name === filename) {
+        name = filename.replace(/\.[^/.]+$/, "");
+    }
+
+    return { grade, name, filename, originalName: filename }; // เพิ่ม originalName เพื่อ return เป็น string ตอน map กลับถ้าจำเป็น แต่ใน function นี้ return object
 };
 
 // Function 1: ดึงรูปภาพ Hero/Pet (มี Logic เฉพาะ)
 const getSortedImages = (folderName) => {
     const dirPath = path.join(__dirname, '../public/images', folderName);
-    
+
     if (!fs.existsSync(dirPath)) return [];
 
     const files = fs.readdirSync(dirPath);
@@ -39,13 +58,14 @@ const getSortedImages = (folderName) => {
         return a.name.localeCompare(b.name);
     });
 
-    return items;
+    // Return กลับเป็น filename array เหมือนเดิม เพื่อไม่ให้กระทบ Controller ส่วนอื่น
+    return items.map(item => item.filename);
 };
 
 // Function 2: ดึงรูปภาพ Items (Weapon/Armor/Accessory) และเรียงตาม Grade
 const getImageFiles = (folderPath) => {
     const dirPath = path.join(__dirname, '../public/images', folderPath);
-    
+
     if (!fs.existsSync(dirPath)) {
         console.warn(`Directory not found: ${dirPath}`);
         return [];
@@ -90,17 +110,17 @@ const formatHeroName = (filename) => {
 const getFilesFromDir = (dirPath) => {
     const fullPath = path.join(__dirname, '../public', dirPath);
     if (!fs.existsSync(fullPath)) return [];
-    
+
     return fs.readdirSync(fullPath).filter(file => /\.(png|jpg|jpeg|gif|webp)$/i.test(file));
 };
 
 // [NEW] Function 4: อ่านรูป Skill จากโฟลเดอร์ย่อย (สำหรับ Codex)
 const getSkillImages = (heroSkillFolder) => {
     if (!heroSkillFolder) return [];
-    
+
     // Path: public/images/skill/{ชื่อโฟลเดอร์}
     const skillPath = path.join(__dirname, '../public/images/skill', heroSkillFolder);
-    
+
     if (fs.existsSync(skillPath)) {
         // อ่านไฟล์รูปทั้งหมดในโฟลเดอร์ skill นั้น
         return fs.readdirSync(skillPath)
