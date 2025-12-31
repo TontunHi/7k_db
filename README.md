@@ -55,7 +55,7 @@ Follow these simple steps to run the project on your machine.
 
 1.  **Clone the repository** (or download files):
     ```bash
-    git clone https://github.com/yourusername/seven-knights-rebirth.git
+    git clone https://github.com/TontunHi/seven-knights-rebirth.git
     ```
 
 2.  **Install Dependencies**:
