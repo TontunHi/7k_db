@@ -15,7 +15,7 @@ class StageService {
         // 1. Fetch Stage Metadata
         const metadataSql = `SELECT * FROM stage_comps ORDER BY 
                              CASE WHEN type = 'Stage' THEN 1 ELSE 2 END, 
-                             stage_main ASC, stage_sub ASC`;
+                             stage_main ASC, stage_sub ASC, team_order ASC`;
         const stages = await this.query('all', metadataSql);
 
         // 2. Fetch Team Members
@@ -117,6 +117,56 @@ class StageService {
 
     static async deleteStage(id) {
         await this.query('run', "DELETE FROM stage_comps WHERE id = ?", [id]);
+        return { success: true };
+    }
+
+    // [New Function] บันทึกแบบกลุ่ม (รองรับ Nightmare 2 ทีม)
+    static async saveStageGroup(data) {
+        const { stage_main, stage_sub, type, teams } = data; 
+        // teams คือ Array ของ { formation, description, heroes, team_order }
+
+        return new Promise((resolve, reject) => {
+            db.serialize(async () => {
+                try {
+                    await new Promise((res, rej) => db.run("BEGIN TRANSACTION", (err) => err ? rej(err) : res()));
+
+                    // 1. ลบข้อมูลเก่าของด่านนี้ทิ้งทั้งหมด (เพื่อ Re-insert ใหม่ให้สะอาด)
+                    await this.query('run', 
+                        `DELETE FROM stage_comps WHERE stage_main=? AND stage_sub=? AND type=?`, 
+                        [stage_main, stage_sub, type]
+                    );
+
+                    // 2. วนลูปสร้างทีมใหม่
+                    for (const team of teams) {
+                        const res = await this.query('run',
+                            `INSERT INTO stage_comps (stage_main, stage_sub, type, formation, description, team_order, heroes) VALUES (?,?,?,?,?,?,?)`,
+                            [stage_main, stage_sub, type, team.formation, team.description, team.team_order, '[]']
+                        );
+                        const newId = res.lastID;
+
+                        // Insert Heroes
+                        if (Array.isArray(team.heroes)) {
+                             const stmt = db.prepare("INSERT INTO stage_team_members (stage_id, hero_filename, slot_index) VALUES (?, ?, ?)");
+                             team.heroes.forEach((h, index) => {
+                                 if (h) stmt.run(newId, h, index);
+                             });
+                             await new Promise(r => stmt.finalize(r));
+                        }
+                    }
+
+                    await new Promise((res, rej) => db.run("COMMIT", (err) => err ? rej(err) : res()));
+                    resolve({ success: true });
+
+                } catch (err) {
+                    db.run("ROLLBACK");
+                    reject(err);
+                }
+            });
+        });
+    }
+
+    static async deleteStageGroup(main, sub, type) {
+        await this.query('run', "DELETE FROM stage_comps WHERE stage_main=? AND stage_sub=? AND type=?", [main, sub, type]);
         return { success: true };
     }
 }

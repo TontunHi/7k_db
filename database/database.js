@@ -14,6 +14,7 @@ const db = new sqlite3.Database(dbPath, (err) => {
 
 function initTables() {
     db.serialize(() => {
+        // --- BUILDS ---
         db.run(`CREATE TABLE IF NOT EXISTS builds (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             hero_filename TEXT NOT NULL,
@@ -21,21 +22,17 @@ function initTables() {
             c_level TEXT DEFAULT 'C0',
             mode TEXT DEFAULT 'PVE',
             
-            weapon1_img TEXT,
-            weapon1_stat TEXT,
-            armor1_img TEXT,
-            armor1_stat TEXT,
-            
-            weapon2_img TEXT,
-            weapon2_stat TEXT,
-            armor2_img TEXT,
-            armor2_stat TEXT,
+            weapon1_img TEXT, weapon1_stat TEXT,
+            armor1_img TEXT, armor1_stat TEXT,
+            weapon2_img TEXT, weapon2_stat TEXT,
+            armor2_img TEXT, armor2_stat TEXT,
             
             accessories TEXT, 
             substats TEXT,    
             description TEXT
         )`);
 
+        // --- TIER LIST ---
         db.run(`CREATE TABLE IF NOT EXISTS tier_rankings (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             category TEXT NOT NULL,
@@ -44,14 +41,17 @@ function initTables() {
             char_type TEXT NOT NULL
         )`);
 
+        // --- STAGE & NIGHTMARE ---
+        // [แก้ไข] ย้ายอันที่ถูกต้อง (มี team_order) มาไว้ตรงนี้ และลบอันเก่าทิ้ง
         db.run(`CREATE TABLE IF NOT EXISTS stage_comps (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            stage_main INTEGER,     -- เลขหน้า เช่น 20
-            stage_sub INTEGER,      -- เลขหลัง เช่น 30
-            type TEXT,              -- 'Stage' หรือ 'Nightmare'
-            formation TEXT,         -- '1-4', '2-3', '3-2', '4-1'
-            heroes TEXT,            -- DEPRECATED: JSON Array (Will be migrated)
-            description TEXT        -- คำอธิบายเสริม
+            stage_main INTEGER,
+            stage_sub INTEGER,
+            type TEXT, -- 'Stage' or 'Nightmare'
+            formation TEXT,
+            description TEXT,
+            heroes TEXT, -- Legacy
+            team_order INTEGER DEFAULT 1 -- [New Column] 1=Team1, 2=Team2
         )`);
 
         db.run(`CREATE TABLE IF NOT EXISTS stage_team_members (
@@ -63,11 +63,12 @@ function initTables() {
         )`);
         db.run(`CREATE INDEX IF NOT EXISTS idx_stage_members_stage_id ON stage_team_members(stage_id)`);
 
+        // --- DUNGEON ---
         db.run(`CREATE TABLE IF NOT EXISTS dungeon_comps (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            dungeon_name TEXT,      -- เก็บชื่อไฟล์รูป Banner เช่น 'gold_dungeon.png'
-            formation TEXT,         -- '1-4', '2-3', etc.
-            heroes TEXT,            -- JSON Array เก็บชื่อไฟล์รูป 5 ตัว
+            dungeon_name TEXT,
+            formation TEXT,
+            heroes TEXT,
             description TEXT
         )`);
 
@@ -80,13 +81,14 @@ function initTables() {
         )`);
         db.run(`CREATE INDEX IF NOT EXISTS idx_dungeon_members_dungeon_id ON dungeon_team_members(dungeon_id)`);
 
+        // --- GUILD WAR ---
         db.run(`CREATE TABLE IF NOT EXISTS guildwar_comps (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             team_name TEXT,
             formation TEXT,
-            heroes TEXT,            -- JSON Array เก็บชื่อไฟล์ Hero (max 3)
-            pet TEXT,               -- ชื่อไฟล์ Pet
-            skill_order TEXT,       -- JSON Array เก็บ Sequence การกดสกิล
+            heroes TEXT,
+            pet TEXT,
+            skill_order TEXT,
             description TEXT
         )`);
 
@@ -99,10 +101,11 @@ function initTables() {
         )`);
         db.run(`CREATE INDEX IF NOT EXISTS idx_gw_members_gw_id ON guildwar_team_members(guildwar_id)`);
 
+        // --- CODEX ---
         db.run(`CREATE TABLE IF NOT EXISTS codex_categories (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT,
-            type TEXT DEFAULT 'hero' -- แยกประเภท hero หรือ pet
+            type TEXT DEFAULT 'hero'
         )`);
 
         db.run(`CREATE TABLE IF NOT EXISTS codex_groups (
@@ -118,7 +121,7 @@ function initTables() {
             name TEXT,
             image_name TEXT,
             skill_folder TEXT,
-            skill_order TEXT,   -- [NEW] เก็บ JSON Array ลำดับสกิล เช่น ["skill1.png", "skill2.png"]
+            skill_order TEXT,
             FOREIGN KEY(group_id) REFERENCES codex_groups(id)
         )`);
 
@@ -130,6 +133,7 @@ function initTables() {
             FOREIGN KEY(group_id) REFERENCES codex_groups(id)
         )`);
 
+        // --- RAID ---
         db.run(`CREATE TABLE IF NOT EXISTS raid_bosses (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT,
@@ -145,30 +149,32 @@ function initTables() {
             skill_priority TEXT,
             description TEXT,
             youtube_link TEXT,
-            pet_id TEXT,  -- [New Column] ใส่ไว้ที่นี่เลย
+            pet_id TEXT,  -- [New Column]
             FOREIGN KEY(raid_id) REFERENCES raid_bosses(id)
         )`);
 
         db.run(`CREATE TABLE IF NOT EXISTS raid_team_members (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             team_id INTEGER NOT NULL,
-            hero_id TEXT,       -- filename
-            slot_index INTEGER, -- 0-4
+            hero_id TEXT,
+            slot_index INTEGER,
             FOREIGN KEY(team_id) REFERENCES raid_teams(id) ON DELETE CASCADE
         )`);
         db.run(`CREATE INDEX IF NOT EXISTS idx_raid_members_team_id ON raid_team_members(team_id)`);
 
+        // --- CASTLE RUSH ---
         db.run(`CREATE TABLE IF NOT EXISTS castle_rush_teams (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            stage_key TEXT,             -- ตัวระบุวัน เช่น 'cr_rudy', 'cr_eileene'
+            stage_key TEXT,
             team_name TEXT,
             formation TEXT,
-            hero_ids TEXT,              -- JSON Array
-            skill_priority TEXT,        -- JSON Array
+            hero_ids TEXT,
+            skill_priority TEXT,
             description TEXT,
             youtube_link TEXT
         )`);
 
+        // --- INDEXES ---
         db.run(`CREATE INDEX IF NOT EXISTS idx_codex_groups_cat_id ON codex_groups(category_id)`);
         db.run(`CREATE INDEX IF NOT EXISTS idx_codex_heroes_group_id ON codex_heroes(group_id)`);
         db.run(`CREATE INDEX IF NOT EXISTS idx_codex_pets_group_id ON codex_pets(group_id)`);

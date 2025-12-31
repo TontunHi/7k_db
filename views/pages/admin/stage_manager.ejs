@@ -1,763 +1,892 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <%- include('../../partials/head') %>
-        <style>
-            body {
-                background-color: #0f0f0f;
-                font-family: 'Segoe UI', sans-serif;
-                overflow-x: hidden;
-            }
+    <style>
+      body {
+        background-color: #0f0f0f;
+        font-family: "Segoe UI", sans-serif;
+        overflow-x: hidden;
+      }
 
-            /* Modern Navbar */
-            .navbar-modern {
-                height: 64px;
-                background: rgba(18, 18, 18, 0.95);
-                backdrop-filter: blur(10px);
-                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                z-index: 1000;
-                padding: 0 20px;
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-            }
+      /* Navbar */
+      .navbar-modern {
+        height: 64px;
+        background: rgba(18, 18, 18, 0.95);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        padding: 0 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      }
+      .nav-brand-box {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .site-logo {
+        height: 40px;
+        width: auto;
+        object-fit: contain;
+        filter: drop-shadow(0 0 5px rgba(255, 193, 7, 0.3));
+      }
+      .nav-title {
+        font-weight: 700;
+        color: #fff;
+        font-size: 1.1rem;
+        letter-spacing: 0.5px;
+      }
+      .nav-btn {
+        background: rgba(255, 255, 255, 0.05);
+        color: #ccc;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s;
+      }
+      .nav-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        transform: translateY(-1px);
+      }
+      .nav-btn.primary {
+        background: rgba(255, 193, 7, 0.1);
+        color: #ffc107;
+        border-color: rgba(255, 193, 7, 0.3);
+      }
 
-            .nav-brand-box {
-                display: flex;
-                align-items: center;
-                gap: 12px;
-            }
+      .main-content {
+        margin-top: 90px;
+        padding-bottom: 50px;
+        max-width: 900px;
+        margin-left: auto;
+        margin-right: auto;
+      }
 
-            .site-logo {
-                height: 40px;
-                width: auto;
-                object-fit: contain;
-                filter: drop-shadow(0 0 5px rgba(255, 193, 7, 0.3));
-            }
+      /* Floating Button */
+      .btn-add-floating {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: #ffc107;
+        color: #000;
+        border: none;
+        box-shadow: 0 5px 20px rgba(255, 193, 7, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        transition: 0.3s;
+        z-index: 100;
+      }
+      .btn-add-floating:hover {
+        transform: scale(1.1) rotate(90deg);
+        background: #fff;
+      }
 
-            .nav-title {
-                font-weight: 700;
-                color: #fff;
-                font-size: 1.1rem;
-                letter-spacing: 0.5px;
-            }
+      /* Stage Card */
+      .stage-card {
+        background: #161616;
+        border-radius: 12px;
+        margin-bottom: 30px;
+        overflow: hidden;
+        border: 1px solid #333;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        transition: transform 0.2s;
+      }
+      .stage-card:hover {
+        border-color: #555;
+      }
 
-            .nav-btn {
-                background: rgba(255, 255, 255, 0.05);
-                color: #ccc;
-                border: 1px solid rgba(255, 255, 255, 0.1);
-                padding: 6px 16px;
-                border-radius: 20px;
-                font-size: 0.85rem;
-                text-decoration: none;
-                display: inline-flex;
-                align-items: center;
-                gap: 6px;
-                transition: all 0.2s;
-            }
+      .header-stage {
+        background: linear-gradient(
+          90deg,
+          rgba(241, 227, 182, 0.1),
+          transparent
+        );
+        border-left: 5px solid #f1e3b6;
+      }
+      .header-nightmare {
+        background: linear-gradient(
+          90deg,
+          rgba(210, 173, 230, 0.1),
+          transparent
+        );
+        border-left: 5px solid #d2ade6;
+      }
 
-            .nav-btn:hover {
-                background: rgba(255, 255, 255, 0.1);
-                color: #fff;
-                transform: translateY(-1px);
-            }
+      .stage-header {
+        padding: 15px 25px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .stage-header-left {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+      .stage-number {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #fff;
+        letter-spacing: 1px;
+      }
+      .stage-badge {
+        padding: 4px 12px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: bold;
+        text-transform: uppercase;
+      }
+      .badge-stage {
+        background: #f1e3b6;
+        color: #3d3314;
+      }
+      .badge-nightmare {
+        background: #d2ade6;
+        color: #2e1a3b;
+      }
 
-            .nav-btn.primary {
-                background: rgba(255, 193, 7, 0.1);
-                color: #ffc107;
-                border-color: rgba(255, 193, 7, 0.3);
-            }
+      /* Team Row */
+      .team-row {
+        padding: 15px 25px;
+        border-top: 1px solid #2a2a2a;
+        display: grid;
+        grid-template-columns: 80px 1fr;
+        gap: 20px;
+        align-items: center;
+        background: #1a1a1a;
+        transition: background 0.2s;
+      }
+      .team-row:hover {
+        background: #222;
+      }
+      .formation-block {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: #111;
+        border: 1px solid #333;
+        border-radius: 8px;
+        padding: 5px;
+        height: 100%;
+        min-height: 60px;
+      }
+      .formation-block img {
+        width: 30px;
+        margin-bottom: 2px;
+        opacity: 0.9;
+      }
+      .formation-block span {
+        font-size: 0.75rem;
+        color: #ccc;
+        font-weight: bold;
+      }
 
-            .main-content {
-                margin-top: 90px;
-                padding-bottom: 50px;
-                max-width: 900px;
-                margin-left: auto;
-                margin-right: auto;
-            }
+      .middle-content {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .heroes-strip {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .hero-slot-sm {
+        width: 42px;
+        aspect-ratio: 3/4;
+        background: #000;
+        border: 2px solid #dc3545;
+        border-radius: 4px;
+        overflow: hidden;
+        position: relative;
+        transition: transform 0.2s;
+      }
+      .hero-slot-sm img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .hero-slot-sm.is-front {
+        border-color: #0dcaf0 !important;
+        transform: translateY(-4px);
+        box-shadow: 0 4px 8px rgba(13, 202, 240, 0.4);
+        z-index: 2;
+      }
 
-            /* Floating Add Button */
-            .btn-add-floating {
-                position: fixed;
-                bottom: 30px;
-                right: 30px;
-                width: 60px;
-                height: 60px;
-                border-radius: 50%;
-                background: #ffc107;
-                color: #000;
-                border: none;
-                box-shadow: 0 5px 20px rgba(255, 193, 7, 0.4);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 1.5rem;
-                transition: 0.3s;
-                z-index: 100;
-            }
+      .note-box {
+        background: #252525;
+        border-left: 3px solid #ffc107;
+        color: #fff;
+        padding: 6px 12px;
+        border-radius: 0 4px 4px 0;
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: fit-content;
+      }
+      .note-box i {
+        color: #ffc107;
+      }
 
-            .btn-add-floating:hover {
-                transform: scale(1.1) rotate(90deg);
-                background: #fff;
-            }
+      .action-btns-header {
+        display: flex;
+        gap: 8px;
+      }
+      .btn-icon {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #888;
+        transition: 0.2s;
+        background: #111;
+        border: 1px solid #333;
+        cursor: pointer;
+      }
+      .btn-icon:hover {
+        color: #fff;
+        border-color: #666;
+      }
+      .btn-icon.del:hover {
+        background: #dc3545;
+        border-color: #dc3545;
+      }
+      .btn-icon.edit:hover {
+        background: #0d6efd;
+        border-color: #0d6efd;
+      }
 
-            /* Stage Card */
-            .stage-card {
-                background: #161616;
-                border-radius: 12px;
-                margin-bottom: 30px;
-                overflow: hidden;
-                border: 1px solid #333;
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-                transition: transform 0.2s;
-            }
+      /* Modal */
+      .modal-content {
+        background: #1a1a1a;
+        border: 1px solid #444;
+        color: #fff;
+      }
+      .input-dark {
+        background-color: #222 !important;
+        border: 1px solid #444 !important;
+        color: #fff !important;
+      }
+      .input-dark:focus {
+        border-color: #ffc107 !important;
+        color: #fff !important;
+      }
+      .modal-label {
+        color: #fff;
+        font-size: 0.85rem;
+        font-weight: 700;
+        margin-bottom: 6px;
+        display: block;
+      }
 
-            .stage-card:hover {
-                border-color: #555;
-            }
+      .formation-selector {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .form-option input {
+        display: none;
+      }
+      .form-option label {
+        display: block;
+        padding: 5px;
+        border: 2px solid #333;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        background: #111;
+        text-align: center;
+        min-width: 60px;
+      }
+      .form-option label img {
+        width: 25px;
+        margin-bottom: 5px;
+      }
+      .form-option label div {
+        font-size: 0.7rem;
+        color: #aaa;
+        font-weight: bold;
+      }
+      .form-option input:checked + label {
+        border-color: #ffc107;
+        background: rgba(255, 193, 7, 0.1);
+      }
+      .form-option input:checked + label div {
+        color: #ffc107;
+      }
 
-            /* Header Styles */
-            .header-stage {
-                background: linear-gradient(90deg, rgba(241, 227, 182, 0.1), transparent);
-                border-left: 5px solid #f1e3b6;
-            }
+      .hero-select-container {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        margin-top: 15px;
+        height: 80px;
+        align-items: center;
+      }
+      .hero-input-slot {
+        width: 50px;
+        aspect-ratio: 3/4;
+        background: #222;
+        border: 2px solid #444;
+        border-radius: 6px;
+        cursor: pointer;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: 0.3s;
+      }
+      .hero-input-slot img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 4px;
+      }
+      .hero-input-slot.slot-front {
+        border-color: #90caf9;
+        transform: translateY(-10px);
+      }
+      .hero-input-slot.slot-back {
+        border-color: #ef9a9a;
+      }
 
-            .header-nightmare {
-                background: linear-gradient(90deg, rgba(210, 173, 230, 0.1), transparent);
-                border-left: 5px solid #d2ade6;
-            }
+      .hero-picker-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+        gap: 8px;
+        max-height: 350px;
+        overflow-y: auto;
+      }
+      .picker-item {
+        cursor: pointer;
+        border: 1px solid #333;
+        aspect-ratio: 1;
+        padding: 2px;
+        border-radius: 4px;
+        background: #000;
+      }
+      .picker-item:hover {
+        border-color: #ffc107;
+      }
+      .picker-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
 
-            .stage-header {
-                padding: 15px 25px;
-                display: flex;
-                align-items: center;
-                gap: 15px;
-            }
+      .team-section-card {
+        background: #222;
+        border: 1px solid #333;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+        position: relative;
+      }
+      .team-badge-header {
+        position: absolute;
+        top: -10px;
+        left: 15px;
+        background: #ffc107;
+        color: #000;
+        font-weight: bold;
+        font-size: 0.75rem;
+        padding: 2px 10px;
+        border-radius: 4px;
+      }
+      .team-badge-header.t2 {
+        background: #dc3545;
+        color: #fff;
+      }
+    </style>
+  </head>
 
-            .stage-number {
-                font-size: 1.5rem;
-                font-weight: 800;
-                color: #fff;
-                letter-spacing: 1px;
-            }
-
-            .stage-badge {
-                padding: 4px 12px;
-                border-radius: 6px;
-                font-size: 0.75rem;
-                font-weight: bold;
-                text-transform: uppercase;
-            }
-
-            .badge-stage {
-                background: #f1e3b6;
-                color: #3d3314;
-            }
-
-            .badge-nightmare {
-                background: #d2ade6;
-                color: #2e1a3b;
-            }
-
-            /* Team Row */
-            .team-row {
-                padding: 15px 25px;
-                border-top: 1px solid #2a2a2a;
-                display: grid;
-                grid-template-columns: 80px 1fr auto;
-                gap: 20px;
-                align-items: center;
-                background: #1a1a1a;
-                transition: background 0.2s;
-            }
-
-            .team-row:hover {
-                background: #222;
-            }
-
-            .formation-block {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                background: #111;
-                border: 1px solid #333;
-                border-radius: 8px;
-                padding: 5px;
-                height: 100%;
-                min-height: 60px;
-            }
-
-            .formation-block img {
-                width: 30px;
-                margin-bottom: 2px;
-                opacity: 0.9;
-            }
-
-            .formation-block span {
-                font-size: 0.75rem;
-                color: #ccc;
-                font-weight: bold;
-            }
-
-            .middle-content {
-                display: flex;
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .heroes-strip {
-                display: flex;
-                gap: 8px;
-                align-items: center;
-            }
-
-            .hero-slot-sm {
-                width: 42px;
-                aspect-ratio: 3/4;
-                background: #000;
-                border: 2px solid #ef9a9a;
-                border-radius: 4px;
-                overflow: hidden;
-                position: relative;
-                transition: transform 0.2s;
-            }
-
-            .hero-slot-sm img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-            }
-
-            .hero-slot-sm.is-front {
-                border-color: #90caf9;
-                transform: translateY(-4px);
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-                z-index: 2;
-            }
-
-            .note-box {
-                background: #252525;
-                border-left: 3px solid #ffc107;
-                color: #fff;
-                padding: 6px 12px;
-                border-radius: 0 4px 4px 0;
-                font-size: 0.85rem;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                width: fit-content;
-            }
-
-            .note-box i {
-                color: #ffc107;
-            }
-
-            .action-btns {
-                display: flex;
-                gap: 8px;
-            }
-
-            .btn-icon {
-                width: 35px;
-                height: 35px;
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: #888;
-                transition: 0.2s;
-                background: #111;
-                border: 1px solid #333;
-            }
-
-            .btn-icon:hover {
-                color: #fff;
-                border-color: #666;
-            }
-
-            .btn-icon.del:hover {
-                background: #dc3545;
-                border-color: #dc3545;
-            }
-
-            .btn-icon.edit:hover {
-                background: #0d6efd;
-                border-color: #0d6efd;
-            }
-
-            /* Modal */
-            .modal-content {
-                background: #1a1a1a;
-                border: 1px solid #444;
-                color: #fff;
-            }
-
-            .input-dark {
-                background-color: #222 !important;
-                border: 1px solid #444 !important;
-                color: #fff !important;
-            }
-
-            .input-dark:focus {
-                border-color: #ffc107 !important;
-                color: #fff !important;
-            }
-
-            .modal-label {
-                color: #fff;
-                font-size: 0.85rem;
-                font-weight: 700;
-                margin-bottom: 6px;
-                display: block;
-            }
-
-            .formation-selector {
-                display: flex;
-                gap: 15px;
-                justify-content: center;
-            }
-
-            .form-option input {
-                display: none;
-            }
-
-            .form-option label {
-                display: block;
-                padding: 10px;
-                border: 2px solid #333;
-                border-radius: 8px;
-                cursor: pointer;
-                transition: all 0.2s;
-                background: #111;
-                text-align: center;
-                min-width: 80px;
-            }
-
-            .form-option label img {
-                width: 30px;
-                margin-bottom: 5px;
-            }
-
-            .form-option label div {
-                font-size: 0.8rem;
-                color: #aaa;
-                font-weight: bold;
-            }
-
-            .form-option input:checked+label {
-                border-color: #ffc107;
-                background: rgba(255, 193, 7, 0.1);
-            }
-
-            .form-option input:checked+label div {
-                color: #ffc107;
-            }
-
-            .hero-select-container {
-                display: flex;
-                gap: 12px;
-                justify-content: center;
-                margin-top: 25px;
-                height: 100px;
-                align-items: center;
-            }
-
-            .hero-input-slot {
-                width: 65px;
-                aspect-ratio: 3/4;
-                background: #222;
-                border: 2px solid #444;
-                border-radius: 8px;
-                cursor: pointer;
-                position: relative;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                transition: 0.3s;
-            }
-
-            .hero-input-slot img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-                border-radius: 6px;
-            }
-
-            .hero-input-slot.slot-front {
-                border-color: #90caf9;
-                transform: translateY(-15px);
-            }
-
-            .hero-input-slot.slot-back {
-                border-color: #ef9a9a;
-            }
-
-            .hero-picker-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-                gap: 8px;
-                max-height: 350px;
-                overflow-y: auto;
-            }
-
-            .picker-item {
-                cursor: pointer;
-                border: 1px solid #333;
-                aspect-ratio: 1;
-                padding: 2px;
-                border-radius: 4px;
-                background: #000;
-            }
-
-            .picker-item:hover {
-                border-color: #ffc107;
-            }
-
-            .picker-item img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-            }
-        </style>
-</head>
-
-<body class="text-light">
-
+  <body class="text-light">
     <nav class="navbar-modern">
-        <div class="nav-brand-box">
-            <img src="/images/about_website/logo_seven_knights_rebirth.png" alt="Logo" class="site-logo">
-            <span class="nav-title">7K Rebirth <span style="font-weight:400; opacity:0.7;">| Stage Manager</span></span>
-        </div>
-        <div class="d-flex align-items-center gap-3">
-            <a href="/admin/dashboard" class="nav-btn primary"><i class="bi bi-grid-fill"></i> Panel</a>
-            <a href="/admin/logout" class="nav-btn"><i class="bi bi-box-arrow-right"></i> Logout</a>
-        </div>
+      <div class="nav-brand-box">
+        <img
+          src="/images/about_website/logo_seven_knights_rebirth.png"
+          alt="Logo"
+          class="site-logo"
+        />
+        <span class="nav-title"
+          >7K Rebirth
+          <span style="font-weight: 400; opacity: 0.7"
+            >| Stage Manager</span
+          ></span
+        >
+      </div>
+      <div class="d-flex align-items-center gap-3">
+        <a href="/admin/dashboard" class="nav-btn primary"
+          ><i class="bi bi-grid-fill"></i> Panel</a
+        >
+        <a href="/admin/logout" class="nav-btn"
+          ><i class="bi bi-box-arrow-right"></i> Logout</a
+        >
+      </div>
     </nav>
 
     <div class="container main-content">
-        <% stages.forEach(group=> { %>
-            <div class="stage-card">
-                <div class="stage-header header-<%= group.type.toLowerCase() %>">
-                    <span class="stage-number">
-                        <%= group.stage_main %> - <%= group.stage_sub %>
-                    </span>
-                    <span class="stage-badge badge-<%= group.type.toLowerCase() %>">
-                        <%= group.type %>
-                    </span>
-                </div>
+      <% stages.forEach(group=> { %>
+      <div class="stage-card">
+        <div class="stage-header header-<%= group.type.toLowerCase() %>">
+          <div class="stage-header-left">
+            <span class="stage-number"
+              ><%= group.stage_main %> - <%= group.stage_sub %></span
+            >
+            <span class="stage-badge badge-<%= group.type.toLowerCase() %>"
+              ><%= group.type %></span
+            >
+          </div>
+          <div class="action-btns-header">
+            <button
+              class="btn-icon edit"
+              onclick="editStageGroup(<%- JSON.stringify(group) %>)"
+              title="Edit Group"
+            >
+              <i class="bi bi-pencil-fill"></i>
+            </button>
+            <button
+              class="btn-icon del"
+              onclick="deleteStageGroup(<%= group.stage_main %>, <%= group.stage_sub %>, '<%= group.type %>')"
+              title="Delete Group"
+            >
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+        </div>
 
-                <% group.teams.forEach(team=> { %>
-                    <div class="team-row">
-                        <div class="formation-block">
-                            <img src="/images/formation/<%= team.formation %>.png">
-                            <span>
-                                <%= team.formation %>
-                            </span>
-                        </div>
+        <% group.teams.forEach(team=> { %> <% if(group.type === 'Nightmare') {
+        %>
+        <div class="px-4 pt-2 pb-0">
+          <span
+            class="badge"
+            style="background: <%= team.team_order==1 ? '#0dcaf0':'#dc3545' %>; color:#000;"
+            >Team <%= team.team_order %></span
+          >
+        </div>
+        <% } %>
 
-                        <div class="middle-content">
-                            <div class="heroes-strip">
-                                <% let upIndices=[]; if(team.formation==='1-4' ) upIndices=[2]; else
-                                    if(team.formation==='2-3' ) upIndices=[1, 3]; else if(team.formation==='3-2' )
-                                    upIndices=[0, 2, 4]; else if(team.formation==='4-1' ) upIndices=[0, 1, 3, 4]; %>
-                                    <% team.heroes.forEach((h, i)=> { %>
-                                        <div class="hero-slot-sm <%= upIndices.includes(i) ? 'is-front' : '' %>">
-                                            <% if(h) { %> <img src="/images/heroes/<%= h %>">
-                                                <% } %>
-                                        </div>
-                                        <% }) %>
-                            </div>
+        <div class="team-row">
+          <div class="formation-block">
+            <img src="/images/formation/<%= team.formation %>.png" />
+            <span><%= team.formation %></span>
+          </div>
 
-                            <% if(team.description) { %>
-                                <div class="note-box">
-                                    <i class="bi bi-card-text"></i>
-                                    <span>
-                                        <%= team.description %>
-                                    </span>
-                                </div>
-                                <% } %>
-                        </div>
-
-                        <div class="action-btns">
-                            <button class="btn-icon edit"
-                                onclick='editTeam(<%- JSON.stringify(team) %>, <%- JSON.stringify(group) %>)'
-                                title="Edit">
-                                <i class="bi bi-pencil-fill"></i>
-                            </button>
-                            <button class="btn-icon del" onclick="deleteTeam(<%= team.id %>)" title="Delete">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <% }) %>
+          <div class="middle-content">
+            <div class="heroes-strip">
+              <% let upIndices=[]; if(team.formation==='1-4' ) upIndices=[2];
+              else if(team.formation==='2-3' ) upIndices=[1, 3]; else
+              if(team.formation==='3-2' ) upIndices=[0, 2, 4]; else
+              if(team.formation==='4-1' ) upIndices=[0, 1, 3, 4]; %> <%
+              team.heroes.forEach((h, i)=> { %>
+              <div
+                class="hero-slot-sm <%= upIndices.includes(i) ? 'is-front' : '' %>"
+              >
+                <% if(h) { %> <img src="/images/heroes/<%= h %>" /> <% } %>
+              </div>
+              <% }) %>
             </div>
-            <% }) %>
 
-                <% if(stages.length===0) { %>
-                    <div class="text-center py-5 text-muted">
-                        <i class="bi bi-inbox display-1"></i>
-                        <p class="mt-3">No stages added yet.</p>
-                    </div>
-                    <% } %>
+            <% if(team.description) { %>
+            <div class="note-box">
+              <i class="bi bi-card-text"></i>
+              <span><%= team.description %></span>
+            </div>
+            <% } %>
+          </div>
+        </div>
+        <% }) %>
+      </div>
+      <% }) %> <% if(stages.length===0) { %>
+      <div class="text-center py-5 text-muted">
+        <i class="bi bi-inbox display-1"></i>
+        <p class="mt-3">No stages added yet.</p>
+      </div>
+      <% } %>
     </div>
 
     <button class="btn-add-floating" onclick="openAddModal()">
-        <i class="bi bi-plus-lg"></i>
+      <i class="bi bi-plus-lg"></i>
     </button>
 
     <div class="modal fade" id="compModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header border-secondary py-2">
-                    <h6 class="modal-title fw-bold text-warning" id="modalTitle">Add Stage Team</h6>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header border-secondary py-2">
+            <h6 class="modal-title fw-bold text-warning" id="modalTitle">
+              Add Stage/Nightmare
+            </h6>
+            <button
+              type="button"
+              class="btn-close btn-close-white"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body pt-4">
+            <form id="compForm">
+              <div
+                class="row g-2 mb-4 p-3 bg-dark rounded border border-secondary mx-0"
+              >
+                <div class="col-4">
+                  <label class="modal-label">Type</label>
+                  <select
+                    class="form-select form-select-sm input-dark"
+                    name="type"
+                    id="inputType"
+                    onchange="toggleTeamSections()"
+                  >
+                    <option value="Stage">Stage (1 Team)</option>
+                    <option value="Nightmare">Nightmare (2 Teams)</option>
+                  </select>
                 </div>
-                <div class="modal-body pt-4">
-                    <form id="compForm">
-                        <input type="hidden" name="id" id="compId">
-
-                        <div class="row g-2 mb-3">
-                            <div class="col-4">
-                                <label class="modal-label">Type</label>
-                                <select class="form-select form-select-sm input-dark" name="type" id="inputType">
-                                    <option value="Stage">Stage</option>
-                                    <option value="Nightmare">Nightmare</option>
-                                </select>
-                            </div>
-                            <div class="col-4">
-                                <label class="modal-label">Main</label>
-                                <input type="number" name="stage_main" id="inputMain"
-                                    class="form-control form-control-sm input-dark" placeholder="20">
-                            </div>
-                            <div class="col-4">
-                                <label class="modal-label">Sub</label>
-                                <input type="number" name="stage_sub" id="inputSub"
-                                    class="form-control form-control-sm input-dark" placeholder="10">
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="modal-label text-center mb-2">Formation</label>
-                            <div class="formation-selector">
-                                <% ['1-4', '2-3' , '3-2' , '4-1' ].forEach(fmt=> { %>
-                                    <div class="form-option">
-                                        <input type="radio" name="formation" id="fmt_<%= fmt %>" value="<%= fmt %>"
-                                            <%=fmt=='1-4' ?'checked':'' %> onchange="updateHeroSlotsUI(this.value)">
-                                        <label for="fmt_<%= fmt %>">
-                                            <img src="/images/formation/<%= fmt %>.png">
-                                            <div>
-                                                <%= fmt %>
-                                            </div>
-                                        </label>
-                                    </div>
-                                    <% }) %>
-                            </div>
-                        </div>
-
-                        <div class="mb-4">
-                            <label class="modal-label text-center mb-0">Team (Front/Back)</label>
-                            <div class="hero-select-container">
-                                <% for(let i=0; i<5; i++) { %>
-                                    <div class="text-center">
-                                        <div class="hero-input-slot" id="heroSlotContainer_<%= i %>"
-                                            onclick="openHeroPicker(<%= i %>)">
-                                            <img src="" id="heroPreview_<%= i %>" style="display: none;">
-                                            <i class="bi bi-plus-lg text-secondary" id="heroPlaceholder_<%= i %>"></i>
-                                        </div>
-                                        <input type="hidden" name="heroes[]" id="heroInput_<%= i %>">
-                                    </div>
-                                    <% } %>
-                            </div>
-                        </div>
-
-                        <div class="mb-2">
-                            <label class="modal-label">Note</label>
-                            <input type="text" name="description" id="compDesc" class="form-control input-dark"
-                                placeholder="Optional note...">
-                        </div>
-                    </form>
+                <div class="col-4">
+                  <label class="modal-label">Main</label>
+                  <input
+                    type="number"
+                    name="stage_main"
+                    id="inputMain"
+                    class="form-control form-control-sm input-dark"
+                    placeholder="20"
+                  />
                 </div>
-                <div class="modal-footer border-secondary py-2">
-                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-success btn-sm px-4" onclick="saveComp()">Save</button>
+                <div class="col-4">
+                  <label class="modal-label">Sub</label>
+                  <input
+                    type="number"
+                    name="stage_sub"
+                    id="inputSub"
+                    class="form-control form-control-sm input-dark"
+                    placeholder="10"
+                  />
                 </div>
-            </div>
+              </div>
+
+              <div class="team-section-card" id="team1_section">
+                <div class="team-badge-header">TEAM 1</div>
+              </div>
+
+              <div
+                class="team-section-card"
+                id="team2_section"
+                style="display: none"
+              >
+                <div class="team-badge-header t2">TEAM 2</div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer border-secondary py-2">
+            <button
+              type="button"
+              class="btn btn-secondary btn-sm"
+              data-bs-dismiss="modal"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              class="btn btn-success btn-sm px-4"
+              onclick="saveStageGroup()"
+            >
+              Save Group
+            </button>
+          </div>
         </div>
+      </div>
     </div>
 
     <div class="modal fade" id="heroPickerModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header border-secondary py-2">
-                    <h6 class="modal-title">Select Hero</h6>
-                    <input type="text" id="heroSearch"
-                        class="form-control form-control-sm bg-dark text-light border-secondary ms-3"
-                        style="width: 200px;" placeholder="Search...">
-                </div>
-                <div class="modal-body">
-                    <div class="hero-picker-grid" id="heroGrid">
-                        <% heroes.forEach(h=> { %>
-                            <div class="picker-item" onclick="selectHero('<%= h.filename %>')"
-                                data-name="<%= h.name.toLowerCase() %>">
-                                <img src="/images/heroes/<%= h.filename %>" title="<%= h.name %>">
-                            </div>
-                            <% }) %>
-                    </div>
-                </div>
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header border-secondary py-2">
+            <h6 class="modal-title">Select Hero</h6>
+            <input
+              type="text"
+              id="heroSearch"
+              class="form-control form-control-sm bg-dark text-light border-secondary ms-3"
+              style="width: 200px"
+              placeholder="Search..."
+            />
+          </div>
+          <div class="modal-body">
+            <div class="hero-picker-grid" id="heroGrid">
+              <% heroes.forEach(h=> { %>
+              <div
+                class="picker-item"
+                onclick="selectHero('<%= h.filename %>')"
+                data-name="<%= h.name.toLowerCase() %>"
+              >
+                <img
+                  src="/images/heroes/<%= h.filename %>"
+                  title="<%= h.name %>"
+                />
+              </div>
+              <% }) %>
             </div>
+          </div>
         </div>
+      </div>
     </div>
+
+    <script id="team-input-template" type="text/template">
+      <div class="mb-3">
+          <label class="modal-label text-center mb-1">Formation</label>
+          <div class="formation-selector">
+              <% ['1-4', '2-3', '3-2', '4-1'].forEach(fmt => { %>
+                  <div class="form-option">
+                      <input type="radio" name="formation_{{tid}}" id="fmt_{{tid}}_<%= fmt %>" value="<%= fmt %>" onchange="updateHeroSlotsUI('{{tid}}', this.value)">
+                      <label for="fmt_{{tid}}_<%= fmt %>">
+                          <img src="/images/formation/<%= fmt %>.png">
+                          <div><%= fmt %></div>
+                      </label>
+                  </div>
+              <% }) %>
+          </div>
+      </div>
+      <div class="mb-3">
+          <div class="hero-select-container" id="heroContainer_{{tid}}">
+              <% for(let i=0; i<5; i++) { %>
+                  <div class="text-center">
+                      <div class="hero-input-slot" id="heroSlot_{{tid}}_<%= i %>" onclick="openHeroPicker({{tid}}, <%= i %>)">
+                          <img src="" id="heroPreview_{{tid}}_<%= i %>" style="display: none;">
+                          <i class="bi bi-plus-lg text-secondary" id="heroPlaceholder_{{tid}}_<%= i %>"></i>
+                      </div>
+                      <input type="hidden" id="heroInput_{{tid}}_<%= i %>">
+                  </div>
+              <% } %>
+          </div>
+      </div>
+      <div>
+          <input type="text" id="desc_{{tid}}" class="form-control form-control-sm input-dark" placeholder="Note for Team {{tid}}...">
+      </div>
+    </script>
 
     <%- include('../../partials/footer') %>
 
-        <script>
-            const compModal = new bootstrap.Modal(document.getElementById('compModal'));
-            const heroPickerModal = new bootstrap.Modal(document.getElementById('heroPickerModal'));
-            let currentSlot = 0;
+    <script>
+      // Init Inputs from Template
+      const template = document.getElementById("team-input-template").innerHTML;
+      document
+        .getElementById("team1_section")
+        .insertAdjacentHTML("beforeend", template.replace(/{{tid}}/g, "1"));
+      document
+        .getElementById("team2_section")
+        .insertAdjacentHTML("beforeend", template.replace(/{{tid}}/g, "2"));
 
-            function updateHeroSlotsUI(formation) {
-                let frontIndices = [];
-                switch (formation) {
-                    case '1-4': frontIndices = [2]; break;
-                    case '2-3': frontIndices = [1, 3]; break;
-                    case '3-2': frontIndices = [0, 2, 4]; break;
-                    case '4-1': frontIndices = [0, 1, 3, 4]; break;
-                }
+      const compModal = new bootstrap.Modal(
+        document.getElementById("compModal")
+      );
+      const heroPickerModal = new bootstrap.Modal(
+        document.getElementById("heroPickerModal")
+      );
 
-                for (let i = 0; i < 5; i++) {
-                    const container = document.getElementById(`heroSlotContainer_${i}`);
-                    const placeholder = document.getElementById(`heroPlaceholder_${i}`);
-                    container.classList.remove('slot-front', 'slot-back');
-                    placeholder.classList.remove('text-secondary');
+      let activeTeamId = 1;
+      let activeSlotIndex = 0;
 
-                    if (frontIndices.includes(i)) container.classList.add('slot-front');
-                    else container.classList.add('slot-back');
-                }
-            }
+      function toggleTeamSections() {
+        const type = document.getElementById("inputType").value;
+        const t2 = document.getElementById("team2_section");
+        if (type === "Nightmare") t2.style.display = "block";
+        else t2.style.display = "none";
+      }
 
-            function openAddModal() {
-                resetForm();
-                document.getElementById('modalTitle').innerText = "Add Stage Team";
-                updateHeroSlotsUI('1-4');
-                compModal.show();
-            }
+      function updateHeroSlotsUI(tid, formation) {
+        let frontIndices = [];
+        switch (formation) {
+          case "1-4":
+            frontIndices = [2];
+            break;
+          case "2-3":
+            frontIndices = [1, 3];
+            break;
+          case "3-2":
+            frontIndices = [0, 2, 4];
+            break;
+          case "4-1":
+            frontIndices = [0, 1, 3, 4];
+            break;
+        }
+        for (let i = 0; i < 5; i++) {
+          const slot = document.getElementById(`heroSlot_${tid}_${i}`);
+          slot.classList.remove("slot-front", "slot-back");
+          if (frontIndices.includes(i)) slot.classList.add("slot-front");
+          else slot.classList.add("slot-back");
+        }
+      }
 
-            // [NEW] Edit Function
-            function editTeam(team, group) {
-                resetForm();
-                document.getElementById('modalTitle').innerText = "Edit Stage Team";
+      function openAddModal() {
+        resetForm();
+        document.getElementById("modalTitle").innerText = "Add Stage/Nightmare";
+        compModal.show();
+      }
 
-                // Populate ID
-                document.getElementById('compId').value = team.id;
+      function editStageGroup(group) {
+        resetForm();
+        document.getElementById("modalTitle").innerText = "Edit Group";
 
-                // Populate Stage Info
-                document.getElementById('inputType').value = group.type;
-                document.getElementById('inputMain').value = group.stage_main;
-                document.getElementById('inputSub').value = group.stage_sub;
+        document.getElementById("inputType").value = group.type;
+        document.getElementById("inputMain").value = group.stage_main;
+        document.getElementById("inputSub").value = group.stage_sub;
+        toggleTeamSections();
 
-                // Populate Desc
-                document.getElementById('compDesc').value = team.description || '';
+        // Populate Teams
+        group.teams.forEach((team) => {
+          const tid = team.team_order;
+          // Radio
+          const radio = document.getElementById(`fmt_${tid}_${team.formation}`);
+          if (radio) {
+            radio.checked = true;
+            updateHeroSlotsUI(tid, team.formation);
+          }
+          // Heroes
+          team.heroes.forEach((h, i) => {
+            if (i < 5) setHeroSlot(tid, i, h);
+          });
+          // Desc
+          document.getElementById(`desc_${tid}`).value = team.description || "";
+        });
 
-                // Set Formation
-                document.querySelector(`input[name="formation"][value="${team.formation}"]`).checked = true;
-                updateHeroSlotsUI(team.formation);
+        compModal.show();
+      }
 
-                // Set Heroes
-                team.heroes.forEach((h, index) => {
-                    if (index < 5) setHeroSlot(index, h);
-                });
+      function resetForm() {
+        document.getElementById("compForm").reset();
+        // Default Formations
+        document.getElementById("fmt_1_1-4").checked = true;
+        document.getElementById("fmt_2_1-4").checked = true;
+        updateHeroSlotsUI(1, "1-4");
+        updateHeroSlotsUI(2, "1-4");
+        // Clear Images
+        for (let t = 1; t <= 2; t++) {
+          for (let i = 0; i < 5; i++) setHeroSlot(t, i, "");
+        }
+        toggleTeamSections();
+      }
 
-                compModal.show();
-            }
+      function saveStageGroup() {
+        const type = document.getElementById("inputType").value;
+        const stage_main = document.getElementById("inputMain").value;
+        const stage_sub = document.getElementById("inputSub").value;
 
-            function resetForm() {
-                document.getElementById('compForm').reset();
-                document.getElementById('compId').value = '';
-                document.getElementById('fmt_1-4').checked = true;
-                for (let i = 0; i < 5; i++) setHeroSlot(i, '');
-            }
+        if (!stage_main || !stage_sub) {
+          alert("Please enter Main and Sub stage numbers.");
+          return;
+        }
 
-            function saveComp() {
-                const form = document.getElementById('compForm');
-                const formData = new FormData(form);
-                const payload = Object.fromEntries(formData);
+        const teams = [];
+        teams.push(collectTeamData(1));
+        if (type === "Nightmare") {
+          teams.push(collectTeamData(2));
+        }
 
-                payload.heroes = [];
-                for (let i = 0; i < 5; i++) {
-                    payload.heroes.push(document.getElementById(`heroInput_${i}`).value);
-                }
+        const payload = { stage_main, stage_sub, type, teams };
+        const csrfToken = document
+          .querySelector('meta[name="csrf-token"]')
+          .getAttribute("content");
 
-                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-                fetch('/admin/api/save_stage_comp', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'CSRF-Token': csrfToken
-                    },
-                    body: JSON.stringify(payload)
-                })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.success) location.reload();
-                        else alert('Error: ' + (data.error || 'Unknown error'));
-                    });
-            }
+        fetch("/admin/api/save_stage_comp", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "CSRF-Token": csrfToken,
+          },
+          body: JSON.stringify(payload),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.success) location.reload();
+            else alert("Error: " + data.error);
+          });
+      }
 
-            function deleteTeam(id) {
-                if (!confirm('Delete this team?')) return;
-                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-                fetch('/admin/api/delete_stage_comp', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'CSRF-Token': csrfToken
-                    },
-                    body: JSON.stringify({ id })
-                })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.success) location.reload();
-                    });
-            }
+      function collectTeamData(tid) {
+        const fmtEl = document.querySelector(
+          `input[name="formation_${tid}"]:checked`
+        );
+        const formation = fmtEl ? fmtEl.value : "1-4";
+        const description = document.getElementById(`desc_${tid}`).value;
+        const heroes = [];
+        for (let i = 0; i < 5; i++) {
+          heroes.push(document.getElementById(`heroInput_${tid}_${i}`).value);
+        }
+        return { formation, description, heroes, team_order: tid };
+      }
 
-            function openHeroPicker(slotIndex) {
-                currentSlot = slotIndex;
-                heroPickerModal.show();
-            }
-            function selectHero(filename) {
-                setHeroSlot(currentSlot, filename);
-                heroPickerModal.hide();
-            }
-            function setHeroSlot(index, filename) {
-                const input = document.getElementById(`heroInput_${index}`);
-                const img = document.getElementById(`heroPreview_${index}`);
-                const ph = document.getElementById(`heroPlaceholder_${index}`);
+      function deleteStageGroup(main, sub, type) {
+        if (!confirm("Delete this entire Stage Group?")) return;
+        const csrfToken = document
+          .querySelector('meta[name="csrf-token"]')
+          .getAttribute("content");
+        fetch("/admin/api/delete_stage_comp", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "CSRF-Token": csrfToken,
+          },
+          body: JSON.stringify({ main, sub, type }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.success) location.reload();
+          });
+      }
 
-                input.value = filename || '';
-                if (filename) {
-                    img.src = `/images/heroes/${filename}`;
-                    img.style.display = 'block';
-                    ph.style.display = 'none';
-                } else {
-                    img.style.display = 'none';
-                    ph.style.display = 'block';
-                }
-            }
+      function openHeroPicker(tid, index) {
+        activeTeamId = tid;
+        activeSlotIndex = index;
+        heroPickerModal.show();
+      }
 
-            document.getElementById('heroSearch').addEventListener('keyup', function (e) {
-                const term = e.target.value.toLowerCase();
-                document.querySelectorAll('.picker-item').forEach(item => {
-                    item.style.display = item.dataset.name.includes(term) ? 'block' : 'none';
-                });
-            });
-        </script>
-</body>
+      function selectHero(filename) {
+        setHeroSlot(activeTeamId, activeSlotIndex, filename);
+        heroPickerModal.hide();
+      }
 
+      function setHeroSlot(tid, index, filename) {
+        document.getElementById(`heroInput_${tid}_${index}`).value =
+          filename || "";
+        const img = document.getElementById(`heroPreview_${tid}_${index}`);
+        const ph = document.getElementById(`heroPlaceholder_${tid}_${index}`);
+        if (filename) {
+          img.src = `/images/heroes/${filename}`;
+          img.style.display = "block";
+          ph.style.display = "none";
+        } else {
+          img.style.display = "none";
+          ph.style.display = "block";
+        }
+      }
+
+      document.getElementById("heroSearch").addEventListener("keyup", (e) => {
+        const term = e.target.value.toLowerCase();
+        document.querySelectorAll(".picker-item").forEach((item) => {
+          item.style.display = item.dataset.name.includes(term)
+            ? "block"
+            : "none";
+        });
+      });
+    </script>
+  </body>
 </html>

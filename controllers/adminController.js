@@ -171,7 +171,8 @@ exports.getStageCompManager = async (req, res) => {
 exports.saveStageComp = async (req, res) => {
     try {
         const StageService = require('../services/StageService');
-        const result = await StageService.saveStage(req.body);
+        // [UPDATE] Use saveStageGroup
+        const result = await StageService.saveStageGroup(req.body);
         res.json(result);
     } catch (err) {
         res.json({ success: false, error: err.message });
@@ -180,9 +181,9 @@ exports.saveStageComp = async (req, res) => {
 
 exports.deleteStageComp = async (req, res) => {
     try {
-        const { id } = req.body;
+        const { main, sub, type } = req.body; // [UPDATE] Expect group identifiers
         const StageService = require('../services/StageService');
-        await StageService.deleteStage(id);
+        await StageService.deleteStageGroup(main, sub, type);
         res.json({ success: true });
     } catch (err) {
         res.json({ success: false, error: err.message });
