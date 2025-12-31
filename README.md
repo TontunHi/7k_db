@@ -2,7 +2,7 @@
 
 Welcome to the **Seven Knights Rebirth** codebase! This project is a dedicated web application designed to help players master the game with detailed guides, raid strategies, and character builds.
 
-![Banner](https://via.placeholder.com/1000x300?text=Seven+Knights+Rebirth+Guide)
+![Banner]([https://sgimage.netmarble.com/images/netmarble/tskgb/20250916/ugkq1758004953600.png])
 
 ## 📖 About The Project
 
