@@ -24,7 +24,8 @@ exports.getBuildPage = (req, res) => {
             let heroes = dbHeroes.map(h => {
                 let filename = h.image_name;
                 let grade = '';
-                if (filename.startsWith('l+_')) grade = 'l+';
+                if (filename.startsWith('l++_')) grade = 'l++';
+                else if (filename.startsWith('l+_')) grade = 'l+';
                 else if (filename.startsWith('l_')) grade = 'l';
                 else if (filename.startsWith('r_')) grade = 'r';
                 else if (filename.startsWith('uc_')) grade = 'uc';
@@ -49,6 +50,14 @@ exports.getBuildPage = (req, res) => {
                 if (gradeParam === 'legendary') return h.grade.startsWith('l');
                 if (gradeParam === 'rare') return h.grade === 'r';
                 return true;
+            });
+
+            // Sort by Grade (l++ > l+ > l > r > uc > c)
+            const gradeWeight = { 'l++': 6, 'l+': 5, 'l': 4, 'r': 3, 'uc': 2, 'c': 1 };
+            heroes.sort((a, b) => {
+                const wA = gradeWeight[a.grade] || 0;
+                const wB = gradeWeight[b.grade] || 0;
+                return wB - wA; // Descending
             });
 
             // 3. Merge DB Data & Process Skills
