@@ -1,303 +1,532 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <%- include('../partials/head') %>
-    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-    
-    <style>
-        /* --- Modern Dark Theme CSS --- /*/
-        body { background-color: #0f0f0f; font-family: 'Segoe UI', sans-serif; }
-        
-        /* Hero Grid */
-        .hero-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 15px;
-        }
+        <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
-        /* Hero Card (3:4 Ratio) */
-        .hero-card {
-            aspect-ratio: 3/4;
-            position: relative;
-            border-radius: 8px;
-            overflow: hidden;
-            cursor: pointer;
-            border: 2px solid #222;
-            transition: all 0.3s ease;
-            background: #151515;
-        }
-        .hero-card:hover {
-            transform: translateY(-5px);
-            border-color: #ffc107;
-            box-shadow: 0 5px 20px rgba(255, 193, 7, 0.3);
-        }
-        .hero-card img {
-            width: 100%; height: 100%; object-fit: cover;
-            transition: transform 0.5s ease;
-        }
-        .hero-card:hover img { transform: scale(1.1); }
+        <style>
+            /* --- Modern Dark Theme CSS --- /*/
+            body {
+                background-color: #0f0f0f;
+                font-family: 'Segoe UI', sans-serif;
+            }
 
-        .build-count {
-            position: absolute; top: 5px; right: 5px;
-            background: rgba(0,0,0,0.8); color: #ffc107;
-            font-size: 0.7rem; padding: 2px 6px; border-radius: 4px;
-            font-weight: bold; border: 1px solid #ffc107;
-        }
-        
-        /* --- Search Bar --- */
-        .search-wrapper {
-            position: relative;
-            width: 200px; /* ไม่ยาวมาก */
-        }
-        .search-wrapper input {
-            width: 100%;
-            background: #1a1a1a;
-            border: 1px solid #333;
-            color: #fff;
-            padding: 6px 12px 6px 35px; /* เว้นที่ให้ icon */
-            border-radius: 20px;
-            font-size: 0.9rem;
-            transition: all 0.3s;
-        }
-        .search-wrapper input:focus {
-            outline: none;
-            border-color: #ffc107;
-            box-shadow: 0 0 10px rgba(255, 193, 7, 0.2);
-            width: 240px; /* ยืดออกนิดหน่อยตอน focus */
-        }
-        .search-wrapper i {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #666;
-            font-size: 0.9rem;
-        }
+            /* Hero Grid */
+            .hero-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                gap: 15px;
+            }
 
-        /* --- Modal Customization --- */
-        .modal-content {
-            background-color: #1a1a1a;
-            border: 1px solid #333;
-            color: #fff;
-        }
-        .modal-header { border-bottom: 1px solid #333; }
-        .modal-footer { border-top: 1px solid #333; }
-        .btn-close-white { filter: invert(1); }
+            /* Hero Card (3:4 Ratio) */
+            .hero-card {
+                aspect-ratio: 3/4;
+                position: relative;
+                border-radius: 8px;
+                overflow: hidden;
+                cursor: pointer;
+                border: 2px solid #222;
+                transition: all 0.3s ease;
+                background: #151515;
+            }
 
-        /* --- Build Detail Card --- */
-        .build-detail-card {
-            background: #121212;
-            border: 1px solid #2d2d2d;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            position: relative; /* For screenshot button positioning */
-        }
-        .build-detail-card:last-child { margin-bottom: 0; }
+            .hero-card:hover {
+                transform: translateY(-5px);
+                border-color: #ffc107;
+                box-shadow: 0 5px 20px rgba(255, 193, 7, 0.3);
+            }
 
-        .build-header {
-            display: flex; justify-content: space-between; align-items: start;
-            border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px;
-        }
-        .build-badges .badge { margin-left: 5px; font-weight: 500; }
-        
-        /* --- Item Grid (2x2 Layout) --- */
-        .build-items-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;
-        }
+            .hero-card img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: transform 0.5s ease;
+            }
 
-        .item-box {
-            background: #1a1a1a; border-radius: 8px; padding: 10px;
-            display: flex; gap: 10px; align-items: center; border: 1px solid #333;
-        }
-        .item-img {
-            width: 50px; height: 50px; object-fit: contain;
-            background: #000; border-radius: 6px; border: 1px solid #444; flex-shrink: 0;
-        }
-        .stat-text { font-size: 0.75rem; color: #aaa; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; }
-        .stat-value { font-size: 0.9rem; color: #fff; font-weight: 600; line-height: 1.2; }
+            .hero-card:hover img {
+                transform: scale(1.1);
+            }
 
-        /* Accessories */
-        .acc-list img {
-            width: 45px; height: 45px; object-fit: contain;
-            background: #000; border: 1px solid #444; border-radius: 6px;
-        }
+            .build-count {
+                position: absolute;
+                top: 5px;
+                right: 5px;
+                background: rgba(0, 0, 0, 0.8);
+                color: #ffc107;
+                font-size: 0.7rem;
+                padding: 2px 6px;
+                border-radius: 4px;
+                font-weight: bold;
+                border: 1px solid #ffc107;
+            }
 
-        /* Chips */
-        .substat-chip {
-            display: inline-block; background: #222; border: 1px solid #444;
-            color: #ddd; font-size: 0.75rem; padding: 4px 10px;
-            border-radius: 15px; margin-right: 5px; margin-bottom: 5px;
-        }
-        .substat-chip:first-child { border-color: #ffc107; color: #ffc107; }
+            /* --- Search Bar --- */
+            .search-wrapper {
+                position: relative;
+                width: 200px;
+                /* ไม่ยาวมาก */
+            }
 
-        /* --- Screenshot Button --- */
-        .btn-screenshot {
-            position: absolute;
-            bottom: 15px;
-            right: 15px;
-            background: #222;
-            border: 1px solid #444;
-            color: #aaa;
-            width: 35px; height: 35px;
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: all 0.2s;
-            z-index: 5;
-        }
-        .btn-screenshot:hover {
-            background: #ffc107; color: #000; border-color: #ffc107;
-            transform: scale(1.1); box-shadow: 0 0 10px rgba(255, 193, 7, 0.4);
-        }
+            .search-wrapper input {
+                width: 100%;
+                background: #1a1a1a;
+                border: 1px solid #333;
+                color: #fff;
+                padding: 6px 12px 6px 35px;
+                /* เว้นที่ให้ icon */
+                border-radius: 20px;
+                font-size: 0.9rem;
+                transition: all 0.3s;
+            }
 
-        /* --- Capture Container (Hidden) --- */
-        #captureArea {
-            position: fixed; top: -9999px; left: -9999px;
-            width: 500px;
-            background: #121212;
-            padding: 20px;
-            border-radius: 12px;
-            border: 2px solid #333;
-        }
-        /* Style adjustments specifically for the screenshot look */
-        #captureArea .hero-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 15px; }
-        #captureArea .hero-img { width: 60px; height: 80px; object-fit: cover; border-radius: 6px; border: 2px solid #ffc107; }
-        #captureArea h2 { margin: 0; color: #fff; font-size: 1.5rem; }
-        #captureArea .watermark { margin-top: 15px; text-align: center; color: #555; font-size: 0.8rem; border-top: 1px solid #333; padding-top: 10px; }
+            .search-wrapper input:focus {
+                outline: none;
+                border-color: #ffc107;
+                box-shadow: 0 0 10px rgba(255, 193, 7, 0.2);
+                width: 240px;
+                /* ยืดออกนิดหน่อยตอน focus */
+            }
 
-        @media (min-width: 992px) {
-            .hero-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
-        }
-    </style>
+            .search-wrapper i {
+                position: absolute;
+                left: 12px;
+                top: 50%;
+                transform: translateY(-50%);
+                color: #666;
+                font-size: 0.9rem;
+            }
+
+            /* --- Modal Customization --- */
+            .modal-content {
+                background-color: #1a1a1a;
+                border: 1px solid #333;
+                color: #fff;
+            }
+
+            .modal-header {
+                border-bottom: 1px solid #333;
+            }
+
+            .modal-footer {
+                border-top: 1px solid #333;
+            }
+
+            .btn-close-white {
+                filter: invert(1);
+            }
+
+            /* --- Build Detail Card --- */
+            .build-detail-card {
+                background: #121212;
+                border: 1px solid #2d2d2d;
+                border-radius: 10px;
+                padding: 20px;
+                margin-bottom: 20px;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+                position: relative;
+                /* For screenshot button positioning */
+            }
+
+            .build-detail-card:last-child {
+                margin-bottom: 0;
+            }
+
+            .build-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: start;
+                border-bottom: 1px solid #333;
+                padding-bottom: 10px;
+                margin-bottom: 15px;
+            }
+
+            .build-badges .badge {
+                margin-left: 5px;
+                font-weight: 500;
+            }
+
+            /* --- Item Grid (2x2 Layout) --- */
+            .build-items-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 15px;
+                margin-bottom: 20px;
+            }
+
+            .item-box {
+                background: #1a1a1a;
+                border-radius: 8px;
+                padding: 10px;
+                display: flex;
+                gap: 10px;
+                align-items: center;
+                border: 1px solid #333;
+            }
+
+            .item-img {
+                width: 50px;
+                height: 50px;
+                object-fit: contain;
+                background: #000;
+                border-radius: 6px;
+                border: 1px solid #444;
+                flex-shrink: 0;
+            }
+
+            .stat-text {
+                font-size: 0.75rem;
+                color: #aaa;
+                margin: 0;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .stat-value {
+                font-size: 0.9rem;
+                color: #fff;
+                font-weight: 600;
+                line-height: 1.2;
+            }
+
+            /* Accessories */
+            .acc-list img {
+                width: 45px;
+                height: 45px;
+                object-fit: contain;
+                background: #000;
+                border: 1px solid #444;
+                border-radius: 6px;
+            }
+
+            /* Chips */
+            .substat-chip {
+                display: inline-block;
+                background: #222;
+                border: 1px solid #444;
+                color: #ddd;
+                font-size: 0.75rem;
+                padding: 4px 10px;
+                border-radius: 15px;
+                margin-right: 5px;
+                margin-bottom: 5px;
+            }
+
+            .substat-chip:first-child {
+                border-color: #ffc107;
+                color: #ffc107;
+            }
+
+            /* --- Screenshot Button --- */
+            .btn-screenshot {
+                position: absolute;
+                bottom: 15px;
+                right: 15px;
+                background: #222;
+                border: 1px solid #444;
+                color: #aaa;
+                width: 35px;
+                height: 35px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: all 0.2s;
+                z-index: 5;
+            }
+
+            .btn-screenshot:hover {
+                background: #ffc107;
+                color: #000;
+                border-color: #ffc107;
+                transform: scale(1.1);
+                box-shadow: 0 0 10px rgba(255, 193, 7, 0.4);
+            }
+
+            /* --- Capture Container (Hidden) --- */
+            #captureArea {
+                position: fixed;
+                top: -9999px;
+                left: -9999px;
+                width: 500px;
+                background: #121212;
+                padding: 20px;
+                border-radius: 12px;
+                border: 2px solid #333;
+            }
+
+            /* Style adjustments specifically for the screenshot look */
+            #captureArea .hero-header {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+                margin-bottom: 20px;
+                border-bottom: 1px solid #333;
+                padding-bottom: 15px;
+            }
+
+            #captureArea .hero-img {
+                width: 60px;
+                height: 80px;
+                object-fit: cover;
+                border-radius: 6px;
+                border: 2px solid #ffc107;
+            }
+
+            #captureArea h2 {
+                margin: 0;
+                color: #fff;
+                font-size: 1.5rem;
+            }
+
+            #captureArea .watermark {
+                margin-top: 15px;
+                text-align: center;
+                color: #555;
+                font-size: 0.8rem;
+                border-top: 1px solid #333;
+                padding-top: 10px;
+            }
+
+            /* Skill Priority Styles (From Codex) */
+            .skill-list {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                /* Compact gap */
+                align-items: center;
+                margin-left: 15px;
+                /* Spacing from name */
+            }
+
+            .skill-item {
+                width: 40px;
+                /* Small size for header */
+                height: 40px;
+                border-radius: 8px;
+                background: #000;
+                border: 1px solid #444;
+                /* Thinner border */
+                overflow: hidden;
+                position: relative;
+                transition: 0.2s;
+            }
+
+            .skill-item:hover {
+                border-color: #ffc107;
+                transform: scale(1.1);
+            }
+
+            .skill-item img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            .priority-badge {
+                position: absolute;
+                top: 0;
+                right: 0;
+                background: #ffc107;
+                color: #000;
+                font-size: 0.5rem;
+                /* Smaller text */
+                font-weight: 800;
+                width: 15px;
+                /* Smaller badge */
+                height: 15px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-bottom-left-radius: 6px;
+            }
+
+            @media (min-width: 992px) {
+                .hero-grid {
+                    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+                }
+            }
+        </style>
 </head>
+
 <body class="d-flex flex-column h-100 bg-main text-light">
-    
+
     <%- include('../partials/navbar') %>
 
-    <main class="flex-shrink-0 mt-5 pt-4">
-        <div class="container py-5">
-            <div class="d-flex align-items-center justify-content-between border-bottom border-secondary pb-3 mb-4">
-                <div>
-                    <h1 class="display-5 fw-bold text-gradient text-uppercase">
-                        <%= grade %> Heroes
-                    </h1>
-                    <p class="text-secondary mb-0">Select a hero to view recommended builds</p>
+        <main class="flex-shrink-0 mt-5 pt-4">
+            <div class="container py-5">
+                <div class="d-flex align-items-center justify-content-between border-bottom border-secondary pb-3 mb-4">
+                    <div>
+                        <h1 class="display-5 fw-bold text-gradient text-uppercase">
+                            <%= grade %> Heroes
+                        </h1>
+                        <p class="text-secondary mb-0">Select a hero to view recommended builds</p>
+                    </div>
+
+                    <div class="search-wrapper">
+                        <i class="bi bi-search"></i>
+                        <input type="text" id="heroSearch" placeholder="Search Hero...">
+                    </div>
                 </div>
-                
-                <div class="search-wrapper">
-                    <i class="bi bi-search"></i>
-                    <input type="text" id="heroSearch" placeholder="Search Hero...">
+
+                <div class="hero-grid" id="heroGrid">
+                    <% heroes.forEach(hero=> { %>
+                        <% const heroBuilds=buildsMap[hero.filename] || []; %>
+                            <div class="hero-card"
+                                onclick="openBuildModal('<%= hero.name %>', '<%= hero.filename %>', this)"
+                                data-name="<%= hero.name.toLowerCase() %>"
+                                data-builds='<%- JSON.stringify(heroBuilds).replace(/' /g, "&#39;" ) %>'
+                                data-folder="<%= hero.skillFolder %>"
+                                    data-allskills='<%= JSON.stringify(hero.allSkills || []) %>'
+                                        data-priority='<%= JSON.stringify(hero.skillOrder || []) %>'>
+
+                                            <img src="/images/heroes/<%= hero.filename %>" alt="<%= hero.name %>"
+                                                loading="lazy">
+
+                                            <% if (heroBuilds.length> 0) { %>
+                                                <span class="build-count"><i class="bi bi-hammer me-1"></i>
+                                                    <%= heroBuilds.length %>
+                                                </span>
+                                                <% } %>
+                            </div>
+                            <% }) %>
                 </div>
             </div>
+        </main>
 
-            <div class="hero-grid" id="heroGrid">
-                <% heroes.forEach(hero => { %>
-                    <% const heroBuilds = buildsMap[hero.filename] || []; %>
-                    <div class="hero-card" 
-                         onclick="openBuildModal('<%= hero.name %>', '<%= hero.filename %>', this)"
-                         data-name="<%= hero.name.toLowerCase() %>"
-                         data-builds='<%- JSON.stringify(heroBuilds).replace(/'/g, "&#39;") %>'>
-                        
-                        <img src="/images/heroes/<%= hero.filename %>" alt="<%= hero.name %>" loading="lazy">
-                        
-                        <% if (heroBuilds.length > 0) { %>
-                            <span class="build-count"><i class="bi bi-hammer me-1"></i><%= heroBuilds.length %></span>
-                        <% } %>
+        <div class="modal fade" id="buildModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div class="d-flex align-items-center gap-3">
+                            <img id="modalHeroImg" src=""
+                                style="width: 50px; aspect-ratio: 3/4; object-fit: cover; border-radius: 4px; border: 1px solid #ffc107;">
+                            <h4 class="modal-title text-warning text-capitalize me-2" id="modalHeroName">Hero Name</h4>
+                            <!-- Skill Priority Container (Moved to Header) -->
+                            <div id="modalSkillContainer" class="skill-list" style="display: none;"></div>
+                        </div>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
                     </div>
-                <% }) %>
-            </div>
-        </div>
-    </main>
-
-    <div class="modal fade" id="buildModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <div class="d-flex align-items-center gap-3">
-                        <img id="modalHeroImg" src="" style="width: 50px; aspect-ratio: 3/4; object-fit: cover; border-radius: 4px; border: 1px solid #ffc107;">
-                        <h4 class="modal-title text-warning text-capitalize" id="modalHeroName">Hero Name</h4>
+                    <div class="modal-body p-4" id="modalBody">
+                        <div id="buildsContainer"></div>
                     </div>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body p-4" id="modalBody">
-                    </div>
             </div>
         </div>
-    </div>
 
-    <div id="captureArea">
+        <div id="captureArea">
         </div>
 
-    <%- include('../partials/footer') %>
+        <%- include('../partials/footer') %>
 
-    <script>
-        // --- 1. Search Logic ---
-        const searchInput = document.getElementById('heroSearch');
-        const heroGrid = document.getElementById('heroGrid');
-        const cards = heroGrid.querySelectorAll('.hero-card');
+            <script>
+                // --- 1. Search Logic ---
+                const searchInput = document.getElementById('heroSearch');
+                const heroGrid = document.getElementById('heroGrid');
+                const cards = heroGrid.querySelectorAll('.hero-card');
 
-        searchInput.addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase();
-            cards.forEach(card => {
-                const name = card.dataset.name;
-                card.style.display = name.includes(term) ? 'block' : 'none';
-            });
-        });
+                searchInput.addEventListener('input', (e) => {
+                    const term = e.target.value.toLowerCase();
+                    cards.forEach(card => {
+                        const name = card.dataset.name;
+                        card.style.display = name.includes(term) ? 'block' : 'none';
+                    });
+                });
 
-        // --- 2. Modal Logic ---
-        const buildModal = new bootstrap.Modal(document.getElementById('buildModal'));
-        const modalBody = document.getElementById('modalBody');
-        const modalHeroName = document.getElementById('modalHeroName');
-        const modalHeroImg = document.getElementById('modalHeroImg');
+                // --- 2. Modal Logic ---
+                const buildModal = new bootstrap.Modal(document.getElementById('buildModal'));
+                const modalBody = document.getElementById('modalBody'); // Not used directly for content anymore
+                const buildsContainer = document.getElementById('buildsContainer');
+                const modalSkillContainer = document.getElementById('modalSkillContainer');
+                const modalHeroName = document.getElementById('modalHeroName');
+                const modalHeroImg = document.getElementById('modalHeroImg');
 
-        // Store current hero data for screenshot
-        let currentHeroData = { name: '', filename: '' };
+                // Store current hero data for screenshot
+                let currentHeroData = { name: '', filename: '' };
 
-        function openBuildModal(heroName, heroFilename, cardElement) {
-            // Setup Header
-            modalHeroName.innerText = heroName;
-            modalHeroImg.src = `/images/heroes/${heroFilename}`;
-            
-            // Store for Screenshot
-            currentHeroData.name = heroName;
-            currentHeroData.filename = heroFilename;
+                function openBuildModal(heroName, heroFilename, cardElement) {
+                    // Setup Header
+                    modalHeroName.innerText = heroName;
+                    modalHeroImg.src = `/images/heroes/${heroFilename}`;
 
-            // Get Data
-            const buildsData = JSON.parse(cardElement.getAttribute('data-builds') || '[]');
-            
-            // Render Content
-            modalBody.innerHTML = '';
-            
-            if (buildsData.length === 0) {
-                modalBody.innerHTML = `
+                    // Store for Screenshot
+                    currentHeroData.name = heroName;
+                    currentHeroData.filename = heroFilename;
+
+                    // Get Data
+                    const buildsData = JSON.parse(cardElement.getAttribute('data-builds') || '[]');
+                    const folder = cardElement.getAttribute('data-folder');
+                    const allSkills = JSON.parse(cardElement.getAttribute('data-allskills') || '[]');
+                    const priority = JSON.parse(cardElement.getAttribute('data-priority') || '[]');
+
+                    // --- Render Skills ---
+                    modalSkillContainer.innerHTML = '';
+                    if (allSkills && allSkills.length > 0) {
+                        modalSkillContainer.style.display = 'flex';
+
+                        // Sort Skills Descending (3.png -> 1.png) same as Codex
+                        allSkills.sort((a, b) => {
+                            const numA = parseInt(a) || 0;
+                            const numB = parseInt(b) || 0;
+                            return numB - numA;
+                        });
+
+                        allSkills.forEach((filename) => {
+                            const div = document.createElement('div');
+                            div.className = 'skill-item';
+                            div.title = filename;
+
+                            // Check Priority
+                            let badgeHtml = '';
+                            const pIdx = priority.indexOf(filename);
+                            if (pIdx > -1) {
+                                badgeHtml = `<div class="priority-badge">${pIdx + 1}</div>`;
+                            }
+
+                            div.innerHTML = `
+                        <img src="/images/skill/${folder}/${filename}" onerror="this.src='https://via.placeholder.com/60?text=Skill'">
+                        ${badgeHtml}
+                    `;
+                            modalSkillContainer.appendChild(div);
+                        });
+                    } else {
+                        modalSkillContainer.style.display = 'none';
+                    }
+
+                    // --- Render Builds ---
+                    buildsContainer.innerHTML = '';
+
+                    if (buildsData.length === 0) {
+                        buildsContainer.innerHTML = `
                     <div class="text-center py-5 text-muted opacity-50">
                         <i class="bi bi-hammer display-1 mb-3"></i>
                         <h5>No builds available yet.</h5>
                     </div>
                 `;
-            } else {
-                buildsData.forEach((build, index) => {
-                    modalBody.innerHTML += createBuildHTML(build, index);
-                });
-            }
+                    } else {
+                        buildsData.forEach((build, index) => {
+                            buildsContainer.innerHTML += createBuildHTML(build, index);
+                        });
+                    }
 
-            buildModal.show();
-        }
+                    buildModal.show();
+                }
 
-        function createBuildHTML(build, index) {
-            const accHTML = build.accessories.map(acc => 
-                `<img src="/images/items/accessories/${acc}" title="${acc}">`
-            ).join('');
+                function createBuildHTML(build, index) {
+                    const accHTML = build.accessories.map(acc =>
+                        `<img src="/images/items/accessories/${acc}" title="${acc}">`
+                    ).join('');
 
-            const subHTML = build.substats.map((stat, index) => 
-                `<span class="substat-chip">${index + 1}. ${stat}</span>`
-            ).join('');
+                    const subHTML = build.substats.map((stat, index) =>
+                        `<span class="substat-chip">${index + 1}. ${stat}</span>`
+                    ).join('');
 
-            // ใช้ ID เพื่ออ้างอิงตอน Screenshot
-            const buildId = `build-content-${index}`;
+                    // ใช้ ID เพื่ออ้างอิงตอน Screenshot
+                    const buildId = `build-content-${index}`;
 
-            return `
+                    return `
                 <div class="build-detail-card">
                     <button class="btn-screenshot" onclick="takeScreenshot(${index})" title="Save Build as Image">
                         <i class="bi bi-camera"></i>
@@ -351,15 +580,15 @@
                     </div>
                 </div>
             `;
-        }
+                }
 
-        // --- 3. Screenshot Logic ---
-        function takeScreenshot(index) {
-            const captureArea = document.getElementById('captureArea');
-            const buildContent = document.getElementById(`build-content-${index}`).innerHTML;
-            
-            // Construct the visual for the screenshot
-            captureArea.innerHTML = `
+                // --- 3. Screenshot Logic ---
+                function takeScreenshot(index) {
+                    const captureArea = document.getElementById('captureArea');
+                    const buildContent = document.getElementById(`build-content-${index}`).innerHTML;
+
+                    // Construct the visual for the screenshot
+                    captureArea.innerHTML = `
                 <div class="hero-header">
                     <img src="/images/heroes/${currentHeroData.filename}" class="hero-img">
                     <div>
@@ -375,18 +604,19 @@
                 </div>
             `;
 
-            // Use html2canvas
-            html2canvas(captureArea, {
-                backgroundColor: '#121212', // Ensure dark background
-                scale: 2 // High resolution
-            }).then(canvas => {
-                // Trigger Download
-                const link = document.createElement('a');
-                link.download = `7K-Build-${currentHeroData.name}-${index+1}.png`;
-                link.href = canvas.toDataURL();
-                link.click();
-            });
-        }
-    </script>
+                    // Use html2canvas
+                    html2canvas(captureArea, {
+                        backgroundColor: '#121212', // Ensure dark background
+                        scale: 2 // High resolution
+                    }).then(canvas => {
+                        // Trigger Download
+                        const link = document.createElement('a');
+                        link.download = `7K-Build-${currentHeroData.name}-${index + 1}.png`;
+                        link.href = canvas.toDataURL();
+                        link.click();
+                    });
+                }
+            </script>
 </body>
+
 </html>

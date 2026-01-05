@@ -1,41 +1,89 @@
 const fileHelper = require('../utils/fileHelper');
 const fs = require('fs');
+const fsPromises = require('fs').promises;
 const path = require('path');
 const BuildService = require('../services/buildService');
+const db = require('../database/database');
 
 // ==========================================
 // PUBLIC: แสดงหน้า Build สำหรับ User ทั่วไป
 // ==========================================
-exports.getBuildPage = async (req, res) => {
-    try {
-        const gradeParam = req.params.grade ? req.params.grade.toLowerCase() : 'legendary';
+exports.getBuildPage = (req, res) => {
+    const gradeParam = req.params.grade ? req.params.grade.toLowerCase() : 'legendary';
 
-        // 1. ดึงรูป Heroes
-        // 1. ดึงรูป Heroes
-        const heroFiles = fileHelper.getSortedImages('heroes');
-        const heroes = heroFiles.map(file => fileHelper.getGradeAndName(file)); // Map string -> object
+    // 1. ดึงข้อมูล Heroes จาก DB เพื่อเอา Skill info
+    db.all("SELECT * FROM codex_heroes", [], async (err, dbHeroes) => {
+        if (err) {
+            console.error("DB Error:", err);
+            return res.render('pages/error');
+        }
 
-        const filteredHeroes = heroes.filter(h => {
-            if (gradeParam === 'legendary') return h.grade.startsWith('l');
-            if (gradeParam === 'rare') return h.grade === 'r';
-            return true;
-        });
+        try {
+            // 2. ดึงรูป Heroes (File System is Source of Truth for existence)
+            const heroFiles = fileHelper.getSortedImages('heroes');
+            let heroes = heroFiles.map(file => fileHelper.getGradeAndName(file));
 
-        // 2. ดึงข้อมูล Builds ผ่าน Service
-        const builds = await BuildService.getAllBuilds();
-        const buildsMap = BuildService.processBuildsForDisplay(builds);
+            // Filter Grade
+            heroes = heroes.filter(h => {
+                if (gradeParam === 'legendary') return h.grade.startsWith('l');
+                if (gradeParam === 'rare') return h.grade === 'r';
+                return true;
+            });
 
-        res.render('pages/build', {
-            title: `Builds - ${gradeParam.toUpperCase()}`,
-            page: 'build',
-            grade: gradeParam,
-            heroes: filteredHeroes,
-            buildsMap: buildsMap
-        });
-    } catch (err) {
-        console.error(err);
-        res.render('pages/error');
-    }
+            // 3. Merge DB Data & Process Skills
+            const enrichedHeroes = await Promise.all(heroes.map(async (hero) => {
+                // Find matching DB record
+                const dbHero = dbHeroes.find(dbh => dbh.image_name === hero.filename);
+
+                let skillData = {
+                    skillFolder: '',
+                    skillOrder: [],
+                    allSkills: []
+                };
+
+                if (dbHero) {
+                    // Parse Skill Order
+                    try {
+                        skillData.skillOrder = JSON.parse(dbHero.skill_order || "[]");
+                    } catch (e) { }
+
+                    // Determine Folder
+                    let folder = dbHero.skill_folder || hero.filename.replace(/\.[^/.]+$/, "");
+                    skillData.skillFolder = folder;
+
+                    // Read Skill Files
+                    const skillPath = path.join(__dirname, '../public/images/skill', folder);
+                    try {
+                        await fsPromises.stat(skillPath);
+                        const files = await fsPromises.readdir(skillPath);
+                        skillData.allSkills = files.filter(f => /\.(png|jpg|jpeg|gif)$/i.test(f));
+                    } catch (error) {
+                        // Folder not found or empty
+                    }
+                }
+
+                return {
+                    ...hero,
+                    ...skillData
+                };
+            }));
+
+            // 4. ดึงข้อมูล Builds ผ่าน Service
+            const builds = await BuildService.getAllBuilds();
+            const buildsMap = BuildService.processBuildsForDisplay(builds);
+
+            res.render('pages/build', {
+                title: `Builds - ${gradeParam.toUpperCase()}`,
+                page: 'build',
+                grade: gradeParam,
+                heroes: enrichedHeroes, // Send enriched data
+                buildsMap: buildsMap
+            });
+        } catch (processErr) {
+            console.error(processErr);
+            res.render('pages/error');
+        }
+    });
 };
 
 // ==========================================
