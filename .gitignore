@@ -11,14 +11,6 @@ pnpm-debug.log
 .env.test.local
 .env.production.local
 
-# Database (SQLite)
-# เรามักจะไม่ Commit ไฟล์ Database binary ขึ้น Git เพื่อป้องกัน Conflict
-# แต่จะให้ระบบสร้างไฟล์ใหม่เอง หรือใช้ Seed data แทน
-*.db
-*.sqlite
-*.sqlite3
-database/*.db
-
 # OS System Files
 .DS_Store
 Thumbs.db
