@@ -5,7 +5,7 @@ const RANKS = ['EX', 'S', 'A', 'B', 'C', 'D', 'E'];
 exports.getTierListPage = (req, res) => {
     // Default เป็น PVP ถ้าไม่ระบุ
     const category = req.params.category ? req.params.category.toUpperCase() : 'PVP';
-    
+
     // Validation
     if (!['PVP', 'PVE', 'PET'].includes(category)) {
         return res.redirect('/tierlist/pvp');
@@ -29,14 +29,14 @@ exports.getTierListPage = (req, res) => {
         rows.forEach(row => {
             // ใช้ fileHelper แยกชื่อกับเกรดเพื่อความสวยงาม
             const info = fileHelper.getGradeAndName(row.char_filename);
-            
+
             // ใส่ข้อมูลลงใน Rank นั้นๆ
             if (tierData[row.rank]) {
                 tierData[row.rank].push(info);
             }
         });
-        
-        // (Optional) ในขั้นตอนนี้สามารถ Sort ภายใน Rank ได้อีกทีถ้าต้องการ
+
+        // (Optional) ในขั้นตอนนี้สามารถ Sort ภายใน Rank ได้อีกทีถ้าต้องการ//
 
         res.render('pages/tierlist', {
             title: `Tier List ${category} - Seven Knight Rebirth`,
