@@ -4,6 +4,7 @@ const fsPromises = require('fs').promises;
 const path = require('path');
 const BuildService = require('../services/buildService');
 const db = require('../database/database');
+const SkillService = require('../services/skillService');
 
 // ==========================================
 // PUBLIC: แสดงหน้า Build สำหรับ User ทั่วไป
@@ -19,9 +20,29 @@ exports.getBuildPage = (req, res) => {
         }
 
         try {
-            // 2. ดึงรูป Heroes (File System is Source of Truth for existence)
-            const heroFiles = fileHelper.getSortedImages('heroes');
-            let heroes = heroFiles.map(file => fileHelper.getGradeAndName(file));
+            // 2. Process Heroes from DB (Source of Truth)
+            let heroes = dbHeroes.map(h => {
+                let filename = h.image_name;
+                let grade = '';
+                if (filename.startsWith('l+_')) grade = 'l+';
+                else if (filename.startsWith('l_')) grade = 'l';
+                else if (filename.startsWith('r_')) grade = 'r';
+                else if (filename.startsWith('uc_')) grade = 'uc';
+                else if (filename.startsWith('c_')) grade = 'c';
+
+                let name = h.name;
+                if (!name) {
+                    name = filename.replace(/\.[^/.]+$/, "").replace(/^[a-z]+_+/, "");
+                }
+
+                return {
+                    filename: filename,
+                    grade: grade,
+                    name: name,
+                    skill_folder: h.skill_folder,
+                    skill_order: h.skill_order // Pass through
+                };
+            });
 
             // Filter Grade
             heroes = heroes.filter(h => {
@@ -31,36 +52,17 @@ exports.getBuildPage = (req, res) => {
             });
 
             // 3. Merge DB Data & Process Skills
+            // 3. Merge DB Data & Process Skills
             const enrichedHeroes = await Promise.all(heroes.map(async (hero) => {
                 // Find matching DB record
                 const dbHero = dbHeroes.find(dbh => dbh.image_name === hero.filename);
 
-                let skillData = {
-                    skillFolder: '',
-                    skillOrder: [],
-                    allSkills: []
-                };
-
-                if (dbHero) {
-                    // Parse Skill Order
-                    try {
-                        skillData.skillOrder = JSON.parse(dbHero.skill_order || "[]");
-                    } catch (e) { }
-
-                    // Determine Folder
-                    let folder = dbHero.skill_folder || hero.filename.replace(/\.[^/.]+$/, "");
-                    skillData.skillFolder = folder;
-
-                    // Read Skill Files
-                    const skillPath = path.join(__dirname, '../public/images/skill', folder);
-                    try {
-                        await fsPromises.stat(skillPath);
-                        const files = await fsPromises.readdir(skillPath);
-                        skillData.allSkills = files.filter(f => /\.(png|jpg|jpeg|gif)$/i.test(f));
-                    } catch (error) {
-                        // Folder not found or empty
-                    }
-                }
+                // [Refactor] Use SkillService
+                const skillData = await SkillService.getHeroSkills(
+                    hero.filename,
+                    dbHero ? dbHero.skill_folder : null,
+                    dbHero ? dbHero.skill_order : null
+                );
 
                 return {
                     ...hero,

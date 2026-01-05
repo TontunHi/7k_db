@@ -957,7 +957,7 @@
             function openPetPicker() { petPicker.show(); }
             function selectPet(filename) {
                 document.getElementById('petInput').value = filename;
-                document.getElementById('petSlotDisplay').innerHTML = `<img src="/images/pets/${filename}">`;
+                document.getElementById('petSlotDisplay').innerHTML = `<img src="/images/pets/${filename}" style="width:100%; height:100%; object-fit:cover;">`;
                 petPicker.hide();
             }
 
