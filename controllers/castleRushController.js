@@ -1,5 +1,7 @@
 const db = require('../database/database');
 const { getFilesFromDir } = require('../utils/fileHelper');
+const fs = require('fs');
+const path = require('path');
 
 // Config รายชื่อด่านและลำดับ (Monday -> Sunday)
 const STAGES = [
@@ -28,6 +30,15 @@ exports.getIndex = (req, res) => {
         };
     });
 
+    // 2. [NEW] Get Pets
+    let pets = [];
+    try {
+        const petDir = path.join(__dirname, '../public/images/pets');
+        if (fs.existsSync(petDir)) {
+            pets = fs.readdirSync(petDir).filter(f => ['.png', '.webp', '.jpg'].includes(path.extname(f).toLowerCase()));
+        }
+    } catch (e) { }
+
     if (activeStageKey) {
         // [DETAIL VIEW] ดึงทีมของด่านนั้นๆ
         const currentStage = STAGES.find(s => s.key === activeStageKey);
@@ -52,6 +63,7 @@ exports.getIndex = (req, res) => {
                 teams: teamsParsed,
                 heroFiles,
                 heroesMap,
+                pets, // Pass pets
                 user: req.session ? req.session.user : null
             });
         });
@@ -66,6 +78,7 @@ exports.getIndex = (req, res) => {
             teams: [],
             heroFiles,
             heroesMap,
+            pets: [],
             user: req.session ? req.session.user : null
         });
     }
@@ -74,7 +87,7 @@ exports.getIndex = (req, res) => {
 exports.saveTeam = (req, res) => {
     const {
         id, stage_key, team_name, formation,
-        hero_ids, skill_priority, description, youtube_link
+        hero_ids, skill_priority, description, youtube_link, pet_id
     } = req.body;
 
     const heroIdsJson = JSON.stringify(hero_ids || []);
@@ -83,9 +96,9 @@ exports.saveTeam = (req, res) => {
     if (id) {
         // Update
         db.run(`UPDATE castle_rush_teams SET 
-            team_name=?, formation=?, hero_ids=?, skill_priority=?, description=?, youtube_link=? 
+            team_name=?, formation=?, hero_ids=?, skill_priority=?, description=?, youtube_link=?, pet_id=? 
             WHERE id=?`,
-            [team_name, formation, heroIdsJson, skillPriorityJson, description, youtube_link, id],
+            [team_name, formation, heroIdsJson, skillPriorityJson, description, youtube_link, pet_id, id],
             (err) => {
                 if (err) return res.json({ success: false, error: err.message });
                 res.json({ success: true });
@@ -94,9 +107,9 @@ exports.saveTeam = (req, res) => {
     } else {
         // Insert
         db.run(`INSERT INTO castle_rush_teams 
-            (stage_key, team_name, formation, hero_ids, skill_priority, description, youtube_link) 
-            VALUES (?, ?, ?, ?, ?, ?, ?)`,
-            [stage_key, team_name, formation, heroIdsJson, skillPriorityJson, description, youtube_link],
+            (stage_key, team_name, formation, hero_ids, skill_priority, description, youtube_link, pet_id) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+            [stage_key, team_name, formation, heroIdsJson, skillPriorityJson, description, youtube_link, pet_id],
             (err) => {
                 if (err) return res.json({ success: false, error: err.message });
                 res.json({ success: true });
@@ -130,6 +143,15 @@ exports.getUserIndex = (req, res) => {
         };
     });
 
+    // 2. [NEW] Get Pets
+    let pets = [];
+    try {
+        const petDir = path.join(__dirname, '../public/images/pets');
+        if (fs.existsSync(petDir)) {
+            pets = fs.readdirSync(petDir).filter(f => ['.png', '.webp', '.jpg'].includes(path.extname(f).toLowerCase()));
+        }
+    } catch (e) { }
+
     if (activeStageKey) {
         // [DETAIL VIEW]
         const currentStage = STAGES.find(s => s.key === activeStageKey);
@@ -150,7 +172,8 @@ exports.getUserIndex = (req, res) => {
                 stages: STAGES,
                 activeStage: currentStage,
                 teams: teamsParsed,
-                heroesMap
+                heroesMap,
+                pets // Pass pets to user view as well if needed
             });
         });
 
@@ -162,7 +185,8 @@ exports.getUserIndex = (req, res) => {
             stages: STAGES,
             activeStage: null,
             teams: [],
-            heroesMap
+            heroesMap,
+            pets: []
         });
     }
 };

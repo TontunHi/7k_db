@@ -171,7 +171,8 @@ function initTables() {
             hero_ids TEXT,
             skill_priority TEXT,
             description TEXT,
-            youtube_link TEXT
+            youtube_link TEXT,
+            pet_id TEXT
         )`);
 
         // --- INDEXES ---
