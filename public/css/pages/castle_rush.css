@@ -1,0 +1,370 @@
+        /* --- Theme --- */
+        body {
+            background-color: #0b0c10;
+            color: #e0e0e0;
+            font-family: 'Kanit', sans-serif;
+            padding-top: 80px;
+        }
+
+        /* --- Stage List (Cards) --- */
+        .stage-card-link {
+            display: block;
+            text-decoration: none;
+            color: inherit;
+            background: #1f2833;
+            border: 1px solid #45a29e;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: 0.3s;
+            height: 100%;
+            position: relative;
+        }
+
+        .stage-card-link:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 25px rgba(255, 193, 7, 0.2);
+            border-color: #ffc107;
+        }
+
+        .stage-img-wrapper {
+            aspect-ratio: 1088 / 3872;
+            overflow: hidden;
+            border-bottom: 1px solid #333;
+            background-color: #15191d;
+        }
+
+        .stage-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: 0.3s;
+        }
+
+        .stage-card-link:hover .stage-img-wrapper img {
+            transform: scale(1.05);
+        }
+
+        .stage-info {
+            padding: 15px;
+            text-align: center;
+            background: #15191d;
+        }
+
+        .stage-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #fff;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* --- COMPACT DETAIL VIEW --- */
+        .page-header {
+            background: #1f2833;
+            padding: 20px 0;
+            border-bottom: 1px solid #45a29e;
+            margin-bottom: 30px;
+        }
+
+        .team-comp-card {
+            background: #15191d;
+            border: 1px solid #2f3a46;
+            border-radius: 12px;
+            padding: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .comp-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .comp-title {
+            color: #ffc107;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .comp-meta {
+            color: #aaa;
+            font-size: 0.85rem;
+        }
+
+        .comp-meta span {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        /* Body Container */
+        .comp-body {
+            background: #0b0c10;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 30px 10px 10px 10px;
+            background-image: radial-gradient(#1f2833 1px, transparent 1px);
+            background-size: 15px 15px;
+            min-height: 140px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        /* Vertical Columns */
+        .hero-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            /* Center Vertically (Pet vs Hero Stacks) */
+            justify-content: center;
+        }
+
+        .hero-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            width: 50px;
+        }
+
+        .hero-slot-visual {
+            width: 50px;
+            height: 66px;
+            background: #000;
+            border-radius: 4px;
+            border: 2px solid #444;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+            z-index: 1;
+            transition: 0.2s;
+        }
+
+        .hero-slot-visual img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .slot-front {
+            border-color: #0dcaf0 !important;
+            transform: translateY(-15px);
+            box-shadow: 0 8px 12px rgba(13, 202, 240, 0.25) !important;
+            z-index: 10;
+        }
+
+        .slot-back {
+            border-color: #dc3545 !important;
+        }
+
+        .slot-pet {
+            border-color: #ffc107 !important;
+            box-shadow: 0 0 8px rgba(255, 193, 7, 0.3) !important;
+            margin-left: 10px !important;
+        }
+
+        /* Skills */
+        .skill-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            width: 100%;
+            align-items: center;
+        }
+
+        .skill-node {
+            width: 28px;
+            height: 28px;
+            border: 1px solid #333;
+            border-radius: 4px;
+            background: #000;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .skill-node img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.3;
+        }
+
+        .skill-node.has-order {
+            border-color: #ffc107;
+            border-width: 1px;
+        }
+
+        .skill-node.has-order img {
+            opacity: 1;
+        }
+
+        .skill-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: #ffc107;
+            color: #000;
+            font-size: 7px;
+            font-weight: 800;
+            width: 10px;
+            height: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom-left-radius: 3px;
+        }
+
+        .skill-node.empty-slot {
+            border: 1px dashed #222;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .desc-box {
+            margin-top: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 6px;
+            padding: 8px 12px;
+            color: #ccc;
+            font-size: 0.85rem;
+            border-left: 2px solid #444;
+        }
+
+        .card-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .btn-capture-circle {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #2c2c2c;
+            border: 1px solid #444;
+            color: #aaa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .btn-capture-circle:hover {
+            background: #444;
+            color: #ffc107;
+            border-color: #ffc107;
+        }
+
+        /* --- CAPTURE TEMPLATE --- */
+        .capture-template-layout {
+            display: flex;
+            flex-direction: row;
+            background: #15191d;
+            width: 900px;
+            border: 2px solid #ffc107;
+        }
+
+        .capture-sidebar-col {
+            width: 250px;
+            background: #000;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-right: 2px solid #ffc107;
+        }
+
+        .capture-sidebar-col img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top;
+            /* Focus on top of vertical image */
+            opacity: 0.6;
+        }
+
+        .capture-sidebar-title {
+            position: absolute;
+            color: #fff;
+            font-weight: 800;
+            font-size: 2.2rem;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px #ffc107;
+            transform: rotate(-90deg);
+            white-space: nowrap;
+        }
+
+        .capture-content-col {
+            flex: 1;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Capture Overrides for better visual in image */
+        .capture-content-col .comp-body {
+            border: 2px solid #444;
+            background: #0e0e0e;
+            min-height: 250px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            overflow: visible !important;
+        }
+
+        .capture-content-col .hero-column {
+            width: 80px;
+            gap: 10px;
+        }
+
+        .capture-content-col .hero-slot-visual {
+            width: 80px;
+            height: 110px;
+            max-width: none;
+            /* Correctness */
+            overflow: visible !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            /* Do NOT remove border here */
+        }
+
+        .capture-content-col .hero-slot-visual img {
+            border-radius: 6px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
+        }
+
+        .capture-content-col .slot-front {
+            transform: translateY(-25px);
+            z-index: 100 !important;
+            border-color: #0dcaf0 !important;
+        }
+
+        /* Remove the weird img border override */
+
+        .capture-content-col .slot-back {
+            border-color: #dc3545 !important;
+        }
+
+        .capture-content-col .slot-pet {
+            border-color: #ffc107 !important;
+        }
+
+        .capture-content-col .skill-node {
+            width: 45px;
+            height: 45px;
+        }
+
+        .capture-content-col .skill-badge {
+            width: 16px;
+            height: 16px;
+            font-size: 10px;
+        }

@@ -1,257 +1,142 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <%- include('../partials/head') %>
-    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+        <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
-    <style>
-        body { background-color: #0f0f0f; font-family: 'Segoe UI', sans-serif; }
-        
-        /* --- Page Header --- */
-        .tier-header {
-            text-align: center; margin-bottom: 40px; position: relative;
-        }
-        .tier-title {
-            font-size: 2.5rem; font-weight: 800; text-transform: uppercase;
-            background: linear-gradient(45deg, #ffc107, #ff8c00);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            margin-bottom: 10px; letter-spacing: 1px;
-        }
-        .tier-subtitle { color: #888; font-size: 1rem; }
-
-        /* --- Category Switcher (Tabs) --- */
-        .cat-switcher {
-            display: flex; justify-content: center; gap: 15px; margin-bottom: 30px;
-        }
-        .cat-btn {
-            background: #1a1a1a; border: 1px solid #333; color: #888;
-            padding: 8px 30px; border-radius: 25px; text-decoration: none;
-            font-weight: 600; transition: all 0.3s;
-        }
-        .cat-btn:hover { color: #fff; border-color: #666; }
-        .cat-btn.active { 
-            background: #ffc107; color: #000; border-color: #ffc107; 
-            box-shadow: 0 0 15px rgba(255, 193, 7, 0.3);
-        }
-
-        /* --- Tier Row Layout --- */
-        .tier-container { max-width: 1000px; margin: 0 auto; padding-bottom: 50px; }
-        
-        .tier-row {
-            display: flex; background: #161616; border-radius: 12px; margin-bottom: 15px;
-            overflow: hidden; border: 1px solid #333; min-height: 110px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            transition: transform 0.2s;
-        }
-        .tier-row:hover { transform: translateX(5px); border-color: #555; }
-
-        /* Rank Column */
-        .tier-rank {
-            width: 100px; flex-shrink: 0;
-            background: linear-gradient(180deg, #1a1a1a 0%, #000 100%);
-            display: flex; align-items: center; justify-content: center;
-            border-right: 1px solid #333; padding: 10px;
-        }
-        .tier-rank img {
-            max-width: 70px; max-height: 70px; object-fit: contain;
-            filter: drop-shadow(0 0 5px rgba(255,255,255,0.1));
-        }
-
-        /* Heroes Content */
-        .tier-content {
-            flex-grow: 1; padding: 15px;
-            display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
-        }
-
-        /* Hero Card */
-        .hero-card {
-            width: 65px; aspect-ratio: 3/4; position: relative;
-            border-radius: 6px; overflow: hidden; border: 1px solid #444;
-            background: #000; transition: all 0.2s; cursor: pointer;
-        }
-        .hero-card:hover { transform: scale(1.1); border-color: #ffc107; z-index: 10; }
-        .hero-card img { width: 100%; height: 100%; object-fit: cover; }
-        
-        /* [REMOVED] .hero-badge style */
-
-        /* --- Export Button --- */
-        .btn-export-floating {
-            position: fixed; bottom: 30px; right: 30px;
-            background: #ffc107; color: #000;
-            width: 55px; height: 55px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.5rem; cursor: pointer;
-            box-shadow: 0 5px 20px rgba(255, 193, 7, 0.4);
-            transition: all 0.3s; z-index: 100; border: none;
-        }
-        .btn-export-floating:hover { transform: scale(1.1) rotate(15deg); background: #fff; }
-
-        /* --- Capture Area (Hidden) --- */
-        #captureArea {
-            position: fixed; top: -9999px; left: -9999px;
-            width: 800px; background: #121212; 
-            z-index: -9999;
-        }
-        .cap-header {
-            padding: 30px 40px; background: linear-gradient(90deg, #1a1a1a, #111);
-            border-bottom: 2px solid #333; display: flex; justify-content: space-between; align-items: center;
-        }
-        .cap-title h1 { margin: 0; color: #ffc107; font-weight: 800; font-size: 2.2rem; text-transform: uppercase; }
-        .cap-title span { color: #fff; font-size: 1.2rem; font-weight: 300; letter-spacing: 2px; }
-        .cap-logo { text-align: right; }
-        .cap-logo div:first-child { color: #fff; font-weight: bold; font-size: 1.2rem; }
-        .cap-logo div:last-child { color: #666; font-size: 0.8rem; }
-
-        .cap-body { padding: 40px; background: #121212; }
-        
-        /* Capture Row Style */
-        .cap-row {
-            display: flex; margin-bottom: 15px; border: 1px solid #333; border-radius: 8px; overflow: hidden; background: #161616;
-        }
-        .cap-rank {
-            width: 100px; background: #080808; border-right: 1px solid #333;
-            display: flex; align-items: center; justify-content: center; padding: 10px;
-        }
-        .cap-rank img { width: 60px; height: auto; }
-        .cap-content { flex: 1; padding: 15px; display: flex; flex-wrap: wrap; gap: 10px; }
-        
-        .cap-hero {
-            width: 60px; aspect-ratio: 3/4; border-radius: 4px; overflow: hidden; border: 1px solid #444; position: relative;
-        }
-        .cap-hero img { width: 100%; height: 100%; object-fit: cover; }
-        
-        /* [REMOVED] .cap-hero .badge style */
-
-        .cap-footer {
-            padding: 15px; text-align: center; color: #444; font-size: 0.8rem; background: #0f0f0f; border-top: 1px solid #222;
-        }
-
-    </style>
+        <link rel="stylesheet" href="/css/pages/tierlist.css">
 </head>
+
 <body class="d-flex flex-column h-100 bg-main text-light">
-    
+
     <%- include('../partials/navbar') %>
 
-    <main class="flex-shrink-0 mt-5 pt-4">
-        <div class="container py-5">
-            
-            <div class="tier-header">
-                <h1 class="tier-title"><%= category %> Tier List</h1>
-                <p class="tier-subtitle">Best characters ranking for <%= category %> content</p>
-            </div>
+        <main class="flex-shrink-0 mt-5 pt-4">
+            <div class="container py-5">
 
-            <div class="cat-switcher">
-                <a href="/tierlist/pvp" class="cat-btn <%= category === 'PVP' ? 'active' : '' %>">PVP</a>
-                <a href="/tierlist/pve" class="cat-btn <%= category === 'PVE' ? 'active' : '' %>">PVE</a>
-                <a href="/tierlist/pet" class="cat-btn <%= category === 'PET' ? 'active' : '' %>">PET</a>
-            </div>
+                <div class="tier-header">
+                    <h1 class="tier-title">
+                        <%= category %> Tier List
+                    </h1>
+                    <p class="tier-subtitle">Best characters ranking for <%= category %> content</p>
+                </div>
 
-            <div class="tier-container" id="tierListContent">
-                <% ranks.forEach(rank => { %>
-                    <% if(tierData[rank] && tierData[rank].length > 0) { %>
-                        <div class="tier-row" data-rank="<%= rank %>">
-                            <div class="tier-rank">
-                                <img src="/images/logo_tiers/<%= rank %>.png" alt="<%= rank %>">
-                            </div>
-                            <div class="tier-content">
-                                <% tierData[rank].forEach(char => { %>
-                                    <div class="hero-card" title="<%= char.name %>">
-                                        <img src="/images/<%= folder %>/<%= char.filename %>" loading="lazy">
+                <div class="cat-switcher">
+                    <a href="/tierlist/pvp" class="cat-btn <%= category === 'PVP' ? 'active' : '' %>">PVP</a>
+                    <a href="/tierlist/pve" class="cat-btn <%= category === 'PVE' ? 'active' : '' %>">PVE</a>
+                    <a href="/tierlist/pet" class="cat-btn <%= category === 'PET' ? 'active' : '' %>">PET</a>
+                </div>
+
+                <div class="tier-container" id="tierListContent">
+                    <% ranks.forEach(rank=> { %>
+                        <% if(tierData[rank] && tierData[rank].length> 0) { %>
+                            <div class="tier-row" data-rank="<%= rank %>">
+                                <div class="tier-rank">
+                                    <img src="/images/logo_tiers/<%= rank %>.png" alt="<%= rank %>">
+                                </div>
+                                <div class="tier-content">
+                                    <% tierData[rank].forEach(char=> { %>
+                                        <div class="hero-card" title="<%= char.name %>">
+                                            <img src="/images/<%= folder %>/<%= char.filename %>" loading="lazy">
                                         </div>
-                                <% }) %>
+                                        <% }) %>
+                                </div>
                             </div>
-                        </div>
-                    <% } %>
-                <% }) %>
-            </div>
+                            <% } %>
+                                <% }) %>
+                </div>
 
+            </div>
+        </main>
+
+        <button class="btn-export-floating" onclick="exportTierList()" title="Save as Image">
+            <i class="bi bi-camera"></i>
+        </button>
+
+        <div id="captureArea">
+            <div class="cap-header">
+                <div class="cap-title">
+                    <h1>
+                        <%= category %>
+                    </h1>
+                    <span>TIER LIST</span>
+                </div>
+                <div class="cap-logo">
+                    <div>7K Rebirth</div>
+                    <div>Database Guide</div>
+                </div>
+            </div>
+            <div class="cap-body" id="capBody">
+            </div>
+            <div class="cap-footer">
+                Generated by 7K Rebirth Database
+            </div>
         </div>
-    </main>
 
-    <button class="btn-export-floating" onclick="exportTierList()" title="Save as Image">
-        <i class="bi bi-camera"></i>
-    </button>
+        <%- include('../partials/footer') %>
 
-    <div id="captureArea">
-        <div class="cap-header">
-            <div class="cap-title">
-                <h1><%= category %></h1>
-                <span>TIER LIST</span>
-            </div>
-            <div class="cap-logo">
-                <div>7K Rebirth</div>
-                <div>Database Guide</div>
-            </div>
-        </div>
-        <div class="cap-body" id="capBody">
-            </div>
-        <div class="cap-footer">
-            Generated by 7K Rebirth Database
-        </div>
-    </div>
+            <script>
+                function exportTierList() {
+                    const sourceContainer = document.getElementById('tierListContent');
+                    const captureBody = document.getElementById('capBody');
+                    const captureArea = document.getElementById('captureArea');
 
-    <%- include('../partials/footer') %>
+                    // 1. Clear previous capture content
+                    captureBody.innerHTML = '';
 
-    <script>
-        function exportTierList() {
-            const sourceContainer = document.getElementById('tierListContent');
-            const captureBody = document.getElementById('capBody');
-            const captureArea = document.getElementById('captureArea');
+                    // 2. Clone Rows to Capture Area
+                    const rows = sourceContainer.querySelectorAll('.tier-row');
 
-            // 1. Clear previous capture content
-            captureBody.innerHTML = '';
+                    rows.forEach(row => {
+                        const rank = row.getAttribute('data-rank');
+                        const heroCards = row.querySelectorAll('.hero-card');
 
-            // 2. Clone Rows to Capture Area
-            const rows = sourceContainer.querySelectorAll('.tier-row');
-            
-            rows.forEach(row => {
-                const rank = row.getAttribute('data-rank');
-                const heroCards = row.querySelectorAll('.hero-card');
-                
-                // Create Cap Row
-                const capRow = document.createElement('div');
-                capRow.className = 'cap-row';
-                
-                // Rank Col
-                const rankCol = document.createElement('div');
-                rankCol.className = 'cap-rank';
-                rankCol.innerHTML = `<img src="/images/logo_tiers/${rank}.png">`;
-                
-                // Content Col
-                const contentCol = document.createElement('div');
-                contentCol.className = 'cap-content';
+                        // Create Cap Row
+                        const capRow = document.createElement('div');
+                        capRow.className = 'cap-row';
 
-                // Heroes
-                heroCards.forEach(card => {
-                    const imgSrc = card.querySelector('img').src;
-                    
-                    const capHero = document.createElement('div');
-                    capHero.className = 'cap-hero';
-                    capHero.innerHTML = `
+                        // Rank Col
+                        const rankCol = document.createElement('div');
+                        rankCol.className = 'cap-rank';
+                        rankCol.innerHTML = `<img src="/images/logo_tiers/${rank}.png">`;
+
+                        // Content Col
+                        const contentCol = document.createElement('div');
+                        contentCol.className = 'cap-content';
+
+                        // Heroes
+                        heroCards.forEach(card => {
+                            const imgSrc = card.querySelector('img').src;
+
+                            const capHero = document.createElement('div');
+                            capHero.className = 'cap-hero';
+                            capHero.innerHTML = `
                         <img src="${imgSrc}">
                         `;
-                    contentCol.appendChild(capHero);
-                });
+                            contentCol.appendChild(capHero);
+                        });
 
-                capRow.appendChild(rankCol);
-                capRow.appendChild(contentCol);
-                captureBody.appendChild(capRow);
-            });
+                        capRow.appendChild(rankCol);
+                        capRow.appendChild(contentCol);
+                        captureBody.appendChild(capRow);
+                    });
 
-            // 3. Wait a bit then capture
-            setTimeout(() => {
-                html2canvas(captureArea, {
-                    backgroundColor: '#121212',
-                    scale: 2, // High Quality
-                    useCORS: true
-                }).then(canvas => {
-                    const link = document.createElement('a');
-                    link.download = `7K-TierList-<%= category %>.png`;
-                    link.href = canvas.toDataURL();
-                    link.click();
-                });
-            }, 100);
-        }
-    </script>
+                    // 3. Wait a bit then capture
+                    setTimeout(() => {
+                        html2canvas(captureArea, {
+                            backgroundColor: '#121212',
+                            scale: 2, // High Quality
+                            useCORS: true
+                        }).then(canvas => {
+                            const link = document.createElement('a');
+                            link.download = `7K-TierList-<%= category %>.png`;
+                            link.href = canvas.toDataURL();
+                            link.click();
+                        });
+                    }, 100);
+                }
+            </script>
 </body>
+
 </html>

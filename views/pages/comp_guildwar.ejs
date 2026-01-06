@@ -1,444 +1,251 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <%- include('../partials/head') %>
-    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-    
-    <style>
-        body { background-color: #0f0f0f; font-family: 'Segoe UI', sans-serif; }
-        
-        .page-title-box { text-align: center; margin-bottom: 40px; }
-        .page-title {
-            font-size: 2.2rem; font-weight: 800; 
-            background: linear-gradient(45deg, #ffc107, #ff8c00);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            text-transform: uppercase; letter-spacing: 1px;
-        }
+        <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
-        /* --- Card Styles --- */
-        .gw-card {
-            background: #161616; border-radius: 12px; margin-bottom: 25px;
-            overflow: hidden; border: 1px solid #333; position: relative;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            cursor: pointer;
-        }
-        .gw-card:hover { 
-            border-color: #ffc107; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4); 
-            transform: translateY(-5px); 
-        }
-
-        .gw-header {
-            padding: 15px 25px; background: linear-gradient(90deg, #1f1f1f, #161616); 
-            border-bottom: 1px solid #2a2a2a; display: flex; justify-content: space-between; align-items: center;
-        }
-        .gw-title { font-weight: 700; font-size: 1.1rem; color: #ffc107; text-transform: uppercase; letter-spacing: 0.5px; }
-
-        .gw-body { 
-            padding: 25px; 
-            display: flex; gap: 20px; align-items: center; justify-content: space-between;
-            background: #161616;
-        }
-
-        /* Info Col */
-        .info-col { 
-            display: flex; flex-direction: column; gap: 10px; align-items: center; 
-            min-width: 60px; border-right: 1px solid #333; padding-right: 25px;
-        }
-        .formation-img { width: 50px; opacity: 0.9; }
-        .info-label { font-size: 0.8rem; color: #fff; font-weight: bold; letter-spacing: 0.5px; }
-
-        /* Heroes Grid (Web View) */
-        .heroes-grid { 
-            display: flex; gap: 18px; flex-grow: 1; justify-content: center; align-items: flex-start; 
-            min-height: 110px;
-        }
-        
-        .hero-unit { 
-            display: flex; flex-direction: column; gap: 8px; align-items: center; width: 70px;
-            position: relative; transition: all 0.3s;
-        }
-        
-        .hero-img-box {
-            width: 70px; aspect-ratio: 3/4; background: #000; border-radius: 8px; overflow: hidden;
-            border: 2px solid #444; transition: all 0.3s;
-        }
-        .hero-img-box img { width: 100%; height: 100%; object-fit: cover; }
-
-        /* Web View Position Logic */
-        .hero-unit.pos-front .hero-img-box {
-            border-color: #90caf9; transform: translateY(-12px);
-            box-shadow: 0 8px 15px rgba(144, 202, 249, 0.15);
-        }
-        .hero-unit.pos-back .hero-img-box {
-            border-color: #ef9a9a; opacity: 0.9;
-        }
-
-        /* Skills Vertical */
-        .skills-col { display: flex; flex-direction: column; gap: 4px; justify-content: center; }
-        .skill-icon {
-            width: 30px; height: 30px; background: #222; border-radius: 4px; border: 1px solid #444;
-            overflow: hidden; position: relative;
-        }
-        .skill-icon img { width: 100%; height: 100%; object-fit: cover; opacity: 0.5; filter: grayscale(100%); }
-        .skill-icon.active { border-color: #ffc107; }
-        .skill-icon.active img { opacity: 1; filter: grayscale(0%); }
-        .skill-badge {
-            position: absolute; top: 0; right: 0;
-            background: #ffc107; color: #000; font-size: 9px; font-weight: 800;
-            width: 12px; height: 12px; display: flex; align-items: center; justify-content: center;
-            z-index: 3; border-bottom-left-radius: 3px;
-        }
-
-        /* Pet */
-        .pet-display { 
-            padding-left: 20px; border-left: 1px solid #333; display: flex; flex-direction: column; align-items: center;
-        }
-        .pet-slot { 
-            width: 55px; aspect-ratio: 3/4; border-radius: 6px; 
-            border: 2px solid #444; overflow: hidden; background: #000; margin-bottom: 5px;
-        }
-        .pet-slot img { width: 100%; height: 100%; object-fit: cover; }
-
-        /* Description */
-        .gw-desc {
-            font-size: 0.9rem; color: #e0e0e0; padding: 15px 25px; border-top: 1px solid #222;
-            background: #1a1a1a; font-style: italic; display: flex; align-items: center; gap: 10px;
-        }
-
-        /* Export Button */
-        .btn-export-card {
-            background: rgba(255, 255, 255, 0.05); color: #ccc;
-            border: 1px solid #333; border-radius: 6px;
-            width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;
-            transition: 0.2s; z-index: 10;
-        }
-        .btn-export-card:hover { background: #ffc107; color: #000; border-color: #ffc107; }
-
-        /* --- Modal Styles --- */
-        .modal-content { background: #1a1a1a; border: 1px solid #444; color: #fff; }
-        .modal-header { border-bottom: 1px solid #333; }
-        .modal-title { color: #ffc107; font-weight: 800; text-transform: uppercase; }
-        
-        .view-content-wrapper {
-            display: flex; justify-content: center; gap: 35px; align-items: center; padding: 30px 0;
-        }
-        .view-hero-unit { display: flex; flex-direction: column; align-items: center; gap: 12px; width: 80px; }
-        .view-hero-img { width: 80px; aspect-ratio: 3/4; border-radius: 8px; border: 3px solid #333; overflow: hidden; position: relative; }
-        .view-hero-img img { width: 100%; height: 100%; object-fit: cover; }
-        
-        .view-hero-unit.front .view-hero-img { border-color: #90caf9; transform: translateY(-20px); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
-        .view-hero-unit.back .view-hero-img { border-color: #ef9a9a; }
-
-        .view-skills { display: flex; flex-direction: column; gap: 6px; }
-        .view-skill-icon { width: 40px; height: 40px; border-radius: 6px; overflow: hidden; border: 1px solid #444; position: relative; }
-        .view-skill-icon img { width: 100%; height: 100%; object-fit: cover; opacity: 0.3; filter: grayscale(100%); }
-        .view-skill-icon.active { border-color: #ffc107; }
-        .view-skill-icon.active img { opacity: 1; filter: grayscale(0%); }
-        .view-skill-badge { position: absolute; top: 0; right: 0; background: #ffc107; color: #000; font-size: 11px; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; font-weight: bold; border-bottom-left-radius: 6px; }
-
-        /* --- Capture Area (Revised) --- */
-        #captureArea { 
-            position: fixed; top: -9999px; left: -9999px; 
-            width: 1200px; background: #121212; z-index: -9999; 
-        }
-        .cap-header { padding: 30px 50px; background: linear-gradient(90deg, #1f1f1f, #111); border-bottom: 3px solid #ffc107; display: flex; justify-content: space-between; align-items: center; }
-        .cap-title { font-size: 2.2rem; font-weight: 800; color: #ffc107; text-transform: uppercase; }
-        .cap-body { 
-            padding: 80px 50px 60px 50px; /* Top padding allows room for jumping front units */
-            display: flex; justify-content: center; gap: 60px; /* Spacing between heroes */
-            align-items: flex-end; /* Align bottom */
-            background: #1a1a1a; 
-        }
-        .cap-footer { padding: 20px; text-align: center; color: #666; background: #121212; border-top: 1px solid #222; font-size: 1rem;}
-
-        /* Wrapper for Hero Unit */
-        .cap-hero-unit { 
-            display: flex; flex-direction: column; align-items: center; gap: 15px; width: 130px; 
-            position: relative; 
-        }
-
-        /* Z-Index Layering: Front on top */
-        .cap-hero-unit.front { z-index: 100; transform: translateY(-40px); }
-        .cap-hero-unit.back { z-index: 1; }
-
-        /* Hero Image Container (Border is here) */
-        .cap-hero-img-wrapper {
-            width: 130px; aspect-ratio: 3/4; 
-            border-radius: 12px;
-            background: #000;
-            overflow: hidden; /* Clips image */
-            border: 5px solid #333; /* Default Border */
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-
-        /* Color Modifiers */
-        .cap-hero-unit.front .cap-hero-img-wrapper { border-color: #90caf9; }
-        .cap-hero-unit.back .cap-hero-img-wrapper { border-color: #ef9a9a; }
-
-        /* The Image Itself - CLEAN, NO OVERLAY */
-        .cap-hero-img-wrapper img {
-            width: 100%; height: 100%; object-fit: cover;
-            display: block;
-        }
-
-        /* Skills in Capture */
-        .cap-skills { display: flex; flex-direction: column; gap: 10px; }
-        .cap-skill-icon { 
-            width: 60px; height: 60px; border-radius: 8px; border: 2px solid #444; 
-            position: relative; overflow: hidden; background: #000; 
-        }
-        .cap-skill-icon img { width: 100%; height: 100%; object-fit: cover; opacity: 0.3; filter: grayscale(100%); }
-        .cap-skill-icon.active { border-color: #ffc107; }
-        .cap-skill-icon.active img { opacity: 1; filter: grayscale(0%); }
-        .cap-badge { 
-            position: absolute; top: 0; right: 0; 
-            background: #ffc107; color: #000; 
-            width: 24px; height: 24px; font-size: 14px; font-weight: bold; 
-            display: flex; align-items: center; justify-content: center; 
-            border-bottom-left-radius: 8px; z-index: 20; 
-        }
-
-        /* Pet in Capture */
-        .cap-pet-unit {
-            display: flex; flex-direction: column; align-items: center; gap: 10px;
-            padding-left: 50px; border-left: 3px solid #333;
-            margin-left: 20px;
-        }
-        .cap-pet-img {
-            width: 130px; aspect-ratio: 3/4; border-radius: 12px;
-            border: 5px solid #555; overflow: hidden; background: #000;
-        }
-        .cap-pet-img img { width: 100%; height: 100%; object-fit: cover; }
-
-    </style>
+        <link rel="stylesheet" href="/css/pages/comp_guildwar.css">
 </head>
+
 <body class="d-flex flex-column h-100 bg-main text-light">
-    
+
     <%- include('../partials/navbar') %>
 
-    <main class="flex-shrink-0 mt-5 pt-4">
-        <div class="container py-4" style="max-width: 1200px;">
-            
-            <div class="page-title-box">
-                <h1 class="page-title">Guild War</h1>
-                <p class="text-secondary small">Battle Compositions & Skill Orders</p>
-            </div>
+        <main class="flex-shrink-0 mt-5 pt-4">
+            <div class="container py-4" style="max-width: 1200px;">
 
-            <div class="row g-4 justify-content-center">
-                <% comps.forEach(comp => { %>
-                    <div class="col-md-12 col-lg-6">
-                        <div class="gw-card" onclick='viewDetail(<%- JSON.stringify(comp) %>)'>
-                            <div class="gw-header">
-                                <div class="gw-title"><%= comp.team_name %></div>
-                                <div class="btn-export-card" onclick='exportComp(event, <%- JSON.stringify(comp) %>)' title="Export Image">
-                                    <i class="bi bi-camera"></i>
-                                </div>
-                            </div>
-                            
-                            <div class="gw-body">
-                                <div class="info-col">
-                                    <img src="/images/formation/<%= comp.formation %>.png" class="formation-img">
-                                    <span class="info-label"><%= comp.formation %></span>
-                                </div>
+                <div class="page-title-box">
+                    <h1 class="page-title">Guild War</h1>
+                    <p class="text-secondary small">Battle Compositions & Skill Orders</p>
+                </div>
 
-                                <div class="heroes-grid">
-                                    <% for(let i=0; i<3; i++) { %>
-                                        <% 
-                                            let hero = comp.heroes[i];
-                                            let posClass = 'pos-back';
-                                            if (comp.formation === '1-4' && i === 1) posClass = 'pos-front';
-                                            else if (comp.formation === '4-1' && (i === 0 || i === 2)) posClass = 'pos-front';
-                                        %>
-                                        <div class="hero-unit <%= posClass %>">
-                                            <div class="hero-img-box">
-                                                <% if(hero) { %>
-                                                    <img src="/images/heroes/<%= hero %>">
-                                                <% } %>
-                                            </div>
-                                            <% if(hero) { %>
-                                                <div class="skills-col">
-                                                    <% [2, 3].forEach(skillNum => { 
-                                                        let key = `${i}_${skillNum}`;
-                                                        let order = comp.skill_order.find(o => o.key === key)?.order;
-                                                        let heroName = hero.replace(/\.[^/.]+$/, "");
-                                                    %>
-                                                        <div class="skill-icon <%= order ? 'active' : '' %>">
-                                                            <img src="/images/skill/<%= heroName %>/<%= skillNum %>.png" onerror="this.src='/images/skill/placeholder.png'">
-                                                            <% if(order) { %> <div class="skill-badge"><%= order %></div> <% } %>
-                                                        </div>
-                                                    <% }) %>
-                                                </div>
-                                            <% } %>
-                                        </div>
-                                    <% } %>
-                                </div>
-
-                                <div class="pet-display">
-                                    <div class="pet-slot">
-                                        <% if(comp.pet) { %>
-                                            <img src="/images/pets/<%= comp.pet %>">
-                                        <% } else { %>
-                                            <div style="background:#000; width:100%; height:100%;"></div>
-                                        <% } %>
+                <div class="row g-4 justify-content-center">
+                    <% comps.forEach(comp=> { %>
+                        <div class="col-md-12 col-lg-6">
+                            <div class="gw-card" onclick='viewDetail(<%- JSON.stringify(comp) %>)'>
+                                <div class="gw-header">
+                                    <div class="gw-title">
+                                        <%= comp.team_name %>
                                     </div>
-                                    <span class="info-label">PET</span>
+                                    <div class="btn-export-card"
+                                        onclick='exportComp(event, <%- JSON.stringify(comp) %>)' title="Export Image">
+                                        <i class="bi bi-camera"></i>
+                                    </div>
                                 </div>
+
+                                <div class="gw-body">
+                                    <div class="info-col">
+                                        <img src="/images/formation/<%= comp.formation %>.png" class="formation-img">
+                                        <span class="info-label">
+                                            <%= comp.formation %>
+                                        </span>
+                                    </div>
+
+                                    <div class="heroes-grid">
+                                        <% for(let i=0; i<3; i++) { %>
+                                            <% let hero=comp.heroes[i]; let posClass='pos-back' ; if
+                                                (comp.formation==='1-4' && i===1) posClass='pos-front' ; else if
+                                                (comp.formation==='4-1' && (i===0 || i===2)) posClass='pos-front' ; %>
+                                                <div class="hero-unit <%= posClass %>">
+                                                    <div class="hero-img-box">
+                                                        <% if(hero) { %>
+                                                            <img src="/images/heroes/<%= hero %>">
+                                                            <% } %>
+                                                    </div>
+                                                    <% if(hero) { %>
+                                                        <div class="skills-col">
+                                                            <% [2, 3].forEach(skillNum=> {
+                                                                let key = `${i}_${skillNum}`;
+                                                                let order = comp.skill_order.find(o => o.key ===
+                                                                key)?.order;
+                                                                let heroName = hero.replace(/\.[^/.]+$/, "");
+                                                                %>
+                                                                <div class="skill-icon <%= order ? 'active' : '' %>">
+                                                                    <img src="/images/skill/<%= heroName %>/<%= skillNum %>.png"
+                                                                        onerror="this.src='/images/skill/placeholder.png'">
+                                                                    <% if(order) { %>
+                                                                        <div class="skill-badge">
+                                                                            <%= order %>
+                                                                        </div>
+                                                                        <% } %>
+                                                                </div>
+                                                                <% }) %>
+                                                        </div>
+                                                        <% } %>
+                                                </div>
+                                                <% } %>
+                                    </div>
+
+                                    <div class="pet-display">
+                                        <div class="pet-slot">
+                                            <% if(comp.pet) { %>
+                                                <img src="/images/pets/<%= comp.pet %>">
+                                                <% } else { %>
+                                                    <div style="background:#000; width:100%; height:100%;"></div>
+                                                    <% } %>
+                                        </div>
+                                        <span class="info-label">PET</span>
+                                    </div>
+                                </div>
+
+                                <% if(comp.description && comp.description.trim() !=="" ) { %>
+                                    <div class="gw-desc">
+                                        <i class="bi bi-info-circle text-warning"></i>
+                                        <%= comp.description %>
+                                    </div>
+                                    <% } %>
                             </div>
-
-                            <% if(comp.description && comp.description.trim() !== "") { %>
-                                <div class="gw-desc">
-                                    <i class="bi bi-info-circle text-warning"></i> <%= comp.description %>
-                                </div>
-                            <% } %>
                         </div>
+                        <% }) %>
+                </div>
+
+                <% if(comps.length===0) { %>
+                    <div class="text-center py-5 text-muted">No Guild War comps available.</div>
+                    <% } %>
+
+            </div>
+        </main>
+
+        <div class="modal fade" id="viewModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="vmTitle">TEAM NAME</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                     </div>
-                <% }) %>
-            </div>
-            
-            <% if(comps.length === 0) { %>
-                <div class="text-center py-5 text-muted">No Guild War comps available.</div>
-            <% } %>
-
-        </div>
-    </main>
-
-    <div class="modal fade" id="viewModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="vmTitle">TEAM NAME</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="view-content-wrapper" id="vmContent"></div>
-                    <div id="vmDesc" class="mt-3 p-3 bg-dark rounded border border-secondary text-center fst-italic text-light" style="display:none;"></div>
+                    <div class="modal-body">
+                        <div class="view-content-wrapper" id="vmContent"></div>
+                        <div id="vmDesc"
+                            class="mt-3 p-3 bg-dark rounded border border-secondary text-center fst-italic text-light"
+                            style="display:none;"></div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div id="captureArea">
-        <div class="cap-header">
-            <div class="cap-title" id="capTitle">TEAM NAME</div>
-            <div style="text-align:right;">
-                <div class="text-white fw-bold">7K Rebirth</div>
-                <div class="text-muted small">Guild War Guide</div>
+        <div id="captureArea">
+            <div class="cap-header">
+                <div class="cap-title" id="capTitle">TEAM NAME</div>
+                <div style="text-align:right;">
+                    <div class="text-white fw-bold">7K Rebirth</div>
+                    <div class="text-muted small">Guild War Guide</div>
+                </div>
             </div>
+            <div class="cap-body" id="capBody"></div>
+            <div class="cap-footer">Generated by 7K Rebirth Database</div>
         </div>
-        <div class="cap-body" id="capBody"></div>
-        <div class="cap-footer">Generated by 7K Rebirth Database</div>
-    </div>
 
-    <%- include('../partials/footer') %>
+        <%- include('../partials/footer') %>
 
-    <script>
-        const viewModal = new bootstrap.Modal(document.getElementById('viewModal'));
+            <script>
+                const viewModal = new bootstrap.Modal(document.getElementById('viewModal'));
 
-        function viewDetail(comp) {
-            document.getElementById('vmTitle').innerText = comp.team_name;
-            const descEl = document.getElementById('vmDesc');
-            if(comp.description) {
-                descEl.style.display = 'block';
-                descEl.innerText = comp.description;
-            } else { descEl.style.display = 'none'; }
+                function viewDetail(comp) {
+                    document.getElementById('vmTitle').innerText = comp.team_name;
+                    const descEl = document.getElementById('vmDesc');
+                    if (comp.description) {
+                        descEl.style.display = 'block';
+                        descEl.innerText = comp.description;
+                    } else { descEl.style.display = 'none'; }
 
-            let html = '';
-            for(let i=0; i<3; i++) {
-                let hero = comp.heroes[i];
-                let posClass = 'back';
-                if (comp.formation === '1-4' && i === 1) posClass = 'front';
-                else if (comp.formation === '4-1' && (i === 0 || i === 2)) posClass = 'front';
+                    let html = '';
+                    for (let i = 0; i < 3; i++) {
+                        let hero = comp.heroes[i];
+                        let posClass = 'back';
+                        if (comp.formation === '1-4' && i === 1) posClass = 'front';
+                        else if (comp.formation === '4-1' && (i === 0 || i === 2)) posClass = 'front';
 
-                if(hero) {
-                    let heroName = hero.replace(/\.[^/.]+$/, "");
-                    html += `
+                        if (hero) {
+                            let heroName = hero.replace(/\.[^/.]+$/, "");
+                            html += `
                         <div class="view-hero-unit ${posClass}">
                             <div class="view-hero-img"><img src="/images/heroes/${hero}"></div>
                             <div class="view-skills">`;
-                                [2, 3].forEach(sn => {
-                                    let key = `${i}_${sn}`;
-                                    let order = comp.skill_order.find(o => o.key === key)?.order;
-                                    html += `
+                            [2, 3].forEach(sn => {
+                                let key = `${i}_${sn}`;
+                                let order = comp.skill_order.find(o => o.key === key)?.order;
+                                html += `
                                         <div class="view-skill-icon ${order ? 'active' : ''}">
                                             <img src="/images/skill/${heroName}/${sn}.png" onerror="this.src='/images/skill/placeholder.png'">
                                             ${order ? `<div class="view-skill-badge">${order}</div>` : ''}
                                         </div>`;
-                                });
-                    html += `</div></div>`;
-                }
-            }
-            if(comp.pet) {
-                html += `
+                            });
+                            html += `</div></div>`;
+                        }
+                    }
+                    if (comp.pet) {
+                        html += `
                     <div style="border-left:1px solid #444; padding-left:30px; display:flex; flex-direction:column; align-items:center;">
                         <div style="width:70px; aspect-ratio:3/4; border-radius:8px; overflow:hidden; border:2px solid #555;">
                             <img src="/images/pets/${comp.pet}" style="width:100%; height:100%; object-fit:cover;">
                         </div>
                         <div class="small text-light fw-bold mt-2">PET</div>
                     </div>`;
-            }
-            document.getElementById('vmContent').innerHTML = html;
-            viewModal.show();
-        }
+                    }
+                    document.getElementById('vmContent').innerHTML = html;
+                    viewModal.show();
+                }
 
-        function exportComp(e, comp) {
-            e.stopPropagation();
-            document.getElementById('capTitle').innerText = comp.team_name;
-            
-            let html = '';
-            for(let i=0; i<3; i++) {
-                let hero = comp.heroes[i];
-                let posClass = 'back';
-                if (comp.formation === '1-4' && i === 1) posClass = 'front';
-                else if (comp.formation === '4-1' && (i === 0 || i === 2)) posClass = 'front';
+                function exportComp(e, comp) {
+                    e.stopPropagation();
+                    document.getElementById('capTitle').innerText = comp.team_name;
 
-                if(hero) {
-                    let heroName = hero.replace(/\.[^/.]+$/, "");
-                    html += `
+                    let html = '';
+                    for (let i = 0; i < 3; i++) {
+                        let hero = comp.heroes[i];
+                        let posClass = 'back';
+                        if (comp.formation === '1-4' && i === 1) posClass = 'front';
+                        else if (comp.formation === '4-1' && (i === 0 || i === 2)) posClass = 'front';
+
+                        if (hero) {
+                            let heroName = hero.replace(/\.[^/.]+$/, "");
+                            html += `
                         <div class="cap-hero-unit ${posClass}">
                             <div class="cap-hero-img-wrapper">
                                 <img src="/images/heroes/${hero}" onload="checkImages()">
                             </div>
                             <div class="cap-skills">`;
-                                [2, 3].forEach(sn => {
-                                    let key = `${i}_${sn}`;
-                                    let order = comp.skill_order.find(o => o.key === key)?.order;
-                                    html += `
+                            [2, 3].forEach(sn => {
+                                let key = `${i}_${sn}`;
+                                let order = comp.skill_order.find(o => o.key === key)?.order;
+                                html += `
                                         <div class="cap-skill-icon ${order ? 'active' : ''}">
                                             <img src="/images/skill/${heroName}/${sn}.png" onerror="this.src='/images/skill/placeholder.png'">
                                             ${order ? `<div class="cap-badge">${order}</div>` : ''}
                                         </div>`;
-                                });
-                    html += `</div></div>`;
-                }
-            }
-             if(comp.pet) {
-                html += `
+                            });
+                            html += `</div></div>`;
+                        }
+                    }
+                    if (comp.pet) {
+                        html += `
                     <div class="cap-pet-unit">
                         <div class="cap-pet-img"><img src="/images/pets/${comp.pet}" style="width:100%; height:100%; object-fit:cover;"></div>
                         <div style="color:#aaa; font-weight:bold; font-size:1.2rem;">PET</div>
                     </div>`;
-            }
+                    }
 
-            document.getElementById('capBody').innerHTML = html;
+                    document.getElementById('capBody').innerHTML = html;
 
-            let loadedImages = 0;
-            window.checkImages = function() { loadedImages++; }
+                    let loadedImages = 0;
+                    window.checkImages = function () { loadedImages++; }
 
-            setTimeout(() => {
-                const capArea = document.getElementById('captureArea');
-                html2canvas(capArea, {
-                    scale: 2,
-                    useCORS: true,
-                    backgroundColor: '#121212'
-                }).then(canvas => {
-                    const link = document.createElement('a');
-                    link.download = `7K-GW-${comp.team_name.replace(/\s+/g, '_')}.png`;
-                    link.href = canvas.toDataURL();
-                    link.click();
-                });
-            }, 500);
-        }
-    </script>
+                    setTimeout(() => {
+                        const capArea = document.getElementById('captureArea');
+                        html2canvas(capArea, {
+                            scale: 2,
+                            useCORS: true,
+                            backgroundColor: '#121212'
+                        }).then(canvas => {
+                            const link = document.createElement('a');
+                            link.download = `7K-GW-${comp.team_name.replace(/\s+/g, '_')}.png`;
+                            link.href = canvas.toDataURL();
+                            link.click();
+                        });
+                    }, 500);
+                }
+            </script>
 </body>
+
 </html>

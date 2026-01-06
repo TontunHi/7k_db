@@ -1,120 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <%- include('../partials/head') %>
-    <style>
-        /* Modern Dark & Gold Theme */
-        body { background-color: #0b0c10; color: #e0e0e0; font-family: 'Kanit', sans-serif; padding-top: 80px; }
-        
-        /* Hero Section */
-        .hero-section {
-            text-align: center; padding: 60px 20px;
-            background: radial-gradient(circle at center, #1f2833 0%, #0b0c10 70%);
-            margin-bottom: 40px;
-        }
-        .hero-title { font-size: 3rem; font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 2px; }
-        .hero-title span { color: #ffc107; text-shadow: 0 0 20px rgba(255, 193, 7, 0.5); }
-        .hero-subtitle { color: #888; font-size: 1.1rem; max-width: 600px; margin: 10px auto; }
-
-        /* Grid Navigation */
-        .nav-card {
-            background: #15191d; border: 1px solid #333; border-radius: 16px;
-            padding: 30px 20px; text-align: center; text-decoration: none; color: inherit;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            height: 100%; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            position: relative; overflow: hidden;
-        }
-        
-        /* Hover Effects */
-        .nav-card:hover {
-            transform: translateY(-10px);
-            border-color: #ffc107;
-            background: #1e2329;
-            box-shadow: 0 10px 30px rgba(255, 193, 7, 0.15);
-        }
-        
-        .card-icon {
-            font-size: 3rem; margin-bottom: 15px; color: #666; transition: 0.3s;
-        }
-        .nav-card:hover .card-icon { color: #ffc107; transform: scale(1.1); }
-        
-        .card-title { font-size: 1.25rem; font-weight: 700; color: #fff; margin-bottom: 5px; }
-        .card-desc { font-size: 0.9rem; color: #777; }
-
-        /* Icon Background Decor */
-        .nav-card::before {
-            content: ''; position: absolute; top: -50px; right: -50px;
-            width: 100px; height: 100px; background: rgba(255, 193, 7, 0.05);
-            border-radius: 50%; filter: blur(20px); transition: 0.5s;
-        }
-        .nav-card:hover::before { transform: scale(3); opacity: 0.2; }
-
-    </style>
+        <link rel="stylesheet" href="/css/pages/index.css">
 </head>
+
 <body>
 
     <%- include('../partials/navbar') %>
 
-    <div class="hero-section">
-        <h1 class="hero-title">7K <span>Rebirth</span></h1>
-        <p class="hero-subtitle">Comprehensive Database, Strategy Guides, and Tier List for Seven Knights Rebirth.</p>
-    </div>
-
-    <div class="container pb-5">
-        <div class="row g-4">
-            
-            <div class="col-md-6 col-lg-4">
-                <a href="/tierlist" class="nav-card">
-                    <i class="bi bi-trophy-fill card-icon"></i>
-                    <div class="card-title">Tier List</div>
-                    <div class="card-desc">Rankings for PVE & PVP modes</div>
-                </a>
-            </div>
-
-            <div class="col-md-6 col-lg-4">
-                <a href="/build/legendary" class="nav-card">
-                    <i class="bi bi-hammer card-icon"></i>
-                    <div class="card-title">Hero Builds</div>
-                    <div class="card-desc">Equipment guides for Legendary & Rare</div>
-                </a>
-            </div>
-
-            <div class="col-md-6 col-lg-4">
-                <a href="/codex/hero" class="nav-card">
-                    <i class="bi bi-book-half card-icon"></i>
-                    <div class="card-title">Codex</div>
-                    <div class="card-desc">Full database of Heroes and Pets</div>
-                </a>
-            </div>
-
-            <div class="col-md-6 col-lg-4">
-                <a href="/raid" class="nav-card">
-                    <i class="bi bi-crosshair card-icon"></i>
-                    <div class="card-title">Raid Boss</div>
-                    <div class="card-desc">Teams & formations for Raid Bosses</div>
-                </a>
-            </div>
-
-            <div class="col-md-6 col-lg-4">
-                <a href="/castle-rush" class="nav-card">
-                    <i class="bi bi-shield-shaded card-icon"></i>
-                    <div class="card-title">Castle Rush</div>
-                    <div class="card-desc">Daily guides for CR (Mon - Sun)</div>
-                </a>
-            </div>
-
-            <div class="col-md-6 col-lg-4">
-                <a href="/comp/stage" class="nav-card">
-                    <i class="bi bi-map-fill card-icon"></i>
-                    <div class="card-title">Compositions</div>
-                    <div class="card-desc">Adventure, Dungeon, and Guild War</div>
-                </a>
-            </div>
-
+        <div class="hero-section">
+            <h1 class="hero-title">7K <span>Rebirth</span></h1>
+            <p class="hero-subtitle">Comprehensive Database, Strategy Guides, and Tier List for Seven Knights Rebirth.
+            </p>
         </div>
-    </div>
 
-    <%- include('../partials/footer') %>
+        <div class="container pb-5">
+            <div class="row g-4">
+
+                <div class="col-md-6 col-lg-4">
+                    <a href="/tierlist" class="nav-card">
+                        <i class="bi bi-trophy-fill card-icon"></i>
+                        <div class="card-title">Tier List</div>
+                        <div class="card-desc">Rankings for PVE & PVP modes</div>
+                    </a>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <a href="/build/legendary" class="nav-card">
+                        <i class="bi bi-hammer card-icon"></i>
+                        <div class="card-title">Hero Builds</div>
+                        <div class="card-desc">Equipment guides for Legendary & Rare</div>
+                    </a>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <a href="/codex/hero" class="nav-card">
+                        <i class="bi bi-book-half card-icon"></i>
+                        <div class="card-title">Codex</div>
+                        <div class="card-desc">Full database of Heroes and Pets</div>
+                    </a>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <a href="/raid" class="nav-card">
+                        <i class="bi bi-crosshair card-icon"></i>
+                        <div class="card-title">Raid Boss</div>
+                        <div class="card-desc">Teams & formations for Raid Bosses</div>
+                    </a>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <a href="/castle-rush" class="nav-card">
+                        <i class="bi bi-shield-shaded card-icon"></i>
+                        <div class="card-title">Castle Rush</div>
+                        <div class="card-desc">Daily guides for CR (Mon - Sun)</div>
+                    </a>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <a href="/comp/stage" class="nav-card">
+                        <i class="bi bi-map-fill card-icon"></i>
+                        <div class="card-title">Compositions</div>
+                        <div class="card-desc">Adventure, Dungeon, and Guild War</div>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
+        <%- include('../partials/footer') %>
 
 </body>
+
 </html>

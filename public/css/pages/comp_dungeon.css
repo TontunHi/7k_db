@@ -1,0 +1,303 @@
+        body {
+            background-color: #0f0f0f;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .page-title-box {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* --- Compact Card --- */
+        .dungeon-card {
+            background: #161616;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            border: 1px solid #333;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .dungeon-banner-box {
+            position: relative;
+            width: 100%;
+            height: auto;
+            min-height: 50px;
+            border-bottom: 1px solid #2a2a2a;
+            line-height: 0;
+        }
+
+        .dungeon-banner-img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* --- Team Row (Interactive) --- */
+        .team-row {
+            padding: 10px 15px;
+            border-bottom: 1px solid #222;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            transition: background 0.2s;
+            position: relative;
+        }
+
+        .team-row:last-child {
+            border-bottom: none;
+        }
+
+        .team-row:hover {
+            background: #1f1f1f;
+        }
+
+        .team-clickable {
+            display: flex;
+            flex-grow: 1;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+        }
+
+        .formation-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 45px;
+            opacity: 0.9;
+        }
+
+        .formation-info img {
+            width: 25px;
+            margin-bottom: 2px;
+        }
+
+        .formation-info span {
+            font-size: 0.65rem;
+            color: #888;
+            font-weight: bold;
+        }
+
+        .heroes-container {
+            flex-grow: 1;
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            min-height: 50px;
+        }
+
+        .hero-slot {
+            width: 40px;
+            aspect-ratio: 3/4;
+            background: #000;
+            border: 2px solid #ef9a9a;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .hero-slot img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .hero-slot.is-front {
+            border-color: #90caf9;
+            transform: translateY(-6px);
+            box-shadow: 0 3px 10px rgba(144, 202, 249, 0.15);
+            z-index: 2;
+        }
+
+        .desc-box {
+            background: rgba(255, 107, 107, 0.08);
+            border-left: 2px solid #ff6b6b;
+            padding: 4px 10px;
+            border-radius: 0 4px 4px 0;
+            font-size: 0.75rem;
+            color: #ffadad;
+            max-width: 300px;
+        }
+
+        .btn-export {
+            background: #222;
+            color: #fff;
+            border: 1px solid #444;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+            cursor: pointer;
+            margin-left: auto;
+            font-size: 0.8rem;
+            z-index: 10;
+        }
+
+        .btn-export:hover {
+            background: #ff6b6b;
+            color: #000;
+            border-color: #ff6b6b;
+        }
+
+        /* --- View Modal Styles --- */
+        .modal-content {
+            background: #1a1a1a;
+            border: 1px solid #444;
+            color: #fff;
+        }
+
+        .modal-header {
+            border-bottom: 1px solid #333;
+        }
+
+        .modal-title {
+            font-weight: 800;
+            color: #ff6b6b;
+            text-transform: uppercase;
+        }
+
+        .view-hero-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            padding: 20px 0;
+            align-items: flex-end;
+            min-height: 120px;
+        }
+
+        .view-hero-slot {
+            width: 70px;
+            aspect-ratio: 3/4;
+            background: #000;
+            border: 3px solid #ef9a9a;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            transition: transform 0.3s;
+        }
+
+        .view-hero-slot img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .view-hero-slot.v-front {
+            border-color: #90caf9;
+            transform: translateY(-20px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+            z-index: 5;
+        }
+
+        .view-desc {
+            background: #222;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            color: #ccc;
+            font-style: italic;
+            border-left: 4px solid #ff6b6b;
+            margin-top: 10px;
+        }
+
+        /* --- Capture Canvas --- */
+        #captureArea {
+            position: fixed;
+            top: -9999px;
+            left: -9999px;
+            width: 1420px;
+            background: #121212;
+            padding: 0;
+            z-index: -9999;
+        }
+
+        .capture-banner {
+            width: 100%;
+            height: auto;
+            border-bottom: 4px solid #ff6b6b;
+            position: relative;
+            z-index: 1;
+            line-height: 0;
+            display: block;
+        }
+
+        .capture-banner img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .capture-body {
+            padding: 80px 50px 60px 50px;
+            background: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            align-items: flex-end;
+            position: relative;
+            z-index: 50;
+        }
+
+        .capture-desc {
+            background: #1a1a1a;
+            color: #d0d0d0;
+            padding: 0 80px 40px 80px;
+            text-align: center;
+            font-size: 1.8rem;
+            font-style: italic;
+            position: relative;
+            z-index: 50;
+        }
+
+        .capture-hero {
+            width: 140px;
+            aspect-ratio: 3/4;
+            border: 4px solid #ef9a9a;
+            border-radius: 12px;
+            position: relative;
+            z-index: 2;
+            background: #000;
+        }
+
+        .capture-hero img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+            position: relative;
+            z-index: 5;
+            display: block;
+        }
+
+        .capture-hero.front {
+            border-color: #90caf9;
+            top: -50px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            z-index: 100 !important;
+        }
+
+        .capture-footer {
+            padding: 20px;
+            text-align: center;
+            font-size: 1.2rem;
+            color: #555;
+            background: #121212;
+            position: relative;
+            z-index: 10;
+        }

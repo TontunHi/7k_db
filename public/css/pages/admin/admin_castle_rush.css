@@ -1,0 +1,444 @@
+        /* --- Base Theme --- */
+        body {
+            background-color: #0f0f0f;
+            color: #e0e0e0;
+            padding-top: 80px;
+            font-family: 'Kanit', sans-serif;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 3px;
+        }
+
+        /* Navbar */
+        .navbar-modern {
+            height: 64px;
+            background: rgba(18, 18, 18, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1050;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-brand-text {
+            font-weight: 700;
+            color: #fff;
+            font-size: 1.1rem;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.05);
+            color: #ccc;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        /* Stage Card */
+        .stage-card {
+            background: #1f2833;
+            border: 1px solid #45a29e;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: 0.3s;
+            cursor: pointer;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stage-card:hover {
+            transform: translateY(-8px);
+            border-color: #ffc107;
+            box-shadow: 0 10px 25px rgba(255, 193, 7, 0.2);
+        }
+
+        .stage-img-wrapper {
+            aspect-ratio: 1088 / 3872;
+            overflow: hidden;
+            border-bottom: 1px solid #333;
+            background-color: #15191d;
+        }
+
+        .stage-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: 0.3s;
+        }
+
+        .stage-card:hover .stage-img-wrapper img {
+            transform: scale(1.05);
+        }
+
+        .stage-info {
+            padding: 15px;
+            text-align: center;
+            background: #15191d;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stage-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #fff;
+            text-transform: uppercase;
+            margin: 0;
+        }
+
+        /* --- Compact Card Design --- */
+        .page-header {
+            background: #1f2833;
+            padding: 20px 0;
+            border-bottom: 1px solid #45a29e;
+            margin-bottom: 30px;
+        }
+
+        .team-comp-card {
+            background: #15191d;
+            border: 1px solid #2f3a46;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .comp-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .comp-title {
+            color: #ffc107;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .comp-meta {
+            color: #aaa;
+            font-size: 0.85rem;
+        }
+
+        .comp-meta span {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .comp-body {
+            background: #0b0c10;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 30px 10px 10px 10px;
+            position: relative;
+            background-image: radial-gradient(#1f2833 1px, transparent 1px);
+            background-size: 15px 15px;
+            min-height: 140px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .hero-row {
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+            justify-content: center;
+        }
+
+        .hero-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            width: 50px;
+        }
+
+        .hero-slot-visual {
+            width: 50px;
+            height: 66px;
+            background: #000;
+            border-radius: 4px;
+            border: 2px solid #444;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+            z-index: 1;
+            transition: 0.2s;
+        }
+
+        .hero-slot-visual img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .slot-front {
+            border-color: #0dcaf0 !important;
+            transform: translateY(-15px);
+            box-shadow: 0 8px 12px rgba(13, 202, 240, 0.25) !important;
+            z-index: 10;
+        }
+
+        .slot-back {
+            border-color: #dc3545 !important;
+        }
+
+        .slot-pet {
+            border-color: #ffc107 !important;
+            box-shadow: 0 0 8px rgba(255, 193, 7, 0.3) !important;
+            margin-left: 10px !important;
+        }
+
+        /* Skills Stack */
+        .skill-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            width: 100%;
+            align-items: center;
+        }
+
+        .skill-node {
+            width: 28px;
+            height: 28px;
+            border: 1px solid #333;
+            border-radius: 4px;
+            background: #000;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .skill-node img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.3;
+            transition: opacity 0.2s;
+        }
+
+        /* Selected State */
+        .skill-node.has-order {
+            border-color: #ffc107;
+            border-width: 1px;
+        }
+
+        .skill-node.has-order img {
+            opacity: 1;
+        }
+
+        /* Number Badge */
+        .skill-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: #ffc107;
+            color: #000;
+            font-size: 8px;
+            font-weight: 800;
+            width: 12px;
+            height: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom-left-radius: 3px;
+            z-index: 10;
+            /* Ensure on top */
+        }
+
+        .skill-node.empty-slot {
+            border: 1px dashed #222;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .desc-box {
+            margin-top: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 6px;
+            padding: 8px 12px;
+            color: #ccc;
+            font-size: 0.85rem;
+            border-left: 2px solid #444;
+        }
+
+        /* Modal & Form */
+        .modal-content {
+            background: #121212;
+            border: 1px solid #333;
+        }
+
+        .form-label-modern {
+            color: #888;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .input-modern {
+            background: #000 !important;
+            border: 1px solid #333 !important;
+            color: #fff !important;
+            border-radius: 6px;
+        }
+
+        /* Editor Specifics */
+        .battle-stage {
+            background: #1a1a1a;
+            border-radius: 12px;
+            border: 1px solid #333;
+            padding: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            min-height: 180px;
+        }
+
+        .hero-input-slot {
+            width: 55px;
+            height: 73px;
+            background: #000;
+            border-radius: 4px;
+            border: 2px dashed #444;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            transition: 0.3s;
+        }
+
+        .hero-input-slot:hover {
+            border-color: #fff;
+            transform: scale(1.05);
+        }
+
+        .hero-input-slot img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .formation-wrapper {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .form-select-card {
+            background: #1a1a1a;
+            border: 2px solid #333;
+            border-radius: 8px;
+            padding: 5px;
+            cursor: pointer;
+            width: 80px;
+            text-align: center;
+        }
+
+        .form-select-card.active {
+            border-color: #ffc107;
+            background: rgba(255, 193, 7, 0.05);
+        }
+
+        .form-img {
+            width: 100%;
+            opacity: 0.6;
+        }
+
+        .form-select-card.active .form-img {
+            opacity: 1;
+        }
+
+        /* Editor Skill Matrix */
+        .skill-matrix {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            justify-content: center;
+            padding-bottom: 5px;
+        }
+
+        .hero-col {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .skill-box {
+            width: 32px;
+            height: 32px;
+            border: 1px solid #333;
+            border-radius: 4px;
+            cursor: pointer;
+            overflow: hidden;
+            position: relative;
+            background: #000;
+        }
+
+        .skill-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.5;
+            transition: opacity 0.2s;
+        }
+
+        .skill-box.selected {
+            border: 2px solid #ffc107;
+        }
+
+        .skill-box.selected img {
+            opacity: 1;
+        }
+
+        /* Make sure image is fully visible */
+
+        .picker-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 10px;
+        }
+
+        .pick-item img {
+            width: 100%;
+            aspect-ratio: 3/4;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .pick-item:hover img {
+            border: 2px solid #ffc107;
+        }

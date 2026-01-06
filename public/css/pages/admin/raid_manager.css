@@ -1,0 +1,328 @@
+      /* --- Base Theme --- */
+      body {
+          background-color: #0f0f0f;
+          color: #e0e0e0;
+          padding-top: 80px;
+          font-family: "Segoe UI", sans-serif;
+      }
+
+      ::-webkit-scrollbar {
+          width: 6px;
+          height: 6px;
+      }
+
+      ::-webkit-scrollbar-thumb {
+          background: #444;
+          border-radius: 3px;
+      }
+
+      /* --- Admin Navbar Style --- */
+      .navbar-modern {
+          height: 64px;
+          background: rgba(18, 18, 18, 0.95);
+          backdrop-filter: blur(10px);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          z-index: 1050;
+          padding: 0 20px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+      }
+
+      .nav-brand-text {
+          font-weight: 700;
+          color: #fff;
+          font-size: 1.1rem;
+      }
+
+      .nav-btn {
+          background: rgba(255, 255, 255, 0.05);
+          color: #ccc;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          padding: 6px 16px;
+          border-radius: 20px;
+          font-size: 0.85rem;
+          text-decoration: none;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          transition: 0.2s;
+      }
+
+      .nav-btn:hover {
+          background: rgba(255, 255, 255, 0.1);
+          color: #fff;
+      }
+
+      /* --- Raid List (Vertical Banner Style) --- */
+      .raid-list-container {
+          max-width: 900px;
+          margin: 0 auto;
+      }
+
+      .raid-card-vertical {
+          background: #1e1e1e;
+          border: 1px solid #333;
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          padding: 0;
+          margin-bottom: 20px;
+          transition: all 0.2s;
+          position: relative;
+          overflow: hidden;
+          cursor: pointer;
+          height: 120px;
+      }
+
+      .raid-card-vertical:hover {
+          transform: translateY(-3px);
+          border-color: #ffc107;
+          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      }
+
+      .raid-cover-full {
+          width: 200px;
+          height: 100%;
+          object-fit: cover;
+          border-right: 1px solid #333;
+          mask-image: linear-gradient(to right, black 80%, transparent 100%);
+      }
+
+      .raid-info {
+          flex: 1;
+          padding: 20px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+      }
+
+      .raid-title {
+          font-size: 1.5rem;
+          font-weight: 800;
+          color: #fff;
+          margin: 0;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+      }
+
+      .raid-meta {
+          color: #888;
+          font-size: 0.9rem;
+          margin-top: 5px;
+      }
+
+      /* .delete-btn-absolute removed - using flex .raid-actions instead */
+
+      /* --- Team Detail --- */
+      .page-header {
+          background: #161616;
+          padding: 20px 0;
+          border-bottom: 1px solid #333;
+          margin-bottom: 30px;
+      }
+
+      .team-card-item {
+          background: #1e1e1e;
+          border: 1px solid #333;
+          border-radius: 8px;
+          padding: 15px;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          transition: 0.2s;
+      }
+
+      .team-card-item:hover {
+          border-color: #666;
+          background: #222;
+      }
+
+      /* --- MODERN EDITOR MODAL --- */
+      .modal-content {
+          background: #121212;
+          border: 1px solid #333;
+      }
+
+      .form-label-modern {
+          color: #888;
+          font-size: 0.75rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          margin-bottom: 5px;
+      }
+
+      .input-modern {
+          background: #000 !important;
+          border: 1px solid #333 !important;
+          color: #fff !important;
+          border-radius: 6px;
+      }
+
+      /* Formation Selector */
+      .formation-wrapper {
+          display: flex;
+          justify-content: center;
+          gap: 15px;
+          margin-bottom: 25px;
+          flex-wrap: wrap;
+      }
+
+      .form-select-card {
+          background: #1a1a1a;
+          border: 2px solid #333;
+          border-radius: 8px;
+          padding: 8px;
+          cursor: pointer;
+          transition: 0.2s;
+          text-align: center;
+          width: 90px;
+      }
+
+      .form-select-card:hover {
+          border-color: #666;
+          background: #222;
+      }
+
+      .form-select-card.active {
+          border-color: #ffc107;
+          background: rgba(255, 193, 7, 0.05);
+      }
+
+      .form-select-card img {
+          width: 30px;
+          margin-bottom: 5px;
+      }
+
+      .form-select-card span {
+          display: block;
+          font-size: 0.8rem;
+          color: #ccc;
+          font-weight: bold;
+      }
+
+      /* Hero Slots in Modal */
+      .hero-slots-container {
+          display: flex;
+          justify-content: center;
+          gap: 12px;
+          margin-bottom: 25px;
+          padding: 20px 0;
+          background: rgba(255, 255, 255, 0.02);
+          border-radius: 8px;
+      }
+
+      .hero-input-group {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          width: 70px;
+          transition: transform 0.3s;
+      }
+
+      .hero-input-box {
+          width: 65px;
+          height: 65px;
+          background: #080808;
+          border: 1px dashed #444;
+          border-radius: 8px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+          transition: 0.2s;
+          overflow: hidden;
+      }
+
+      .hero-input-box:hover {
+          border-color: #ffc107;
+          background: #161616;
+      }
+
+      .hero-input-box img.hero-thumb {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+      }
+
+      /* Front/Back positioning visual */
+      .hero-input-group.is-front {
+          transform: translateY(-15px);
+      }
+
+      .hero-input-group.is-front .hero-input-box {
+          border-style: solid;
+          border-color: #90caf9;
+          box-shadow: 0 4px 10px rgba(144, 202, 249, 0.2);
+      }
+
+      .hero-input-group.is-back .hero-input-box {
+          border-style: solid;
+          border-color: #ef9a9a;
+      }
+
+      /* Picker */
+      .hero-picker-grid,
+      .pet-picker-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+          gap: 10px;
+          max-height: 300px;
+          overflow-y: auto;
+          padding: 5px;
+      }
+
+      .picker-item {
+          aspect-ratio: 1;
+          background: #000;
+          border: 1px solid #333;
+          border-radius: 6px;
+          cursor: pointer;
+          overflow: hidden;
+      }
+
+      .picker-item:hover {
+          border-color: #ffc107;
+      }
+
+      .picker-item img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+      }
+
+      .skill-priority-container {
+          display: flex;
+          gap: 10px;
+          overflow-x: auto;
+          padding-bottom: 5px;
+      }
+
+      .skill-prio-slot {
+          min-width: 50px;
+          height: 50px;
+          border: 1px dashed #444;
+          border-radius: 6px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          background: #080808;
+      }
+
+      .skill-prio-slot:hover {
+          border-color: #ffc107;
+      }
+
+      .skill-prio-slot img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          border-radius: 6px;
+      }

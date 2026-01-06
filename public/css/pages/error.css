@@ -1,0 +1,30 @@
+            body {
+                background-color: #0b0c10;
+                color: #fff;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                height: 100vh;
+                text-align: center;
+            }
+
+            .error-container {
+                padding: 40px;
+                border: 1px solid #45a29e;
+                border-radius: 10px;
+                background: #1f2833;
+            }
+
+            h1 {
+                color: #ffc107;
+                font-size: 3rem;
+            }
+
+            p {
+                font-size: 1.2rem;
+                color: #c5c6c7;
+            }
+
+            .btn-home {
+                margin-top: 20px;
+            }

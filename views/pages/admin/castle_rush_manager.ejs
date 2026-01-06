@@ -1,689 +1,181 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <%- include('../../partials/head') %>
-        <style>
-            /* --- Base Theme --- */
-            body {
-                background-color: #0f0f0f;
-                color: #e0e0e0;
-                padding-top: 80px;
-                font-family: 'Kanit', sans-serif;
-            }
-
-            ::-webkit-scrollbar {
-                width: 6px;
-                height: 6px;
-            }
-
-            ::-webkit-scrollbar-thumb {
-                background: #444;
-                border-radius: 3px;
-            }
-
-            /* --- Admin Navbar --- */
-            .navbar-modern {
-                height: 64px;
-                background: rgba(18, 18, 18, 0.95);
-                backdrop-filter: blur(10px);
-                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                z-index: 1050;
-                padding: 0 20px;
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-            }
-
-            .nav-brand-text {
-                font-weight: 700;
-                color: #fff;
-                font-size: 1.1rem;
-            }
-
-            .nav-btn {
-                background: rgba(255, 255, 255, 0.05);
-                color: #ccc;
-                border: 1px solid rgba(255, 255, 255, 0.1);
-                padding: 6px 16px;
-                border-radius: 20px;
-                font-size: 0.85rem;
-                text-decoration: none;
-                display: inline-flex;
-                align-items: center;
-                gap: 6px;
-                transition: 0.2s;
-            }
-
-            .nav-btn:hover {
-                background: rgba(255, 255, 255, 0.1);
-                color: #fff;
-            }
-
-            /* --- Stage Card (Landscape) --- */
-            .stage-card {
-                background: #1f2833;
-                border: 1px solid #45a29e;
-                border-radius: 12px;
-                overflow: hidden;
-                transition: 0.3s;
-                cursor: pointer;
-                position: relative;
-                height: 100%;
-                display: flex;
-                flex-direction: column;
-            }
-
-            .stage-card:hover {
-                transform: translateY(-8px);
-                border-color: #ffc107;
-                box-shadow: 0 10px 25px rgba(255, 193, 7, 0.2);
-            }
-
-            .stage-img-wrapper {
-                aspect-ratio: 1088 / 3872;
-                overflow: hidden;
-                border-bottom: 1px solid #333;
-                background-color: #15191d;
-            }
-
-            .stage-img-wrapper img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-                transition: 0.3s;
-            }
-
-            .stage-card:hover .stage-img-wrapper img {
-                transform: scale(1.05);
-            }
-
-            .stage-info {
-                padding: 15px;
-                text-align: center;
-                background: #15191d;
-                flex: 1;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-
-            .stage-name {
-                font-size: 1.1rem;
-                font-weight: 700;
-                color: #fff;
-                text-transform: uppercase;
-                margin: 0;
-            }
-
-            /* --- Detail & Team Card (Ported from Public) --- */
-            .page-header {
-                background: #1f2833;
-                padding: 20px 0;
-                border-bottom: 1px solid #45a29e;
-                margin-bottom: 30px;
-            }
-
-            .team-comp-card {
-                background: #15191d;
-                border: 1px solid #2f3a46;
-                border-radius: 12px;
-                padding: 15px;
-                /* Reduced padding */
-                margin-bottom: 30px;
-                display: flex;
-                flex-direction: column;
-                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            }
-
-            .comp-title {
-                color: #ffc107;
-                font-weight: 700;
-                font-size: 1.25rem;
-                margin-bottom: 5px;
-            }
-
-            .comp-meta {
-                color: #aaa;
-                font-size: 0.9rem;
-                display: flex;
-                gap: 10px;
-                align-items: center;
-            }
-
-            .comp-meta span {
-                color: #fff;
-            }
-
-            /* Battle Field (Formation) */
-            .battle-field {
-                background: #0b0c10;
-                border-radius: 12px;
-                border: 2px solid #2f3a46;
-                padding: 30px 10px 15px 10px;
-                /* Reduced padding */
-                margin: 20px 0;
-                /* Reduced margin */
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                min-height: 150px;
-                /* Reduced min-height */
-                background-image: radial-gradient(#1f2833 1px, transparent 1px);
-                background-size: 15px 15px;
-                overflow: visible;
-
-            }
-
-            .hero-row {
-                display: flex;
-                gap: 8px;
-                align-items: center;
-                justify-content: center;
-                position: relative;
-                flex-wrap: nowrap;
-                /* Force single row */
-                max-width: 100%;
-            }
-
-            .hero-slot-visual {
-                width: 60px;
-                height: 80px;
-                /* 3:4 Ratio */
-                background: #000;
-                border-radius: 6px;
-                border: 2px solid #444;
-                overflow: hidden;
-                /* Prevent overflow */
-                position: relative;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-                z-index: 1;
-                transition: 0.2s;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-
-            /* Editor uses Input Slot style but we map to visual */
-            .hero-input-slot {
-                width: 60px;
-                height: 80px;
-                /* 3:4 Ratio */
-                background: #000;
-                border-radius: 6px;
-                border: 2px dashed #444;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                cursor: pointer;
-                position: relative;
-                transition: 0.3s;
-                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-            }
-
-            .hero-input-slot:hover {
-                border-color: #fff;
-                transform: scale(1.05);
-                z-index: 10;
-            }
-
-            .hero-slot-visual img,
-            .hero-input-slot img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-            }
-
-            .slot-front {
-                border-color: #0dcaf0 !important;
-                transform: translateY(-25px);
-                box-shadow: 0 10px 15px rgba(13, 202, 240, 0.3) !important;
-                z-index: 10;
-            }
-
-            .slot-back {
-                border-color: #dc3545 !important;
-                z-index: 1;
-                opacity: 0.9;
-            }
-
-            /* Skill Nodes */
-            .skill-section-title {
-                font-size: 0.85rem;
-                font-weight: 700;
-                color: #888;
-                text-transform: uppercase;
-                margin-bottom: 10px;
-                border-left: 3px solid #ffc107;
-                padding-left: 10px;
-            }
-
-            .skill-section-container {
-                background: #0f1216;
-                border: 1px solid #333;
-                border-radius: 8px;
-                padding: 10px;
-                display: flex;
-                flex-direction: column;
-                gap: 6px;
-                align-items: center;
-            }
-
-            .skill-fixed-row {
-                display: flex;
-                gap: 8px;
-                justify-content: center;
-            }
-
-            .skill-node {
-                position: relative;
-                width: 40px;
-                height: 40px;
-                border-radius: 6px;
-                border: 1px solid #444;
-                overflow: hidden;
-                background: #000;
-                flex-shrink: 0;
-            }
-
-            .skill-node.empty-slot {
-                background: transparent;
-                border-color: transparent;
-            }
-
-            .skill-node img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-                opacity: 0.6;
-            }
-
-            .skill-node.has-order {
-                border-color: #ffc107;
-                box-shadow: 0 0 5px rgba(255, 193, 7, 0.3);
-            }
-
-            .skill-node.has-order img {
-                opacity: 1;
-            }
-
-            .skill-badge {
-                position: absolute;
-                top: 0;
-                right: 0;
-                background: #ffc107;
-                color: #000;
-                font-size: 10px;
-                font-weight: 800;
-                width: 16px;
-                height: 16px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                border-bottom-left-radius: 4px;
-                z-index: 2;
-            }
-
-            /* Description */
-            .desc-box {
-                background: rgba(255, 255, 255, 0.05);
-                border-radius: 8px;
-                padding: 10px;
-                color: #ddd;
-                font-size: 0.9rem;
-                margin-top: 15px;
-                border-left: 3px solid #ffc107;
-            }
-
-            /* --- EDITOR MODAL --- */
-            .modal-content {
-                background: #121212;
-                border: 1px solid #333;
-            }
-
-            .form-label-modern {
-                color: #888;
-                font-size: 0.75rem;
-                font-weight: 700;
-                text-transform: uppercase;
-                letter-spacing: 1px;
-                margin-bottom: 5px;
-            }
-
-            .input-modern {
-                background: #000 !important;
-                border: 1px solid #333 !important;
-                color: #fff !important;
-                border-radius: 6px;
-            }
-
-            /* Battle Stage (Editor) */
-            .battle-stage {
-                background: #1a1a1a;
-                border-radius: 12px;
-                border: 1px solid #333;
-                padding: 40px 20px;
-                margin-bottom: 20px;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                min-height: 220px;
-                position: relative;
-                background-image: radial-gradient(#2a2a2a 1px, transparent 1px);
-                background-size: 20px 20px;
-                gap: 10px;
-            }
-
-            /* Formation Selector */
-            .formation-wrapper {
-                display: flex;
-                justify-content: center;
-                gap: 15px;
-                margin-bottom: 25px;
-                flex-wrap: wrap;
-            }
-
-            .form-select-card {
-                background: #1a1a1a;
-                border: 2px solid #333;
-                border-radius: 8px;
-                padding: 8px;
-                cursor: pointer;
-                transition: 0.2s;
-                text-align: center;
-                width: 90px;
-            }
-
-            .form-select-card.active {
-                border-color: #ffc107;
-                background: rgba(255, 193, 7, 0.05);
-            }
-
-            .form-img {
-                width: 100%;
-                opacity: 0.6;
-            }
-
-            .form-select-card.active .form-img {
-                opacity: 1;
-            }
-
-            .form-select-card.active .form-name {
-                color: #ffc107;
-            }
-
-            .form-name {
-                color: #aaa;
-                font-weight: bold;
-                font-size: 0.8rem;
-            }
-
-            /* Skill Matrix Editor */
-            .skill-section {
-                background: #000;
-                border: 1px solid #333;
-                border-radius: 8px;
-                padding: 15px;
-            }
-
-            .skill-matrix {
-                display: flex;
-                gap: 12px;
-                overflow-x: auto;
-                padding-bottom: 5px;
-                justify-content: center;
-            }
-
-            .hero-col {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: 4px;
-            }
-
-            .skill-box {
-                width: 35px;
-                height: 35px;
-                border: 1px solid #333;
-                border-radius: 4px;
-                cursor: pointer;
-                position: relative;
-                overflow: hidden;
-            }
-
-            .skill-box img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-                opacity: 0.5;
-            }
-
-            .skill-box.selected {
-                border: 2px solid #ffc107;
-            }
-
-            .skill-box.selected img {
-                opacity: 1;
-            }
-
-            .order-badge {
-                position: absolute;
-                top: 0;
-                right: 0;
-                background: #ffc107;
-                color: #000;
-                width: 14px;
-                height: 14px;
-                font-size: 9px;
-                font-weight: bold;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-
-            /* Picker */
-            .picker-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-                gap: 10px;
-            }
-
-            .pick-item img {
-                width: 100%;
-                aspect-ratio: 3/4;
-                object-fit: cover;
-                border-radius: 6px;
-                border: 2px solid transparent;
-            }
-
-            .pick-item:hover img {
-                border-color: #ffc107;
-                transform: scale(1.05);
-            }
-        </style>
-</head>
-
-<body class="text-light">
-
-    <nav class="navbar-modern">
-        <div class="d-flex align-items-center gap-3">
-            <img src="/images/about_website/logo_seven_knights_rebirth.png" alt="Logo" style="height: 40px;">
-            <span class="nav-brand-text">7K Rebirth <span style="font-weight:400; opacity:0.7;">| Admin</span></span>
-        </div>
-        <div class="d-flex align-items-center gap-3">
-            <a href="/admin/dashboard" class="nav-btn"><i class="bi bi-grid-fill"></i> Dashboard</a>
-            <a href="/admin/logout" class="nav-btn"><i class="bi bi-box-arrow-right"></i> Logout</a>
-        </div>
-    </nav>
-
-    <% if (viewState==='list' ) { %>
-        <div class="container py-5">
-            <h2 class="text-white fw-bold mb-5 text-center text-uppercase" style="letter-spacing: 2px;">
-                <i class="bi bi-shield-shaded me-2 text-warning"></i>Castle Rush Manager
-            </h2>
-
-            <div class="row g-4 justify-content-center">
-                <% stages.forEach(stage=> { %>
-                    <div class="col-6 col-md-4 col-xl-3">
-                        <div class="stage-card"
-                            onclick="window.location.href='/admin/manage/castle-rush?stage_key=<%= stage.key %>'">
-                            <div class="stage-img-wrapper">
-                                <img src="/images/castle_rush/<%= stage.img %>"
-                                    onerror="this.src='https://via.placeholder.com/300x170?text=No+Image'">
-                            </div>
-                            <div class="stage-info">
-                                <h5 class="stage-name">
-                                    <%= stage.name %>
-                                </h5>
-                            </div>
-                        </div>
-                    </div>
-                    <% }) %>
+<%- include('../../partials/head') %>
+    <link rel="stylesheet" href="/css/pages/admin/admin_castle_rush.css">
+
+    <body class="text-light">
+        <nav class="navbar-modern">
+            <div class="d-flex align-items-center gap-3">
+                <img src="/images/about_website/logo_seven_knights_rebirth.png" alt="Logo" style="height: 40px;">
+                <span class="nav-brand-text">7K Rebirth <span style="font-weight:400; opacity:0.7;">|
+                        Admin</span></span>
             </div>
-        </div>
+            <div class="d-flex align-items-center gap-3">
+                <a href="/admin/dashboard" class="nav-btn"><i class="bi bi-grid-fill"></i> Dashboard</a>
+                <a href="/admin/logout" class="nav-btn"><i class="bi bi-box-arrow-right"></i> Logout</a>
+            </div>
+        </nav>
 
-        <% } else { %>
-            <div class="page-header">
-                <div class="container d-flex justify-content-between align-items-center">
-                    <div class="d-flex align-items-center gap-3">
-                        <a href="/admin/manage/castle-rush" class="btn btn-outline-secondary rounded-circle"
-                            style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;"><i
-                                class="bi bi-arrow-left"></i></a>
-                        <div class="d-flex align-items-center gap-3">
-                            <img src="/images/castle_rush/<%= activeStage.img %>"
-                                style="width:50px;height:50px;border-radius:8px;object-fit:cover;border:1px solid #444;">
-                            <h3 class="m-0 fw-bold text-white">
-                                <%= activeStage.name %>
-                            </h3>
+        <% if (viewState==='list' ) { %>
+            <div class="container py-5">
+                <h2 class="text-white fw-bold mb-4 text-center text-uppercase" style="letter-spacing: 2px;">
+                    <i class="bi bi-shield-shaded me-2 text-warning"></i>Castle Rush Manager
+                </h2>
+                <div class="row g-4 justify-content-center">
+                    <% stages.forEach(stage=> { %>
+                        <div class="col-6 col-md-4 col-xl-3">
+                            <div class="stage-card"
+                                onclick="window.location.href='/admin/manage/castle-rush?stage_key=<%= stage.key %>'">
+                                <div class="stage-img-wrapper">
+                                    <img src="/images/castle_rush/<%= stage.img %>"
+                                        onerror="this.src='https://via.placeholder.com/300x170?text=No+Image'">
+                                </div>
+                                <div class="stage-info">
+                                    <h5 class="stage-name">
+                                        <%= stage.name %>
+                                    </h5>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <button class="btn btn-warning px-4 fw-bold rounded-pill shadow-sm" onclick="openEditor()">
-                        <i class="bi bi-plus-lg me-2"></i>Add Team
-                    </button>
+                        <% }) %>
                 </div>
             </div>
-
-            <div class="container">
-                <div class="row g-3">
-                    <% if(teams.length===0) { %>
-                        <div class="col-12 text-center py-5 text-muted border border-dashed border-secondary rounded">
-                            <h5>No teams created for this day.</h5>
+            <% } else { %>
+                <div class="page-header">
+                    <div class="container d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center gap-3">
+                            <a href="/admin/manage/castle-rush" class="btn btn-outline-secondary rounded-circle"
+                                style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;"><i
+                                    class="bi bi-arrow-left"></i></a>
+                            <div class="d-flex align-items-center gap-3">
+                                <img src="/images/castle_rush/<%= activeStage.img %>"
+                                    style="width:50px;height:50px;border-radius:8px;object-fit:cover;border:1px solid #444;">
+                                <h3 class="m-0 fw-bold text-white">
+                                    <%= activeStage.name %>
+                                </h3>
+                            </div>
                         </div>
-                        <% } %>
-                            <% teams.forEach(team=> { %>
-                                <div class="col-xl-6">
-                                    <div class="team-comp-card">
-                                        <div class="d-flex justify-content-between align-items-start mb-2">
-                                            <div>
-                                                <div class="comp-title">
-                                                    <%= team.team_name || 'Team Guide' %>
+                        <button class="btn btn-warning px-4 fw-bold rounded-pill shadow-sm" onclick="openEditor()">
+                            <i class="bi bi-plus-lg me-2"></i>Add Team
+                        </button>
+                    </div>
+                </div>
+
+                <div class="container">
+                    <div class="row g-3">
+                        <% if(teams.length===0) { %>
+                            <div
+                                class="col-12 text-center py-5 text-muted border border-dashed border-secondary rounded">
+                                <h5>No teams created for this day.</h5>
+                            </div>
+                            <% } %>
+
+                                <% teams.forEach(team=> { %>
+                                    <div class="col-xl-6">
+                                        <div class="team-comp-card">
+                                            <div class="comp-header">
+                                                <div>
+                                                    <div class="comp-title">
+                                                        <%= team.team_name || 'Team Guide' %>
+                                                    </div>
+                                                    <div class="comp-meta">Formation: <span>
+                                                            <%= team.formation %>
+                                                        </span></div>
                                                 </div>
-                                                <div class="comp-meta">
-                                                    Formation: <span>
-                                                        <%= team.formation %>
-                                                    </span>
+                                                <div class="d-flex gap-2">
+                                                    <button class="btn btn-sm btn-outline-warning"
+                                                        data-team='<%- JSON.stringify(team).replace(/' /g, "&#39;" ) %>'
+                                                        onclick="editTeam(JSON.parse(this.dataset.team))">
+                                                        <i class="bi bi-pencil-fill"></i>
+                                                    </button>
+                                                    <form action="/admin/api/castle-rush/delete_team" method="POST"
+                                                        onsubmit="return confirm('Delete team?');">
+                                                        <input type="hidden" name="id" value="<%= team.id %>">
+                                                        <input type="hidden" name="stage_key"
+                                                            value="<%= activeStage.key %>">
+                                                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger"><i
+                                                                class="bi bi-trash"></i></button>
+                                                    </form>
                                                 </div>
                                             </div>
-                                            <div class="d-flex gap-2">
-                                                <button class="btn btn-sm btn-outline-warning"
-                                                    data-team='<%- JSON.stringify(team).replace(/' /g, "&#39;" ) %>'
-                                                    onclick="editTeam(JSON.parse(this.dataset.team))">
-                                                    <i class="bi bi-pencil-fill"></i>
-                                                </button>
-                                                <form action="/admin/api/castle-rush/delete_team" method="POST"
-                                                    onsubmit="return confirm('Delete team?');">
-                                                    <input type="hidden" name="id" value="<%= team.id %>">
-                                                    <input type="hidden" name="stage_key"
-                                                        value="<%= activeStage.key %>">
-                                                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger"><i
-                                                            class="bi bi-trash"></i></button>
-                                                </form>
-                                            </div>
-                                        </div>
 
-                                        <div class="battle-field">
-                                            <div class="hero-row">
-                                                <% let slotClasses=['slot-back', 'slot-back' , 'slot-back' , 'slot-back'
-                                                    , 'slot-back' ]; if(team.formation==='1-4' )
-                                                    slotClasses[2]='slot-front' ; else if(team.formation==='2-3' ) {
-                                                    slotClasses[1]='slot-front' ; slotClasses[3]='slot-front' ; } else
-                                                    if(team.formation==='3-2' ) { slotClasses[0]='slot-front' ;
-                                                    slotClasses[2]='slot-front' ; slotClasses[4]='slot-front' ; } else
-                                                    if(team.formation==='4-1' ) { slotClasses[0]='slot-front' ;
-                                                    slotClasses[1]='slot-front' ; slotClasses[3]='slot-front' ;
-                                                    slotClasses[4]='slot-front' ; } %>
-                                                    <% team.hero_ids.forEach((hid, idx)=> { %>
-                                                        <% let h=heroesMap[hid]; %>
-                                                            <div class="hero-slot-visual <%= slotClasses[idx] %>">
-                                                                <% if(h) { %>
-                                                                    <img src="/images/heroes/<%= h.image_name %>">
-                                                                    <% } %>
-                                                            </div>
-                                                            <% }) %>
-
-                                                                <% if(team.pet_id) { %>
-                                                                    <div class="hero-slot-visual slot-back"
-                                                                        style="box-shadow: 0 0 10px rgba(255, 215, 0, 0.3); margin-left: clamp(5px, 2vw, 15px) !important; margin-right: 0 !important; border-color: #ffd700 !important;">
-                                                                        <img src="/images/pets/<%= team.pet_id %>">
-                                                                        <div class="skill-badge"
-                                                                            style="top:-10px; right:50%; transform:translateX(50%); border-radius:4px;">
-                                                                            PET</div>
-                                                                    </div>
-                                            </div>
-                                            <% } %>
-                                        </div>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <div class="skill-section-title">Skill Order</div>
-                                        <div class="skill-section-container">
-                                            <% [2, 3].forEach(sIdx=> { %>
-                                                <div class="skill-fixed-row">
-                                                    <% team.hero_ids.forEach((hid, heroIdx)=> { %>
-                                                        <% let h=heroesMap[hid]; let fileName=`${sIdx}.png`; let
-                                                            orderKey=`${heroIdx}_${fileName}`; let orderIndex=-1;
-                                                            if(team.skill_priority &&
-                                                            team.skill_priority.includes(orderKey)) {
-                                                            orderIndex=team.skill_priority.indexOf(orderKey) + 1; } let
-                                                            exists=(h && h.skills && h.skills.includes(fileName)); %>
-                                                            <% if(h && exists) { %>
-                                                                <% let folder=h.skill_folder ||
-                                                                    h.image_name.replace(/\.[^/.]+$/, "" ); %>
+                                            <div class="comp-body">
+                                                <div class="hero-row">
+                                                    <% let slotClasses=['slot-back', 'slot-back' , 'slot-back'
+                                                        , 'slot-back' , 'slot-back' ]; if(team.formation==='1-4' )
+                                                        slotClasses[2]='slot-front' ; else if(team.formation==='2-3' ) {
+                                                        slotClasses[1]='slot-front' ; slotClasses[3]='slot-front' ; }
+                                                        else if(team.formation==='3-2' ) { slotClasses[0]='slot-front' ;
+                                                        slotClasses[2]='slot-front' ; slotClasses[4]='slot-front' ; }
+                                                        else if(team.formation==='4-1' ) { slotClasses[0]='slot-front' ;
+                                                        slotClasses[1]='slot-front' ; slotClasses[3]='slot-front' ;
+                                                        slotClasses[4]='slot-front' ; } %>
+                                                        <% team.hero_ids.forEach((hid, idx)=> { %>
+                                                            <% let h=heroesMap[hid]; %>
+                                                                <div class="hero-column">
                                                                     <div
-                                                                        class="skill-node <%= orderIndex > 0 ? 'has-order' : '' %>">
-                                                                        <img src="/images/skill/<%= folder %>/<%= fileName %>"
-                                                                            onerror="this.style.opacity='0.1'">
-                                                                        <% if(orderIndex> 0) { %>
-                                                                            <div class="skill-badge">
-                                                                                <%= orderIndex %>
-                                                                            </div>
+                                                                        class="hero-slot-visual <%= slotClasses[idx] %>">
+                                                                        <% if(h) { %> <img
+                                                                                src="/images/heroes/<%= h.image_name %>">
                                                                             <% } %>
                                                                     </div>
-                                                                    <% } else { %>
-                                                                        <div class="skill-node empty-slot"></div>
+                                                                    <div class="skill-stack">
+                                                                        <% [2, 3].forEach(sIdx=> { %>
+                                                                            <% let fileName=`${sIdx}.png`; let
+                                                                                orderKey=`${idx}_${fileName}`; let
+                                                                                orderIndex=-1; if(team.skill_priority &&
+                                                                                team.skill_priority.includes(orderKey))
+                                                                                {
+                                                                                orderIndex=team.skill_priority.indexOf(orderKey)
+                                                                                + 1; } let exists=(h && h.skills &&
+                                                                                h.skills.includes(fileName)); %>
+                                                                                <% if(h && exists) { %>
+                                                                                    <% let folder=h.skill_folder ||
+                                                                                        h.image_name.replace(/\.[^/.]+$/, ""
+                                                                                        ); %>
+                                                                                        <div
+                                                                                            class="skill-node <%= orderIndex > 0 ? 'has-order' : '' %>">
+                                                                                            <img src="/images/skill/<%= folder %>/<%= fileName %>"
+                                                                                                onerror="this.style.opacity='0.1'">
+                                                                                            <% if(orderIndex> 0) { %>
+                                                                                                <div
+                                                                                                    class="skill-badge">
+                                                                                                    <%= orderIndex %>
+                                                                                                </div>
+                                                                                                <% } %>
+                                                                                        </div>
+                                                                                        <% } else { %>
+                                                                                            <div
+                                                                                                class="skill-node empty-slot">
+                                                                                            </div>
+                                                                                            <% } %>
+                                                                                                <% }) %>
+                                                                    </div>
+                                                                </div>
+                                                                <% }) %>
+
+                                                                    <% if(team.pet_id) { %>
+                                                                        <div class="hero-column">
+                                                                            <div class="hero-slot-visual slot-pet">
+                                                                                <img
+                                                                                    src="/images/pets/<%= team.pet_id %>">
+                                                                                <div class="skill-badge"
+                                                                                    style="top:-8px; right:50%; transform:translateX(50%); border-radius:4px;">
+                                                                                    PET</div>
+                                                                            </div>
+                                                                        </div>
                                                                         <% } %>
-                                                                            <% }) %>
                                                 </div>
-                                                <% }) %>
+                                            </div>
+
+                                            <% if(team.description) { %>
+                                                <div class="desc-box">
+                                                    <%= team.description %>
+                                                </div>
+                                                <% } %>
                                         </div>
                                     </div>
-
-                                    <% if(team.description) { %>
-                                        <div class="desc-box">
-                                            <%= team.description %>
-                                        </div>
-                                        <% } %>
-                                </div>
-                </div>
-            </div>
-            <% }) %>
-                </div>
+                                    <% }) %>
+                    </div>
                 </div>
 
                 <div class="modal fade" id="teamEditorModal" tabindex="-1" data-bs-backdrop="static">
@@ -695,7 +187,6 @@
                                     data-bs-dismiss="modal"></button>
                             </div>
                             <div class="modal-body p-4">
-
                                 <div class="row g-3 mb-4">
                                     <div class="col-md-6">
                                         <label class="form-label-modern">Team Name</label>
@@ -723,23 +214,22 @@
                                         <% }) %>
                                 </div>
 
-                                <div class="battle-stage" style="gap:10px;">
+                                <div class="battle-stage">
                                     <% for(let i=1; i<=5; i++) { %>
                                         <div class="hero-input-slot empty slot-back" id="slot-<%= i-1 %>"
                                             data-slot-index="<%= i-1 %>" onclick="openPicker(this.dataset.slotIndex)">
                                             <i class="bi bi-plus-lg"></i>
                                         </div>
                                         <% } %>
-
                                             <div id="petSlot" class="hero-input-slot empty" onclick="openPetPicker()"
                                                 style="border-style:dashed; border-color:#ffc107; position:relative;">
                                                 <span
-                                                    style="position:absolute; top:-20px; font-size: 0.7rem; color:#888; font-weight:bold;">PET</span>
+                                                    style="position:absolute; top:-20px; font-size: 0.6rem; color:#888; font-weight:bold;">PET</span>
                                                 <i class="bi bi-plus-lg text-warning"></i>
                                             </div>
                                 </div>
 
-                                <div class="skill-section mb-3">
+                                <div class="skill-section mb-3 mt-3">
                                     <label class="form-label-modern w-100 text-center mb-3">Skill Priority
                                         Sequence</label>
                                     <div id="skillMatrix" class="skill-matrix">
@@ -767,7 +257,7 @@
                         <div class="modal-content border-secondary">
                             <div class="modal-header border-secondary py-2">
                                 <input type="text" id="heroSearch" class="form-control input-modern form-control-sm"
-                                    placeholder="Search Hero File..." onkeyup="filterHeroes()">
+                                    placeholder="Search Hero..." onkeyup="filterHeroes()">
                                 <button type="button" class="btn-close btn-close-white ms-2"
                                     data-bs-dismiss="modal"></button>
                             </div>
@@ -818,13 +308,10 @@
                     </div>
                 </div>
 
-                <!-- Data Injection -->
                 <script id="heroes-map-data" type="application/json"><%- JSON.stringify(heroesMap || {}) %></script>
                 <script>
-                    // Data
                     const activeStageKey = '<%= activeStage ? activeStage.key : "" %>';
                     const heroesMap = JSON.parse(document.getElementById('heroes-map-data').textContent);
-
                     let currentTeamId = null;
                     let currentFormation = '1-4';
                     let teamSlots = [null, null, null, null, null];
@@ -832,7 +319,6 @@
                     let pickingSlotIndex = -1;
                     let selectedPetId = null;
 
-                    // Editor Logic
                     function openEditor() {
                         currentTeamId = null;
                         document.getElementById('editorTitle').innerText = 'CREATE NEW TEAM';
@@ -840,11 +326,9 @@
                         skillPriority = [];
                         currentFormation = '1-4';
                         selectedPetId = null;
-
                         document.getElementById('editName').value = '';
                         document.getElementById('editYoutube').value = '';
                         document.getElementById('editDesc').value = '';
-
                         updatePetSlotVisual();
                         setFormation('1-4');
                         new bootstrap.Modal(document.getElementById('teamEditorModal')).show();
@@ -854,7 +338,6 @@
                         currentTeamId = team.id;
                         document.getElementById('editorTitle').innerText = 'EDIT TEAM';
                         currentFormation = team.formation || '1-4';
-
                         teamSlots = team.hero_ids.map(hid => {
                             if (!hid) return null;
                             const h = heroesMap[hid];
@@ -862,17 +345,14 @@
                         });
                         skillPriority = team.skill_priority || [];
                         selectedPetId = team.pet_id || null;
-
                         document.getElementById('editName').value = team.team_name || '';
                         document.getElementById('editYoutube').value = team.youtube_link || '';
                         document.getElementById('editDesc').value = team.description || '';
-
                         updatePetSlotVisual();
                         setFormation(currentFormation);
                         new bootstrap.Modal(document.getElementById('teamEditorModal')).show();
                     }
 
-                    // Formation Visuals
                     function setFormation(fmt) {
                         currentFormation = fmt;
                         document.querySelectorAll('.form-select-card').forEach(el => el.classList.remove('active'));
@@ -887,7 +367,6 @@
                             const el = document.getElementById(`slot-${i}`);
                             if (el) el.className = `hero-input-slot ${teamSlots[i] ? '' : 'empty'} slot-back`;
                         }
-
                         let frontIndices = [];
                         switch (currentFormation) {
                             case '1-4': frontIndices = [2]; break;
@@ -895,7 +374,6 @@
                             case '3-2': frontIndices = [0, 2, 4]; break;
                             case '4-1': frontIndices = [0, 1, 3, 4]; break;
                         }
-
                         frontIndices.forEach(idx => {
                             const el = document.getElementById(`slot-${idx}`);
                             if (el) { el.classList.remove('slot-back'); el.classList.add('slot-front'); }
@@ -916,7 +394,6 @@
                         renderSkillMatrix();
                     }
 
-                    // Hero Picker
                     function openPicker(idx) {
                         pickingSlotIndex = idx;
                         document.getElementById('heroSearch').value = '';
@@ -942,61 +419,43 @@
                         const folder = filename.replace(/\.[^/.]+$/, "");
                         teamSlots[pickingSlotIndex] = { id: filename, img: filename, folder: folder };
                         skillPriority = skillPriority.filter(s => !s.startsWith(`${pickingSlotIndex}_`));
-
-                        const modalEl = document.getElementById('heroPickerModal');
-                        const modal = bootstrap.Modal.getInstance(modalEl);
-                        modal.hide();
-
+                        bootstrap.Modal.getInstance(document.getElementById('heroPickerModal')).hide();
                         renderSlots();
                         updateFormationVisuals();
                     }
 
-                    // Skill Matrix
                     function renderSkillMatrix() {
                         const container = document.getElementById('skillMatrix');
                         container.innerHTML = '';
-
                         teamSlots.forEach((h, idx) => {
                             if (!h) return;
-
                             const col = document.createElement('div');
                             col.className = 'hero-col';
-
-                            // Check backend skills data if available
                             let availableSkills = [];
                             if (heroesMap[h.id] && heroesMap[h.id].skills) {
                                 availableSkills = heroesMap[h.id].skills;
                             }
-
-                            // We want slots 2, 3 ONLY (files usually 2.png, 3.png) [Ref req: Only 2 or 3]
                             [2, 3].forEach(i => {
                                 const filename = `${i}.png`;
                                 const val = `${idx}_${filename}`;
-
                                 const exists = availableSkills.includes(filename);
-
                                 const box = document.createElement('div');
                                 box.className = 'skill-box' + (exists ? '' : ' empty-skill');
-
                                 if (exists) {
                                     const pIdx = skillPriority.indexOf(val);
                                     if (pIdx > -1) {
                                         box.classList.add('selected');
-                                        box.innerHTML = `<div class="order-badge">${pIdx + 1}</div>`;
+                                        // [FIX] Use correct class 'skill-badge' to ensure proper styling
+                                        box.innerHTML = `<div class="skill-badge">${pIdx + 1}</div>`;
                                     }
-
                                     const sImg = document.createElement('img');
                                     const folder = h.folder || h.img.replace(/\.[^/.]+$/, "");
                                     sImg.src = `/images/skill/${folder}/${filename}`;
                                     box.appendChild(sImg);
                                     box.onclick = () => toggleSkill(val);
                                 } else {
-                                    // Empty slot
-                                    box.style.opacity = '0.3';
-                                    box.style.cursor = 'default';
-                                    box.style.borderStyle = 'dashed';
+                                    box.style.opacity = '0.3'; box.style.cursor = 'default'; box.style.borderStyle = 'dashed';
                                 }
-
                                 col.appendChild(box);
                             });
                             container.appendChild(col);
@@ -1010,11 +469,9 @@
                         renderSkillMatrix();
                     }
 
-                    // Save Data
                     function saveTeamData() {
                         const finalHeroIds = teamSlots.map(s => s ? s.id : null);
                         if (finalHeroIds.every(id => id === null)) return alert('Add at least one hero!');
-
                         const payload = {
                             id: currentTeamId,
                             stage_key: activeStageKey,
@@ -1026,54 +483,36 @@
                             youtube_link: document.getElementById('editYoutube').value,
                             pet_id: selectedPetId
                         };
-
                         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
                         fetch('/admin/api/castle-rush/save_team', {
                             method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'CSRF-Token': csrfToken
-                            },
+                            headers: { 'Content-Type': 'application/json', 'CSRF-Token': csrfToken },
                             body: JSON.stringify(payload)
-                        })
-                            .then(res => res.json())
-                            .then(data => {
-                                if (data.success) location.reload();
-                                else alert('Error: ' + data.error);
-                            });
+                        }).then(res => res.json()).then(data => {
+                            if (data.success) location.reload();
+                            else alert('Error: ' + data.error);
+                        });
                     }
 
-                    function openPetPicker() {
-                        new bootstrap.Modal(document.getElementById('petPickerModal')).show();
-                    }
-
+                    function openPetPicker() { new bootstrap.Modal(document.getElementById('petPickerModal')).show(); }
                     function selectPet(petId) {
                         selectedPetId = petId;
                         updatePetSlotVisual();
-                        const el = document.getElementById('petPickerModal');
-                        const modal = bootstrap.Modal.getInstance(el);
-                        modal.hide();
+                        bootstrap.Modal.getInstance(document.getElementById('petPickerModal')).hide();
                     }
-
                     function updatePetSlotVisual() {
                         const slot = document.getElementById('petSlot');
                         if (selectedPetId) {
                             slot.innerHTML = `<img src="/images/pets/${selectedPetId}">`;
-                            slot.classList.remove('empty');
-                            slot.style.borderStyle = 'solid';
+                            slot.classList.remove('empty'); slot.style.borderStyle = 'solid';
                         } else {
-                            slot.innerHTML = `
-                                <span style="position:absolute; top:-20px; font-size: 0.7rem; color:#888; font-weight:bold;">PET</span>
-                                <i class="bi bi-plus-lg text-warning"></i>
-                            `;
-                            slot.classList.add('empty');
-                            slot.style.borderStyle = 'dashed';
+                            slot.innerHTML = `<span style="position:absolute; top:-20px; font-size: 0.6rem; color:#888; font-weight:bold;">PET</span><i class="bi bi-plus-lg text-warning"></i>`;
+                            slot.classList.add('empty'); slot.style.borderStyle = 'dashed';
                         }
                     }
                 </script>
                 <% } %>
-
                     <%- include('../../partials/footer') %>
-</body>
+    </body>
 
-</html>
+    </html>
