@@ -57,6 +57,10 @@
                     <a href="/admin/codex/pet" class="btn-action btn-green">
                         <i class="bi bi-android2 me-2"></i> Pet Codex
                     </a>
+
+                    <button onclick="syncHeroes()" class="btn-action btn-outline-info mt-2 text-center d-block w-100">
+                        <i class="bi bi-arrow-repeat me-2"></i> Force Sync Heroes (DB)
+                    </button>
                 </div>
             </div>
 
@@ -172,6 +176,23 @@
 
     <%- include('../../partials/footer') %>
 
+        <script>
+            async function syncHeroes() {
+                if (!confirm("This will scan the 'public/images/heroes' folder and update the database. Continue?")) return;
+
+                try {
+                    const res = await fetch('/admin/api/sync_heroes', { method: 'POST' });
+                    const data = await res.json();
+                    if (data.success) {
+                        alert("Sync Complete! " + data.message);
+                    } else {
+                        alert("Error: " + data.error);
+                    }
+                } catch (e) {
+                    alert("Request Failed: " + e.message);
+                }
+            }
+        </script>
 </body>
 
 </html>

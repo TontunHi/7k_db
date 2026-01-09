@@ -64,6 +64,7 @@ router.get('/codex/pet/delete/:id', adminCodexController.deletePet);
 // Shared Actions (Add Category / Group)
 router.post('/codex/category/add', adminCodexController.addCategory);
 router.post('/codex/group/add', adminCodexController.addGroup);
+router.post('/api/sync_heroes', requireAdmin, adminController.syncHeroes); // [NEW SYNC ROUTE]
 
 // --- RAID MANAGER --- [NEW SECTION]
 router.get('/manage/raid', requireAdmin, raidController.getIndex);

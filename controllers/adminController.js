@@ -42,6 +42,28 @@ exports.getDashboard = (req, res) => {
     });
 };
 
+// [NEW] Sync Heroes Action
+exports.syncHeroes = async (req, res) => {
+    try {
+        const { exec } = require('child_process');
+        const path = require('path');
+        const scriptPath = path.join(__dirname, '../utils/sync_heroes.js');
+
+        // Execute the node script
+        exec(`node "${scriptPath}"`, (error, stdout, stderr) => {
+            if (error) {
+                console.error(`exec error: ${error}`);
+                return res.json({ success: false, error: error.message });
+            }
+            console.log(`stdout: ${stdout}`);
+            res.json({ success: true, message: stdout });
+        });
+    } catch (err) {
+        console.error(err);
+        res.json({ success: false, error: err.message });
+    }
+};
+
 // --- Tier List Manager Section ---
 // --- Tier List Manager Section ---
 exports.getTierListManager = async (req, res) => {

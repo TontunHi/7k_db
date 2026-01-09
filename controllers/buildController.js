@@ -52,12 +52,13 @@ exports.getBuildPage = (req, res) => {
                 return true;
             });
 
-            // Sort by Grade (l++ > l+ > l > r > uc > c)
+            // Sort by Grade (l++ > l+ > l > r > uc > c) -> Name (Asc)
             const gradeWeight = { 'l++': 6, 'l+': 5, 'l': 4, 'r': 3, 'uc': 2, 'c': 1 };
             heroes.sort((a, b) => {
                 const wA = gradeWeight[a.grade] || 0;
                 const wB = gradeWeight[b.grade] || 0;
-                return wB - wA; // Descending
+                if (wA !== wB) return wB - wA; // Grade Descending
+                return a.name.localeCompare(b.name); // Name Ascending
             });
 
             // 3. Merge DB Data & Process Skills
